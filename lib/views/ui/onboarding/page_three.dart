@@ -1,4 +1,5 @@
 import 'package:easy_ride/views/common/shadow_btn.dart';
+import 'package:easy_ride/views/ui/auth/login.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
@@ -52,7 +53,10 @@ class PageThree extends StatelessWidget {
               children: [
                 ShadowBtn(
                   onTap: () {
-                    print("object");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()));
                   },
                   gradientColor1: const Color.fromARGB(255, 123, 136, 170),
                   gradientColor2: Color(lightShade.value),

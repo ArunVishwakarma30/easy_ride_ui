@@ -2,8 +2,6 @@ import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/controllers/onboarding_provider.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
-import 'package:easy_ride/views/ui/auth/login.dart';
-import 'package:easy_ride/views/ui/auth/temp.dart';
 import 'package:easy_ride/views/ui/onboarding/page_one.dart';
 import 'package:easy_ride/views/ui/onboarding/page_three.dart';
 import 'package:easy_ride/views/ui/onboarding/page_two.dart';
@@ -105,14 +103,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                               padding: const EdgeInsets.only(bottom: 12.0),
                               child: InkWell(
                                 onTap: () {
-                                  // pageController.previousPage(
-                                  //     duration:
-                                  //         const Duration(milliseconds: 300),
-                                  //     curve: Curves.linear);
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>const LoginPage()));
+                                  pageController.previousPage(
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.linear);
+                                  
                                           
                                 },
                                 child: ReuseableText(
