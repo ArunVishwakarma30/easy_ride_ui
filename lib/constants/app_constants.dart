@@ -18,6 +18,4 @@ const backgroundGrey = Color(0xFFF2F2F2); //
 const backGroundLight = Color(0xFFCCCCCC); //
 const backGrounddark = Color(0xFFFFFFFF); //
 
-const loginBack = Color.fromARGB(255, 103, 119, 224);
-const tfCol1 = Color(0xFFc6cef1);
-const tfCol2 = Color(0xFF8d9ce4);
+const loginPageColor = Color(0xFF00a5ff);
