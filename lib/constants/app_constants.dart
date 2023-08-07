@@ -19,3 +19,5 @@ const backGroundLight = Color(0xFFCCCCCC); //
 const backGrounddark = Color(0xFFFFFFFF); //
 
 const loginPageColor = Color(0xFF00a5ff);
+
+String regEx = r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$';

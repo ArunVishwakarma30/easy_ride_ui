@@ -1,10 +1,13 @@
+import 'package:easy_ride/controllers/auth_provider.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/customTextField.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/common/shadow_btn.dart';
+import 'package:easy_ride/views/ui/auth/register.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 import '../../../constants/app_constants.dart';
 
@@ -16,14 +19,15 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController name = TextEditingController();
-  final TextEditingController password = TextEditingController();
-  final formKey = GlobalKey<FormState>();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
     // TODO: implement dispose
-    TextEditingController().dispose();
+    _email.dispose();
+    _password.dispose();
     super.dispose();
   }
 
@@ -32,15 +36,14 @@ class _LoginPageState extends State<LoginPage> {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
-    return GestureDetector(
-      onTap: () {
-        // This closes the keyboard when tapping outside of text fields
-        final currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus) {
-          currentFocus.unfocus();
-        }
-      },
-      child: Scaffold(
+    return GestureDetector(onTap: () {
+      // This closes the keyboard when tapping outside of text fields
+      final currentFocus = FocusScope.of(context);
+      if (!currentFocus.hasPrimaryFocus) {
+        currentFocus.unfocus();
+      }
+    }, child: Consumer<AuthProvider>(builder: (context, authProvider, child) {
+      return Scaffold(
           resizeToAvoidBottomInset: false, //
           body: Container(
             height: height,
@@ -87,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                       child: Form(
-                        key: formKey, // form key
+                        key: _formKey, // form key
                         child: Column(
                           children: [
                             const HeightSpacer(size: 10),
@@ -113,20 +116,44 @@ class _LoginPageState extends State<LoginPage> {
                                       MainAxisAlignment.spaceEvenly,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    CustomTextField(
-                                      label: "Email or Phone Number",
-                                      keyType: TextInputType.name,
-                                      prefixIcon:
-                                          const Icon(Icons.person_rounded),
-                                      controller: name,
-                                      textSce: false,
+                                    Container(
+                                      margin: EdgeInsets.only(top: 10.0),
+                                      child: CustomTextField(
+                                        label: "Email",
+                                        keyType: TextInputType.emailAddress,
+                                        prefixIcon:
+                                            const Icon(Icons.person_rounded),
+                                        controller: _email,
+                                        textSce: false,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter an email address';
+                                          }
+                                          // Regular expression to validate email format
+                                          final emailRegex = RegExp(
+                                              r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
+                                          if (!emailRegex.hasMatch(value)) {
+                                            return 'Please enter a valid email address';
+                                          }
+                                          return null; // Validation passed
+                                        },
+                                      ),
                                     ),
                                     CustomTextField(
                                       label: "Password",
                                       prefixIcon: const Icon(Icons.lock),
                                       keyType: TextInputType.name,
-                                      controller: password,
-                                      textSce: true,
+                                      controller: _password,
+                                      suffixIcon: GestureDetector(
+                                        onTap: () {
+                                          authProvider.setSecure();
+                                        },
+                                        child: authProvider.secure
+                                            ? const Icon(Icons.visibility_off)
+                                            : const Icon(Icons.visibility),
+                                      ),
+                                      textSce:
+                                          authProvider.secure ? true : false,
                                     ),
                                   ],
                                 ),
@@ -134,36 +161,34 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             Expanded(
                                 flex: 2,
-                                child: Container(
-                                  child: Column(
-                                    children: [
-                                      ShadowBtn(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const LoginPage()));
-                                        },
-                                        gradientColor1: const Color.fromARGB(
-                                            255, 65, 100, 189),
-                                        gradientColor2:
-                                            Color(loginPageColor.value),
-                                        size: 18.0,
-                                        height: 55,
-                                        width: width * 0.4,
-                                        child: Text(
-                                          'Login',
-                                          style: GoogleFonts.varelaRound(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 20.0,
-                                            letterSpacing: 0.0,
-                                            color: Colors.white,
-                                          ),
+                                child: Column(
+                                  children: [
+                                    ShadowBtn(
+                                      onTap: () {
+                                        if (_formKey.currentState!.validate()) {
+                                          print("Login button tapper");
+                                        }
+                                      },
+                                      gradientColor1: const Color.fromARGB(
+                                          255, 65, 100, 189),
+                                      gradientColor2:
+                                          Color(loginPageColor.value),
+                                      size: 18.0,
+                                      height: 55,
+                                      width: width * 0.4,
+                                      child: Text(
+                                        'Login',
+                                        style: GoogleFonts.varelaRound(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20.0,
+                                          letterSpacing: 0.0,
+                                          color: Colors.white,
                                         ),
                                       ),
-                                      const HeightSpacer(size: 15),
-                                      Row(
+                                    ),
+                                    const HeightSpacer(size: 15),
+                                    Flexible(
+                                      child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
@@ -175,13 +200,27 @@ class _LoginPageState extends State<LoginPage> {
                                                   FontWeight.w600)),
                                           InkWell(
                                               onTap: () {
-                                                print("tapped");
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const RegisterPage()));
                                               },
-                                              child: ReuseableText(text: "Sign Up", style: roundFont(16, Color(loginPageColor.value), FontWeight.bold).copyWith(decoration: TextDecoration.underline)))
+                                              child: ReuseableText(
+                                                  text: "Sign Up",
+                                                  style: roundFont(
+                                                          16,
+                                                          Color(loginPageColor
+                                                              .value),
+                                                          FontWeight.bold)
+                                                      .copyWith(
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .underline)))
                                         ],
-                                      )
-                                    ],
-                                  ),
+                                      ),
+                                    )
+                                  ],
                                 ))
                           ],
                         ),
@@ -189,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
                     ))
               ],
             ),
-          )),
-    );
+          ));
+    }));
   }
 }

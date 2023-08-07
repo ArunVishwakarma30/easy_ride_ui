@@ -1,5 +1,6 @@
 import 'package:easy_ride/views/common/shadow_btn.dart';
 import 'package:easy_ride/views/ui/auth/login.dart';
+import 'package:easy_ride/views/ui/auth/register.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
@@ -74,6 +75,12 @@ class PageThree extends StatelessWidget {
                   ),
                 ),
                 ShadowBtn(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RegisterPage()));
+                  },
                   size: 18.0,
                   height: 55,
                   width: 135.0,
