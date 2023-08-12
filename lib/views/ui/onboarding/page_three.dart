@@ -6,6 +6,7 @@ import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../constants/app_constants.dart';
 
@@ -53,7 +54,10 @@ class PageThree extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ShadowBtn(
-                  onTap: () {
+                  onTap: () async {
+                    var prefs = await SharedPreferences.getInstance();
+                    prefs.setBool('entrypoint', true);
+                    print(prefs.get('entrypoint'));
                     Navigator.push(
                         context,
                         MaterialPageRoute(

@@ -5,6 +5,7 @@ import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/common/shadow_btn.dart';
 import 'package:easy_ride/views/ui/auth/register.dart';
+import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -166,7 +167,11 @@ class _LoginPageState extends State<LoginPage> {
                                     ShadowBtn(
                                       onTap: () {
                                         if (_formKey.currentState!.validate()) {
-                                          print("Login button tapper");
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: ((context) =>
+                                                     const MainPage())));
                                         }
                                       },
                                       gradientColor1: const Color.fromARGB(

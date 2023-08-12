@@ -19,5 +19,6 @@ const backGroundLight = Color(0xFFCCCCCC); //
 const backGrounddark = Color(0xFFFFFFFF); //
 
 const loginPageColor = Color(0xFF00a5ff);
+const lightLoginBack = Color.fromARGB(255, 89, 173, 219);
 
 String regEx = r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$';
