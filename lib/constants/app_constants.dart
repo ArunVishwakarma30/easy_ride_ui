@@ -22,3 +22,5 @@ const loginPageColor = Color(0xFF00a5ff);
 const lightLoginBack = Color.fromARGB(255, 89, 173, 219);
 
 String regEx = r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$';
+
+String map_key = "AIzaSyCpBewCrd7Um9Ll4xs8Ddq3GZCCvCRMQ_E";
