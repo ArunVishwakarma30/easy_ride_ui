@@ -7,6 +7,17 @@ class SearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text("SearchPage")),);
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body:
+      // ListView(
+      //  children: [
+      //
+      //  ],
+      //
+      // )
+    );
   }
 }

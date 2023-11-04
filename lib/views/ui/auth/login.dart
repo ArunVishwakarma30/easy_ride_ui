@@ -126,18 +126,18 @@ class _LoginPageState extends State<LoginPage> {
                                             const Icon(Icons.person_rounded),
                                         controller: _email,
                                         textSce: false,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter an email address';
-                                          }
-                                          // Regular expression to validate email format
-                                          final emailRegex = RegExp(
-                                              r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
-                                          if (!emailRegex.hasMatch(value)) {
-                                            return 'Please enter a valid email address';
-                                          }
-                                          return null; // Validation passed
-                                        },
+                                        // validator: (value) {
+                                        //   if (value == null || value.isEmpty) {
+                                        //     return 'Please enter an email address';
+                                        //   }
+                                        //   // Regular expression to validate email format
+                                        //   final emailRegex = RegExp(
+                                        //       r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
+                                        //   if (!emailRegex.hasMatch(value)) {
+                                        //     return 'Please enter a valid email address';
+                                        //   }
+                                        //   return null; // Validation passed
+                                        // },
                                       ),
                                     ),
                                     CustomTextField(

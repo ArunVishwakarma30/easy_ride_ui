@@ -1,6 +1,7 @@
 import 'package:easy_ride/controllers/auth_provider.dart';
 import 'package:easy_ride/controllers/onboarding_provider.dart';
 import 'package:easy_ride/views/ui/auth/login.dart';
+import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
 import 'package:easy_ride/views/ui/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constants/app_constants.dart';
+import 'controllers/bottom_navigation_provider.dart';
 
 Widget defaultHome = const OnBoardingScreen();
 
@@ -17,6 +19,7 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (context) => OnBoardingProvider()),
       ChangeNotifierProvider(create: (context) => AuthProvider()),
+      ChangeNotifierProvider(create: (context) => BottomNavNotifier()),
     ],
     child: const MyApp(),
   ));
@@ -48,9 +51,9 @@ class _MyAppState extends State<MyApp> {
       future: _checkEntryPoint(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Show a loading indicator if data is being fetched
+          return const CircularProgressIndicator(); // Show a loading indicator if data is being fetched
         } else if (snapshot.hasError) {
-          return Scaffold(body: Center(child: Text('Error fetching data')));
+          return const Scaffold(body: Center(child: Text('Error fetching data')));
         } else {
           defaultHome = snapshot.data == true
               ? const LoginPage()
@@ -63,7 +66,8 @@ class _MyAppState extends State<MyApp> {
               primarySwatch: Colors.grey,
               iconTheme: IconThemeData(color: Color(loginPageColor.value)),
             ),
-            home: defaultHome,
+            // home: defaultHome,
+            home : MainPage()
           );
         }
       },
