@@ -58,7 +58,7 @@ class PageThree extends StatelessWidget {
                     var prefs = await SharedPreferences.getInstance();
                     prefs.setBool('entrypoint', true);
                     print(prefs.get('entrypoint'));
-                    Navigator.push(
+                   Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const LoginPage()));

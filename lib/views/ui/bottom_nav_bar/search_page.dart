@@ -1,10 +1,12 @@
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
+import 'package:easy_ride/views/ui/departure_info_pages/add_location_page.dart';
+import 'package:easy_ride/views/ui/departure_info_pages/calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
-import '../../common/height_spacer.dart';
 import '../../common/text_with_icons.dart';
 
 class SearchPage extends StatefulWidget {
@@ -96,7 +98,11 @@ class _SearchPageState extends State<SearchPage> {
                                     ? FontWeight.w500
                                     : FontWeight.bold),
                             onTextTap: () {
-                              print("Leaving fron text  pressed");
+                              print("Leaving from text  pressed");
+                              Get.to(const AddLocationPage(),
+                                  transition: Transition.downToUp,
+                                  duration: const Duration(milliseconds: 600),
+                                  arguments: leaveFrom);
                             },
                             onPostFixTap: () {
                               print("swap icon pressed");
@@ -124,6 +130,10 @@ class _SearchPageState extends State<SearchPage> {
                                     : FontWeight.bold),
                             onTextTap: () {
                               print("Going to text  pressed");
+                              Get.to(const AddLocationPage(),
+                                  transition: Transition.downToUp,
+                                  duration: const Duration(milliseconds: 600),
+                                  arguments: goingTo);
                             },
                           ),
                           Container(
@@ -141,6 +151,7 @@ class _SearchPageState extends State<SearchPage> {
                                 child: GestureDetector(
                                   onTap: () {
                                     print("Calendar icon pressed");
+                                    Get.to(Calendar());
                                   },
                                   child: Row(
                                     children: [

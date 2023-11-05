@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
           defaultHome = snapshot.data == true
               ? const LoginPage()
               : const OnBoardingScreen();
-          return MaterialApp(
+          return GetMaterialApp(
             title: 'Flutter Demo',
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
