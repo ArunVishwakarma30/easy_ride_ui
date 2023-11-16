@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class AddLocationPage extends StatefulWidget {
-  const AddLocationPage({Key? key}) : super(key: key);
+class FindLocationPage extends StatefulWidget {
+  const FindLocationPage({Key? key}) : super(key: key);
 
   @override
-  State<AddLocationPage> createState() => _AddLocationPageState();
+  State<FindLocationPage> createState() => _FindLocationPageState();
 }
 
-class _AddLocationPageState extends State<AddLocationPage> {
+class _FindLocationPageState extends State<FindLocationPage> {
   String dataFromPrevPage = Get.arguments;
 
   @override

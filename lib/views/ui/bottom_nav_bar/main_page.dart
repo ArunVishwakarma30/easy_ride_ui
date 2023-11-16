@@ -3,7 +3,7 @@ import 'package:easy_ride/views/ui/bottom_nav_bar/inbox_page.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/profile_page.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/publish_page.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/rides_page.dart';
-import 'package:easy_ride/views/ui/bottom_nav_bar/search_page.dart';
+import 'package:easy_ride/views/ui/departure_info_pages/search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:provider/provider.dart';

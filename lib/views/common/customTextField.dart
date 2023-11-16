@@ -12,13 +12,13 @@ class CustomTextField extends StatelessWidget {
       this.controller,
       required this.keyType,
       required this.textSce,
-      required this.prefixIcon});
+      this.prefixIcon});
   final String label;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
   final TextInputType keyType;
   final bool textSce;
-  final Widget prefixIcon;
+  final Widget? prefixIcon;
   final Widget? suffixIcon;
 
   @override

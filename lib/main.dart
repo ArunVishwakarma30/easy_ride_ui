@@ -2,6 +2,9 @@ import 'package:easy_ride/controllers/auth_provider.dart';
 import 'package:easy_ride/controllers/onboarding_provider.dart';
 import 'package:easy_ride/views/ui/auth/login.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
+import 'package:easy_ride/views/ui/departure_info_pages/search_page.dart';
+import 'package:easy_ride/views/ui/departure_info_pages/sliver_effect.dart';
+import 'package:easy_ride/views/ui/driver_verification/driver_verification.dart';
 import 'package:easy_ride/views/ui/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -53,22 +56,24 @@ class _MyAppState extends State<MyApp> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(); // Show a loading indicator if data is being fetched
         } else if (snapshot.hasError) {
-          return const Scaffold(body: Center(child: Text('Error fetching data')));
+          return const Scaffold(
+              body: Center(child: Text('Error fetching data')));
         } else {
           defaultHome = snapshot.data == true
               ? const LoginPage()
               : const OnBoardingScreen();
           return GetMaterialApp(
-            title: 'Flutter Demo',
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              scaffoldBackgroundColor: Color(backgroundGrey.value),
-              primarySwatch: Colors.grey,
-              iconTheme: IconThemeData(color: Color(loginPageColor.value)),
-            ),
-            // home: defaultHome,
-            home : MainPage()
-          );
+              title: 'Flutter Demo',
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                scaffoldBackgroundColor: Color(backgroundGrey.value),
+                primarySwatch: customColor,
+                iconTheme: IconThemeData(color: Color(loginPageColor.value)),
+              ),
+              // home: defaultHome,
+              // home: MainPage()
+              home: DriverVerification()
+        );
         }
       },
     );
