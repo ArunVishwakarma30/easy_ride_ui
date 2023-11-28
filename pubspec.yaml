@@ -44,12 +44,14 @@ dependencies:
   get: ^4.6.5
   google_maps_flutter: ^2.4.0
   image_picker: ^1.0.4
+  fluttertoast: ^8.2.4
   # geolocator: ^10.0.0
   # flutter_geofire: ^2.0.3
   # flutter_polyline_points: ^2.0.0
   # location: ^5.0.3
   paged_vertical_calendar: ^1.1.6
   intl: ^0.17.0
+  dotted_border: ^2.1.0
 
 dev_dependencies:
   flutter_test:

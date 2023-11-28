@@ -1,4 +1,5 @@
 import 'package:easy_ride/controllers/auth_provider.dart';
+import 'package:easy_ride/controllers/driver_verification_provider.dart';
 import 'package:easy_ride/controllers/onboarding_provider.dart';
 import 'package:easy_ride/views/ui/auth/login.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
@@ -8,6 +9,7 @@ import 'package:easy_ride/views/ui/driver_verification/driver_verification.dart'
 import 'package:easy_ride/views/ui/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +25,7 @@ void main() {
       ChangeNotifierProvider(create: (context) => OnBoardingProvider()),
       ChangeNotifierProvider(create: (context) => AuthProvider()),
       ChangeNotifierProvider(create: (context) => BottomNavNotifier()),
+      ChangeNotifierProvider(create: (create) => DriverVerificationProvider()),
     ],
     child: const MyApp(),
   ));
@@ -63,6 +66,7 @@ class _MyAppState extends State<MyApp> {
               ? const LoginPage()
               : const OnBoardingScreen();
           return GetMaterialApp(
+              builder: FToastBuilder(),
               title: 'Flutter Demo',
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
@@ -72,8 +76,7 @@ class _MyAppState extends State<MyApp> {
               ),
               // home: defaultHome,
               // home: MainPage()
-              home: DriverVerification()
-        );
+              home: DriverVerification());
         }
       },
     );

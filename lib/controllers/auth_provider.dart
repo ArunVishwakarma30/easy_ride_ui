@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AuthProvider extends ChangeNotifier {
   // for on , off the visibility of the password
   bool _secure = true;
+
   get secure => _secure;
 
   void setSecure() {

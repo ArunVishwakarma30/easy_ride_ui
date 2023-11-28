@@ -23,7 +23,6 @@ const lightLoginBack = Color.fromARGB(255, 89, 173, 219);
 const darkHeading = Color(0xff054550);
 const lightBorder = Color(0xFFDCDCDC);
 
-
 final MaterialColor customColor = MaterialColor(0xFF00a5ff, {
   50: Color(0xFF00a5ff),
   100: Color(0xFF00a5ff),
@@ -37,8 +36,22 @@ final MaterialColor customColor = MaterialColor(0xFF00a5ff, {
   900: Color(0xFF00a5ff),
 });
 
-
 String regEx = r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$';
 
 String map_key = "AIzaSyCpBewCrd7Um9Ll4xs8Ddq3GZCCvCRMQ_E";
 
+// Dropdown options for driver verification step two widget:
+List<String> documentOptions = [
+  'Select Document',
+  'Passport',
+  'Aadhaar Card',
+  'PAN Card',
+];
+
+// Car Model names and image paths
+List<Map<String, String>> carTypeAndImg = [
+  {'Name': "Hatch Back", "Img": "assets/images/hatch_back.png"},
+  {'Name': "Sedan", "Img": "assets/images/sedan_car.png"},
+  {'Name': "Suv", "Img": "assets/images/suv_car.png"},
+  {'Name': "Premium", "Img": "assets/images/premium_car.png"},
+];
