@@ -6,6 +6,7 @@ import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/ui/driver_verification/question_heading.dart';
+import 'package:easy_ride/views/ui/driver_verification/service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,10 +19,12 @@ class Step2 extends StatefulWidget {
       {Key? key,
       required this.onDocumentSelected,
       required this.firstNameController,
+      required this.onImageSelected,
       required this.lastNameController})
       : super(key: key);
 
   final ValueChanged<String> onDocumentSelected;
+  final ValueChanged<File> onImageSelected;
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
 
@@ -34,20 +37,30 @@ class _Step2State extends State<Step2> {
   File? img;
 
   // code to capture the identity proof from camera
-  Future pickImage() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.camera);
-      if (image == null) {
-        return;
-      }
+  // Future pickImage() async {
+  //   try {
+  //     final image = await ImagePicker().pickImage(source: ImageSource.camera);
+  //     if (image == null) {
+  //       return;
+  //     }
+  //
+  //     final imageTemporary = File(image.path);
+  //     img = imageTemporary;
+  //
+  //     print("1212hehe ${img.toString()}");
+  //     widget.onImageSelected(img!);
+  //     setState(() {});
+  //   } on PlatformException catch (e) {
+  //     // this code will run , if user denied the permission to access the camera
+  //     print('Filed to pick image: $e');
+  //   }
+  // }
 
-      final imageTemporary = File(image.path);
-      img = imageTemporary;
-      setState(() {});
-    } on PlatformException catch (e) {
-      // this code will run , if user denied the permission to access the camera
-      print('Filed to pick image: $e');
-    }
+  // code to capture the identity proof from camera
+  Future pickImageFromService() async {
+    img = await captureImage(isImageSourceGallery: false);
+    widget.onImageSelected(img!);
+    setState(() {});
   }
 
   @override
@@ -95,6 +108,7 @@ class _Step2State extends State<Step2> {
                 width: 2,
               )),
           child: DropdownButton<String>(
+            isExpanded: true,
             underline: Container(
               height: 0,
             ),
@@ -108,8 +122,6 @@ class _Step2State extends State<Step2> {
                 widget.onDocumentSelected(selectedDocument);
               });
             },
-
-
             items: documentOptions.map((String value) {
               return DropdownMenuItem<String>(
                   value: value,
@@ -182,7 +194,7 @@ class _Step2State extends State<Step2> {
                               style: OutlinedButton.styleFrom(
                                   side: const BorderSide(color: Colors.black)),
                               onPressed: () {
-                                pickImage();
+                                pickImageFromService();
                               },
                               child: ReuseableText(
                                 text: "Retake Photo",
@@ -212,7 +224,7 @@ class _Step2State extends State<Step2> {
                           style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: Colors.black)),
                           onPressed: () {
-                            pickImage();
+                            pickImageFromService();
                           },
                           child: ReuseableText(
                             text: "Open Camera",

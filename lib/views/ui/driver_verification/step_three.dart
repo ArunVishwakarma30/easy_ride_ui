@@ -1,24 +1,47 @@
 import 'package:easy_ride/constants/app_constants.dart';
-import 'package:easy_ride/views/add_vehicle/add_vehicle.dart';
+import 'package:easy_ride/views/ui/driver_verification/add_vehicle/addBike.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'add_vehicle/add_car.dart';
+
 class Step3 extends StatefulWidget {
-  const Step3({Key? key}) : super(key: key);
+  const Step3(
+      {Key? key,
+      required this.vehicleRegistrationNumber,
+      required this.exceptionController,
+      required this.featuresController,
+      required this.makeCategoryController,
+      required this.onTabIndexChanged,
+      required this.onCarSelected})
+      : super(key: key);
+  final TextEditingController vehicleRegistrationNumber;
+  final TextEditingController exceptionController;
+  final TextEditingController featuresController;
+  final TextEditingController makeCategoryController;
+  final Function(int) onTabIndexChanged;
+  final Function(Map<String, String>) onCarSelected; // Callback fun
 
   @override
   State<Step3> createState() => _Step3State();
 }
 
 class _Step3State extends State<Step3> with TickerProviderStateMixin {
+  late TabController tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    tabController =
+        TabController(length: 2, vsync: this, animationDuration: Duration.zero);
+  }
+
   @override
   Widget build(BuildContext context) {
-    TabController tabController =
-        TabController(length: 2, vsync: this, animationDuration: Duration.zero);
     double width = MediaQuery.of(context).size.width;
     return SizedBox(
       // Tofix : fix this height relate problem, (Automatically get the height of the rendered widgets)
-      height: 1200,
+      height: 650,
       child: Column(
         children: [
           Card(
@@ -40,7 +63,7 @@ class _Step3State extends State<Step3> with TickerProviderStateMixin {
                 labelColor: Colors.white,
                 unselectedLabelColor: Colors.black,
                 onTap: (index) {
-                  print(index);
+                  widget.onTabIndexChanged(index);
                 },
                 tabs: const [
                   Tab(
@@ -60,10 +83,18 @@ class _Step3State extends State<Step3> with TickerProviderStateMixin {
             controller: tabController,
             physics: const NeverScrollableScrollPhysics(),
             children: [
-             AddVehicle(),
-              Container(
-                color: Colors.blueGrey,
-              )
+              AddCar(
+                vehicleRegistrationNumber: widget.vehicleRegistrationNumber,
+                exception: widget.exceptionController,
+                makeCategory: widget.makeCategoryController,
+                features: widget.featuresController,
+                onCarSelected: widget.onCarSelected, // Pass the callback fu,
+              ),
+              AddBike(
+                vehicleRegistrationNumber: widget.vehicleRegistrationNumber,
+                makeCategory: widget.makeCategoryController,
+                features: widget.featuresController,
+              ),
             ],
           ))
         ],

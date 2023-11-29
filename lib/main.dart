@@ -1,3 +1,4 @@
+import 'package:easy_ride/controllers/add_vehicle_provider.dart';
 import 'package:easy_ride/controllers/auth_provider.dart';
 import 'package:easy_ride/controllers/driver_verification_provider.dart';
 import 'package:easy_ride/controllers/onboarding_provider.dart';
@@ -26,6 +27,7 @@ void main() {
       ChangeNotifierProvider(create: (context) => AuthProvider()),
       ChangeNotifierProvider(create: (context) => BottomNavNotifier()),
       ChangeNotifierProvider(create: (create) => DriverVerificationProvider()),
+      ChangeNotifierProvider(create: (create) => AddVehicle()),
     ],
     child: const MyApp(),
   ));
@@ -74,9 +76,9 @@ class _MyAppState extends State<MyApp> {
                 primarySwatch: customColor,
                 iconTheme: IconThemeData(color: Color(loginPageColor.value)),
               ),
-              // home: defaultHome,
-              // home: MainPage()
-              home: DriverVerification());
+              // home: defaultHome);
+              //  home: MainPage());
+              home: const DriverVerification());
         }
       },
     );
