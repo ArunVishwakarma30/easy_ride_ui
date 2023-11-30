@@ -50,14 +50,17 @@ List<String> documentOptions = [
 
 // Car Model names and image paths
 List<Map<String, String>> carTypeAndImg = [
+  {'Name': "Select Type", "Img": "assets/images/model_car.jpg"},
   {'Name': "Hatch Back", "Img": "assets/images/hatch_back.png"},
   {'Name': "Sedan", "Img": "assets/images/sedan_car.png"},
   {'Name': "Suv", "Img": "assets/images/suv_car.png"},
   {'Name': "Premium", "Img": "assets/images/premium_car.png"},
+  {'Name': "Passenger Auto Rickshaw", "Img": "assets/images/auto_rikshaw.png"},
 ];
 
 // Bike Model names and image paths
 List<Map<String, String>> bikeTypeAndImg = [
+  {'Name': "Select Type", "Img": "assets/images/model_bike.jpg"},
   {'Name': "Bike", "Img": "assets/images/bike.png"},
   {'Name': "Scooter", "Img": "assets/images/scooter.jpeg"},
 ];

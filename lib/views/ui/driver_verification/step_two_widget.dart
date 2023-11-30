@@ -169,7 +169,7 @@ class _Step2State extends State<Step2> {
                     Container(
                       decoration: const BoxDecoration(
                           borderRadius:
-                              const BorderRadius.all(Radius.circular(10))),
+                              BorderRadius.all(Radius.circular(10))),
                       child: Image.file(
                         img!,
                         height: 200,

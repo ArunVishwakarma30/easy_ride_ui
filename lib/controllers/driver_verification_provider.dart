@@ -2,8 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 class DriverVerificationProvider extends ChangeNotifier {
 
-  // in order to work properly set current step to 0
-  int _currentStep = 2;
+  int _currentStep = 0;
 
   int get currentStep => _currentStep;
 

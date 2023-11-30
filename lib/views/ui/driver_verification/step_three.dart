@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/views/ui/driver_verification/add_vehicle/addBike.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,14 +15,20 @@ class Step3 extends StatefulWidget {
       required this.featuresController,
       required this.makeCategoryController,
       required this.onTabIndexChanged,
-      required this.onCarSelected})
+      required this.onCarSelected,
+      required this.onBikeSelected,
+      required this.onCarImageUploaded,
+      required this.onBikeImageUploaded})
       : super(key: key);
   final TextEditingController vehicleRegistrationNumber;
   final TextEditingController exceptionController;
   final TextEditingController featuresController;
   final TextEditingController makeCategoryController;
   final Function(int) onTabIndexChanged;
-  final Function(Map<String, String>) onCarSelected; // Callback fun
+  final Function(Map<String, String>) onCarSelected;
+  final Function(Map<String, String>) onBikeSelected;
+  final Function(File?) onCarImageUploaded;
+  final Function(File?) onBikeImageUploaded;
 
   @override
   State<Step3> createState() => _Step3State();
@@ -88,12 +96,15 @@ class _Step3State extends State<Step3> with TickerProviderStateMixin {
                 exception: widget.exceptionController,
                 makeCategory: widget.makeCategoryController,
                 features: widget.featuresController,
-                onCarSelected: widget.onCarSelected, // Pass the callback fu,
+                onCarSelected: widget.onCarSelected,
+                onImageUploaded: widget.onCarImageUploaded,
               ),
               AddBike(
                 vehicleRegistrationNumber: widget.vehicleRegistrationNumber,
                 makeCategory: widget.makeCategoryController,
                 features: widget.featuresController,
+                onBikeSelected: widget.onBikeSelected,
+                onImageUploaded: widget.onBikeImageUploaded,
               ),
             ],
           ))

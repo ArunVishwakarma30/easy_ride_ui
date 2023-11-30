@@ -10,6 +10,7 @@ import 'package:easy_ride/views/ui/driver_verification/step_one_widget.dart';
 import 'package:easy_ride/views/ui/driver_verification/step_three.dart';
 import 'package:easy_ride/views/ui/driver_verification/step_two_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import '../../../controllers/add_vehicle_provider.dart';
@@ -22,31 +23,35 @@ class DriverVerification extends StatefulWidget {
 }
 
 class _DriverVerificationState extends State<DriverVerification> {
-  // data from the page 2
+  // data from the step 2
   String selectedDocument = '';
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   var selectedImage = File('');
 
-  //
-
-  // data from the page three car -->
+  // data from the step 3
+  int _isBikeTabSelected = 0;
   final _vehicleRegistrationNumber =
       TextEditingController(); // common for car and bike
   final _makeCategory = TextEditingController(); //  common for car and bike
   final _features = TextEditingController(); //  common for car and bike
   final _exception = TextEditingController();
+  Map<String, String> selectedCar = {};
+  Map<String, String> selectedBike = {};
+  File? uploadedCarImage = null;
+  File? uploadedBikeImage = null;
 
-  int _seatsOffering = 1;
-  int _isBikeTabSelected = 0;
-  Map<String, String> selectedCar = {}; // Define the selectedCar variab
-
-  // Callback function to set the selectedCar value
+  // Callback function to set the selected vehicle value from the drop down
   void onCarSelected(Map<String, String> car) {
     selectedCar = car;
   }
 
-  //Callback function to handle the selected image
+  // Callback function to set the selectedBike value from the drop down
+  void onBikeSelected(Map<String, String> bike) {
+    selectedBike = bike;
+  }
+
+  //Callback function to handle the selected image of users Identity proof
   void handleImageSelected(File img) {
     selectedImage = img;
   }
@@ -60,6 +65,18 @@ class _DriverVerificationState extends State<DriverVerification> {
   //Callback function to get the tab index value of, after the tab index changed
   void onTabIndexChanged(int value) {
     _isBikeTabSelected = value;
+  }
+
+  // callback function to get the image of the car after its uploaded
+  void onCarImageUploaded(File? value) {
+    uploadedCarImage = value;
+    print("uploadedImage :::::: $uploadedCarImage");
+  }
+
+  // callback function to get the image of the bike after its uploaded
+  void onBikeImageUploaded(File? value) {
+    uploadedBikeImage = value;
+    print("uploadedImage :::::: $uploadedBikeImage");
   }
 
   @override
@@ -117,7 +134,10 @@ class _DriverVerificationState extends State<DriverVerification> {
                 featuresController: _features,
                 makeCategoryController: _makeCategory,
                 onTabIndexChanged: onTabIndexChanged,
-                onCarSelected: onCarSelected, // Pass the call
+                onCarSelected: onCarSelected,
+                onBikeSelected: onBikeSelected,
+                onCarImageUploaded: onCarImageUploaded,
+                onBikeImageUploaded: onBikeImageUploaded,
               )),
         ];
 
@@ -141,9 +161,11 @@ class _DriverVerificationState extends State<DriverVerification> {
                     driverVerificationNotifier.incrementCurrentStep();
                     break;
                   case 1:
+                    // Tofix : selectedImage cannot be null , before continuing to the nex step(case 2 OR step 3)
                     if ((firstName.isEmpty) ||
                         (lastName.isEmpty) ||
-                        selectedDocument == "Select Document") {
+                        selectedDocument == 'Select Document' ||
+                        selectedDocument.isEmpty) {
                       showToastMessage(context, "Please Enter all the fields",
                           Icons.error_outline);
                     } else {
@@ -151,28 +173,71 @@ class _DriverVerificationState extends State<DriverVerification> {
                     }
                     break;
                   case 2:
-                    // Todo : Send all the data collected from the page 2 and 3 to server OR Database
+                    String vehicleRegistrationNumber =
+                        _vehicleRegistrationNumber.text.toString();
+
+                    // User Identity (Step 2) Details
+                    print("First Name:${_firstNameController.text.toString()}");
+                    print("Last Name:${_lastNameController.text.toString()}");
                     print(
-                        "Page Two 1st Name : ${_firstNameController.toString()}");
-                    print(
-                        "Page Two last Name : ${_lastNameController.toString()}");
-                    print(
-                        "Identity Dropdown Selected : ${selectedDocument.toString()}");
+                        "Identity Dropdown Selected:${selectedDocument.toString()}");
                     print("Image of identity ${selectedImage.toString()}");
-                    print(_isBikeTabSelected == 1
-                        ? "Bike selected "
-                        : "Car selected");
+                    print(_isBikeTabSelected == 0
+                        ? "Car Details Uploading..."
+                        : "Bike Details Uploading...");
+                    if (_isBikeTabSelected == 0) {
+                      if ((selectedCar['Name'] == null) ||
+                          (selectedCar['Name'] == 'Select Type') ||
+                          vehicleRegistrationNumber.isEmpty) {
+                        showToastMessage(context, "Please Enter all the fields",
+                            Icons.error_outline_outlined);
+                      } else {
+                        print(
+                            "Vehicle Registration Number : ${vehicleRegistrationNumber}");
+                        print(
+                            "Make & category : ${_makeCategory.text.toString()}"); // check if it is null or not before sending to server
+                        print(
+                            "Features : ${_features.text.toString()}"); // check if it is null or not before sending to server
+                        print(
+                            "Is this vehicle is default : ${addVehicleProvider.isDefaultVehicle}");
+                        print(
+                            "Name : ${selectedCar['Name']} /n Image Path : ${selectedCar['Img']}");
+                        print(selectedCar['Name'] == null
+                            ? carTypeAndImg[0]
+                            : selectedCar);
+                        print(
+                            "Vehicle Image File : ${uploadedCarImage.toString()}"); // check if it is null or not , before uploading
+                        print(
+                            "Number of seats selected : ${addVehicleProvider.numOfSeatSelected}");
+                      }
+                    } else {
+                      if ((selectedBike['Name'] == null) ||
+                          (selectedBike['Name'] == 'Select Type') ||
+                          (vehicleRegistrationNumber.isEmpty) ||
+                          (addVehicleProvider.carryHelmet == 0)) {
+                        showToastMessage(context, "Please Enter all the fields",
+                            Icons.error_outline_outlined);
+                      } else {
+                        print(
+                            "Vehicle Registration Number : ${vehicleRegistrationNumber}");
+                        print(
+                            "Make & category : ${_makeCategory.text.toString()}"); // check if it is null or not before sending to server
+                        print(
+                            "Features : ${_features.text.toString()}"); // check if it is null or not before sending to server
+                        print(
+                            "Is this vehicle is default : ${addVehicleProvider.isDefaultVehicle}");
+                        print(
+                            "Name : ${selectedBike['Name']} /n Image Path : ${selectedBike['Img']}");
+                        print(selectedBike['Name'] == null
+                            ? carTypeAndImg[0]
+                            : selectedBike);
+                        print(
+                            "Vehicle Image File : ${uploadedBikeImage.toString()}"); // check if it is null or not , before uploading
+                        print(
+                            "Helmet Required (1 : Required, 2:Optional ) : ${addVehicleProvider.carryHelmet}");
+                      }
+                    }
 
-                    print(
-                        "Number of seats selected : ${addVehicleProvider.numOfSeatSelected}");
-                    print(
-                        "Is Default Vehicle : ${addVehicleProvider.isDefaultVehicle}");
-
-                    print(
-                        "Name : ${selectedCar['Name']} /n Image Path : ${selectedCar['Img']}");
-                    print(selectedCar['Name'] == null
-                        ? carTypeAndImg[0]
-                        : selectedCar);
                     break;
                 }
               },
@@ -198,7 +263,7 @@ class _DriverVerificationState extends State<DriverVerification> {
                               thickness: 1,
                               color: Color(lightBorder.value),
                             ),
-                            HeightSpacer(size: 5),
+                            const HeightSpacer(size: 5),
                             Text(
                               "By Selecting \"Continue\" you agree to the",
                               style: roundFont(width * 0.04,
@@ -254,10 +319,10 @@ class _DriverVerificationState extends State<DriverVerification> {
                         Expanded(
                           child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
+                                shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.all(
                                         Radius.circular(10.0))),
-                                minimumSize: Size(100, 55),
+                                minimumSize: const Size(100, 55),
                               ),
                               onPressed: details.onStepContinue,
                               child: Text(
@@ -266,7 +331,7 @@ class _DriverVerificationState extends State<DriverVerification> {
                                     FontWeight.bold),
                               )),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                         ),
                         Visibility(
@@ -276,10 +341,10 @@ class _DriverVerificationState extends State<DriverVerification> {
                           child: Expanded(
                             child: OutlinedButton(
                                 style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
+                                  shape: const RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(10.0))),
-                                  minimumSize: Size(100, 55),
+                                  minimumSize: const Size(100, 55),
                                 ),
                                 onPressed: details.onStepCancel,
                                 child: Text(

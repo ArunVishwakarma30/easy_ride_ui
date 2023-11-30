@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/controllers/add_vehicle_provider.dart';
 import 'package:easy_ride/views/common/app_style.dart';
@@ -6,7 +8,6 @@ import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/ui/driver_verification/add_vehicle/custom_radio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'capture_img_dialog.dart';
 
 class AddCar extends StatefulWidget {
@@ -16,13 +17,15 @@ class AddCar extends StatefulWidget {
       required this.exception,
       required this.makeCategory,
       required this.features,
-      required this.onCarSelected})
+      required this.onCarSelected,
+      required this.onImageUploaded})
       : super(key: key);
   final TextEditingController vehicleRegistrationNumber;
   final TextEditingController exception;
   final TextEditingController makeCategory;
   final TextEditingController features;
   final Function(Map<String, String>) onCarSelected;
+  final Function(File?) onImageUploaded;
 
   @override
   State<AddCar> createState() => _AddCarState();
@@ -31,8 +34,15 @@ class AddCar extends StatefulWidget {
 class _AddCarState extends State<AddCar> {
   // getting the details of car(Car type and image path) from constant file
   Map<String, String> selectedCar = carTypeAndImg[0];
+  File? capturedImage = File('');
 
-  // int seatsSelected = 1;
+// get the data from the capturedImage
+  void getCapturedImage(File? value) {
+    capturedImage = value;
+    print("printing captured image value :::: $capturedImage");
+    widget.onImageUploaded(capturedImage);
+    setState(() {});
+  }
 
   // List of DropdownMenuItem widgets for the DropdownButton
   List<DropdownMenuItem<String>> dropdownItems = carTypeAndImg
@@ -55,13 +65,22 @@ class _AddCarState extends State<AddCar> {
           GestureDetector(
             onTap: () {
               // Todo : Write a code to get the vehicle picture from gallery OR from camera
-              CaptureImageDialog(context);
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return CaptureImageAlertDialog(
+                    capturedImage: getCapturedImage,
+                  );
+                },
+              );
             },
             child: Column(
               children: [
                 SizedBox(
                   height: width * 0.5,
-                  child: Image.asset(selectedCar["Img"] ?? ''),
+                  child: capturedImage?.path == '' || capturedImage == null
+                      ? Image.asset(selectedCar["Img"] ?? '')
+                      : ClipOval(child: Image.file(capturedImage!)),
                 ),
                 Center(
                   child: ReuseableText(

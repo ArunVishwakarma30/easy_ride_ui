@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,17 +9,22 @@ import '../../../../controllers/add_vehicle_provider.dart';
 import '../../../common/app_style.dart';
 import '../../../common/height_spacer.dart';
 import '../../../common/reuseable_text_widget.dart';
+import 'capture_img_dialog.dart';
 
 class AddBike extends StatefulWidget {
   const AddBike(
       {Key? key,
       required this.vehicleRegistrationNumber,
       required this.makeCategory,
-      required this.features})
+      required this.features,
+      required this.onBikeSelected,
+      required this.onImageUploaded})
       : super(key: key);
   final TextEditingController vehicleRegistrationNumber;
   final TextEditingController makeCategory;
   final TextEditingController features;
+  final Function(Map<String, String>) onBikeSelected;
+  final Function(File?) onImageUploaded;
 
   @override
   State<AddBike> createState() => _AddBikeState();
@@ -26,6 +33,15 @@ class AddBike extends StatefulWidget {
 class _AddBikeState extends State<AddBike> {
   // getting the details of bike(bike type and image path) from constant file
   Map<String, String> selectedBike = bikeTypeAndImg[0];
+  File? capturedImage = File('');
+
+// get the data from the capturedImage
+  void getCapturedImage(File? value) {
+    capturedImage = value;
+    print("printing captured bike image value :::: $capturedImage");
+    widget.onImageUploaded(capturedImage);
+    setState(() {});
+  }
 
   // List of DropdownMenuItem widgets for the DropdownButton
   List<DropdownMenuItem<String>> dropdownItems = bikeTypeAndImg
@@ -48,14 +64,23 @@ class _AddBikeState extends State<AddBike> {
           GestureDetector(
             onTap: () {
               // Todo : Write a code to get the vehicle picture from gallery OR from camera
-              print("Add Code to get the image from gallery or camera");
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return CaptureImageAlertDialog(
+                    capturedImage: getCapturedImage,
+                  );
+                },
+              );
             },
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
                   height: width * 0.5,
-                  child: Image.asset(selectedBike["Img"] ?? ''),
+                  child: capturedImage?.path == '' || capturedImage == null
+                      ? Image.asset(selectedBike["Img"] ?? '')
+                      : ClipOval(child: Image.file(capturedImage!)),
                 ),
                 Center(
                   child: ReuseableText(
@@ -80,6 +105,8 @@ class _AddBikeState extends State<AddBike> {
                     orElse: () => bikeTypeAndImg[
                         0], // Default to the first bike if not found
                   );
+
+                  widget.onBikeSelected(selectedBike);
                 });
               }),
           TextField(
