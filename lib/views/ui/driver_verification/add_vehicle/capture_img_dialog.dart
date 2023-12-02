@@ -6,7 +6,7 @@ import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../service.dart';
+import '../../../common/service.dart';
 
 class CaptureImageAlertDialog extends StatelessWidget {
   const CaptureImageAlertDialog({Key? key, required this.capturedImage})

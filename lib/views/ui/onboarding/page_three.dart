@@ -15,6 +15,13 @@ class PageThree extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // this setEntryPoint() function will set the entry point , and if user opens the app second time after installation
+    // then the onboarding screen will be skipped automatically
+    void setEntryPoint() async {
+      var prefs = await SharedPreferences.getInstance();
+      prefs.setBool('entrypoint', true);
+    }
+
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -54,11 +61,9 @@ class PageThree extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ShadowBtn(
-                  onTap: () async {
-                    var prefs = await SharedPreferences.getInstance();
-                    prefs.setBool('entrypoint', true);
-                    print(prefs.get('entrypoint'));
-                   Navigator.push(
+                  onTap: () {
+                    setEntryPoint();
+                    Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const LoginPage()));
@@ -80,6 +85,7 @@ class PageThree extends StatelessWidget {
                 ),
                 ShadowBtn(
                   onTap: () {
+                    setEntryPoint();
                     Navigator.push(
                         context,
                         MaterialPageRoute(

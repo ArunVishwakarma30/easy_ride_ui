@@ -57,7 +57,7 @@ class _MainPageState extends State<MainPage> {
         backgroundColor: const Color.fromARGB(255, 234, 228, 228),
         body: pages[navNotifier.currentIndex],
         bottomNavigationBar: CurvedNavigationBar(
-          onTap: (value) => {navNotifier.setCurrentIndex(value)},
+          onTap: (value) => {navNotifier.setCurrentIndex(value), print(navNotifier.currentIndex)},
           items: items,
           height: 60,
           index: navNotifier.currentIndex,

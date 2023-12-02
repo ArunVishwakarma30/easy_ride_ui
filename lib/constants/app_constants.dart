@@ -23,6 +23,9 @@ const lightLoginBack = Color.fromARGB(255, 89, 173, 219);
 const darkHeading = Color(0xff054550);
 const lightBorder = Color(0xFFDCDCDC);
 
+const transparent = Color(0x00ffb60f);
+const seatColor = Color(0xffffb60f);
+
 final MaterialColor customColor = MaterialColor(0xFF00a5ff, {
   50: Color(0xFF00a5ff),
   100: Color(0xFF00a5ff),
@@ -39,6 +42,8 @@ final MaterialColor customColor = MaterialColor(0xFF00a5ff, {
 String regEx = r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$';
 
 String map_key = "AIzaSyCpBewCrd7Um9Ll4xs8Ddq3GZCCvCRMQ_E";
+
+// arunv3009 key = AIzaSyAN_7KYgIrv-Ebq9_bzs6-4bhcHjTEp4TM // here almost all useful API's are enabled
 
 // Dropdown options for driver verification step two widget:
 List<String> documentOptions = [
@@ -63,4 +68,9 @@ List<Map<String, String>> bikeTypeAndImg = [
   {'Name': "Select Type", "Img": "assets/images/model_bike.jpg"},
   {'Name': "Bike", "Img": "assets/images/bike.png"},
   {'Name': "Scooter", "Img": "assets/images/scooter.jpeg"},
+];
+
+List<String> monthNames = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 ];

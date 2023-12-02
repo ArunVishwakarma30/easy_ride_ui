@@ -4,9 +4,7 @@ import 'package:easy_ride/controllers/driver_verification_provider.dart';
 import 'package:easy_ride/controllers/onboarding_provider.dart';
 import 'package:easy_ride/views/ui/auth/login.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
-import 'package:easy_ride/views/ui/departure_info_pages/search_page.dart';
-import 'package:easy_ride/views/ui/departure_info_pages/sliver_effect.dart';
-import 'package:easy_ride/views/ui/driver_verification/driver_verification.dart';
+import 'package:easy_ride/views/ui/departure_info_pages/car_design.dart';
 import 'package:easy_ride/views/ui/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'constants/app_constants.dart';
 import 'controllers/bottom_navigation_provider.dart';
+import 'controllers/find_pool_provider.dart';
 
 Widget defaultHome = const OnBoardingScreen();
 
@@ -28,6 +27,7 @@ void main() {
       ChangeNotifierProvider(create: (context) => BottomNavNotifier()),
       ChangeNotifierProvider(create: (create) => DriverVerificationProvider()),
       ChangeNotifierProvider(create: (create) => AddVehicle()),
+      ChangeNotifierProvider(create: (create) => FindPoolProvider()),
     ],
     child: const MyApp(),
   ));
@@ -77,8 +77,8 @@ class _MyAppState extends State<MyApp> {
                 iconTheme: IconThemeData(color: Color(loginPageColor.value)),
               ),
               // home: defaultHome);
-              //  home: MainPage());
-              home: const DriverVerification());
+              home: MainPage());
+          // home: const MapScreen());
         }
       },
     );

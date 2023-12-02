@@ -6,12 +6,14 @@ import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/common/toast_msg.dart';
+import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
 import 'package:easy_ride/views/ui/driver_verification/step_one_widget.dart';
 import 'package:easy_ride/views/ui/driver_verification/step_three.dart';
 import 'package:easy_ride/views/ui/driver_verification/step_two_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../controllers/add_vehicle_provider.dart';
 
@@ -90,6 +92,12 @@ class _DriverVerificationState extends State<DriverVerification> {
 
   @override
   Widget build(BuildContext context) {
+    void setDriverVerification() async {
+      var prefs = await SharedPreferences.getInstance();
+      prefs.setBool("isDriverVerified", true);
+      Get.to(const MainPage());
+    }
+
     final driverVerificationProvider =
         Provider.of<DriverVerificationProvider>(context);
     double width = MediaQuery.of(context).size.width;
@@ -209,6 +217,9 @@ class _DriverVerificationState extends State<DriverVerification> {
                             "Vehicle Image File : ${uploadedCarImage.toString()}"); // check if it is null or not , before uploading
                         print(
                             "Number of seats selected : ${addVehicleProvider.numOfSeatSelected}");
+
+                        // here set share prefs
+                        setDriverVerification();
                       }
                     } else {
                       if ((selectedBike['Name'] == null) ||
@@ -235,6 +246,9 @@ class _DriverVerificationState extends State<DriverVerification> {
                             "Vehicle Image File : ${uploadedBikeImage.toString()}"); // check if it is null or not , before uploading
                         print(
                             "Helmet Required (1 : Required, 2:Optional ) : ${addVehicleProvider.carryHelmet}");
+
+                        // here set share prefs
+                        setDriverVerification();
                       }
                     }
 

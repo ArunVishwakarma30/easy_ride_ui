@@ -27,7 +27,7 @@ class CustomRadio extends StatelessWidget {
                   ? Colors.black45
                   : Colors.white,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0))),
+                  borderRadius: BorderRadius.circular(8.0))),
           child: Center(
               child: ReuseableText(
             text: index.toString(),

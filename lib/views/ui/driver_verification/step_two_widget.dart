@@ -6,7 +6,7 @@ import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/ui/driver_verification/question_heading.dart';
-import 'package:easy_ride/views/ui/driver_verification/service.dart';
+import 'package:easy_ride/views/common/service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

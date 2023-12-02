@@ -1,12 +1,16 @@
 import 'package:easy_ride/constants/app_constants.dart';
+import 'package:easy_ride/controllers/find_pool_provider.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
-import 'package:easy_ride/views/ui/departure_info_pages/calendar.dart';
+import 'package:easy_ride/views/ui/departure_info_pages/car_design.dart';
 import 'package:easy_ride/views/ui/departure_info_pages/find_location_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
+import '../../../controllers/add_vehicle_provider.dart';
+import '../../common/service.dart';
 import '../../common/text_with_icons.dart';
 import 'recent_search_page.dart';
 
@@ -25,15 +29,25 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final findPoolProvider = Provider.of<FindPoolProvider>(context);
+    final addVehicleProvider = Provider.of<AddVehicle>(context);
+    int numOfSeatsSelected = addVehicleProvider.numOfSeatSelected;
+
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.white, // Background color for the status bar
       statusBarIconBrightness:
           Brightness.dark, // Dark icons for better visibility
     ));
+
+    DateTime? providerDateTime = findPoolProvider.travelDateTime!;
+    String dateTime =
+        "${providerDateTime!.day.toString()} ${monthNames[providerDateTime.month - 1]}, ${providerDateTime.hour}:${providerDateTime.minute}";
+
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     double fontSize = width < 600 ? 19 : 22;
     double iconSize = width < 600 ? 24 : 30;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -104,13 +118,27 @@ class _SearchPageState extends State<SearchPage> {
                                         leaveFrom != "Leaving From"
                                             ? FontWeight.w500
                                             : FontWeight.bold),
-                                    onTextTap: () {
-                                      print("Leaving from text  pressed");
-                                      Get.to(const FindLocationPage(),
+                                    onTextTap: () async {
+                                      print("Leaving from text pressed");
+
+                                      // Use Get.to to navigate to FindLocationPage
+                                      String result = await Get.to(
+                                          const FindLocationPage(),
                                           transition: Transition.downToUp,
                                           duration:
                                               const Duration(milliseconds: 600),
                                           arguments: leaveFrom);
+
+                                      // Handle the result (data sent back from FindLocationPage)
+                                      if (result != null) {
+                                        // Do something with the result, such as updating a variable
+                                        print(
+                                            "Data from FindLocationPage: $result");
+                                        setState(() {
+                                          leaveFrom =
+                                              result; // Update the leaveFrom variable with the result
+                                        });
+                                      }
                                     },
                                     onPostFixTap: () {
                                       print("swap icon pressed");
@@ -161,8 +189,8 @@ class _SearchPageState extends State<SearchPage> {
                                         flex: 3,
                                         child: GestureDetector(
                                           onTap: () {
-                                            print("Calendar icon pressed");
-                                            Get.to(Calendar());
+                                            findPoolProvider
+                                                .setTravelDateTime(context);
                                           },
                                           child: Row(
                                             children: [
@@ -175,7 +203,7 @@ class _SearchPageState extends State<SearchPage> {
                                                 margin:
                                                     EdgeInsets.only(left: 10),
                                                 child: ReuseableText(
-                                                  text: "Today",
+                                                  text: dateTime,
                                                   style: roundFont(
                                                       fontSize,
                                                       Colors.black,
@@ -190,7 +218,12 @@ class _SearchPageState extends State<SearchPage> {
                                         flex: 1,
                                         child: GestureDetector(
                                           onTap: () {
-                                            print("Person Icon pressed");
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return CarDesign();
+                                              },
+                                            );
                                           },
                                           child: Row(
                                             children: [
@@ -202,13 +235,16 @@ class _SearchPageState extends State<SearchPage> {
                                               const Expanded(
                                                   flex: 2,
                                                   child: Icon(
-                                                    Icons.person,
+                                                    Icons
+                                                        .airline_seat_recline_extra,
                                                     color: Colors.black45,
                                                   )),
                                               Expanded(
                                                 flex: 1,
                                                 child: ReuseableText(
-                                                  text: "1", // Your number here
+                                                  text: numOfSeatsSelected
+                                                      .toString(),
+                                                  // Your number here
                                                   style: roundFont(
                                                       fontSize,
                                                       Colors.black,
@@ -250,7 +286,7 @@ class _SearchPageState extends State<SearchPage> {
                                 ),
                               ),
                               child: ReuseableText(
-                                text: "Search",
+                                text: "Find Pool",
                                 style: roundFont(
                                     fontSize, Colors.white, FontWeight.w500),
                               ),

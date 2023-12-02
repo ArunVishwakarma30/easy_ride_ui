@@ -11,12 +11,27 @@ class FindLocationPage extends StatefulWidget {
 
 class _FindLocationPageState extends State<FindLocationPage> {
   String dataFromPrevPage = Get.arguments;
+  String newData = "Safed pool Sakinaka, maharashtra, mumbai 400072 ";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text(dataFromPrevPage),
+      body: SafeArea(
+        child: Column(
+          children: [
+            ElevatedButton(
+                onPressed: () {
+                  Get.back(result: newData);
+                },
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 30,
+                )),
+            Center(
+              child: Text(dataFromPrevPage),
+            ),
+          ],
+        ),
       ),
     );
   }
