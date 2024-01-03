@@ -9,35 +9,24 @@ const darkShade = Color(0xFF0F1E39);
 // subtle variations, such as dividers or shadows.
 const lightShade = Color(0xFF007dfe);
 const textColor = Color.fromARGB(255, 77, 83, 111);
-
-const accentGreen = Color(0xFF27AE60); // for btns or click icons
-const farkGreen = Color(0xFF1D864C); // for pressed or hover state
-const lightGreen = Color(0xFF3AD074); // for for subtle highlight and animation
+//
+// const accentGreen = Color(0xFF27AE60); // for btns or click icons
+// const farkGreen = Color(0xFF1D864C); // for pressed or hover state
+// const lightGreen = Color(0xFF3AD074); // for for subtle highlight and animation
 
 const backgroundGrey = Color(0xFFF2F2F2); //
 const backGroundLight = Color(0xFFCCCCCC); //
 const backGrounddark = Color(0xFFFFFFFF); //
 
 const loginPageColor = Color(0xFF00a5ff);
+const darkLoginPageCol = Color(0xff033b78);
 const lightLoginBack = Color.fromARGB(255, 89, 173, 219);
 const darkHeading = Color(0xff054550);
+const lightHeading = Color(0xff1c8494);
 const lightBorder = Color(0xFFDCDCDC);
 
 const transparent = Color(0x00ffb60f);
 const seatColor = Color(0xffffb60f);
-
-final MaterialColor customColor = MaterialColor(0xFF00a5ff, {
-  50: Color(0xFF00a5ff),
-  100: Color(0xFF00a5ff),
-  200: Color(0xFF00a5ff),
-  300: Color(0xFF00a5ff),
-  400: Color(0xFF00a5ff),
-  500: Color(0xFF00a5ff),
-  600: Color(0xFF00a5ff),
-  700: Color(0xFF00a5ff),
-  800: Color(0xFF00a5ff),
-  900: Color(0xFF00a5ff),
-});
 
 String regEx = r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$';
 
@@ -71,6 +60,16 @@ List<Map<String, String>> bikeTypeAndImg = [
 ];
 
 List<String> monthNames = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec"
 ];

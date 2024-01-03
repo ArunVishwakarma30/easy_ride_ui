@@ -168,8 +168,7 @@ class _Step2State extends State<Step2> {
                   children: [
                     Container(
                       decoration: const BoxDecoration(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(10))),
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
                       child: Image.file(
                         img!,
                         height: 200,
@@ -191,14 +190,16 @@ class _Step2State extends State<Step2> {
                                     FontWeight.w500)),
                           ),
                           OutlinedButton(
+
                               style: OutlinedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                                   side: const BorderSide(color: Colors.black)),
                               onPressed: () {
                                 pickImageFromService();
                               },
                               child: ReuseableText(
                                 text: "Retake Photo",
-                                style: roundFont(16, Color(darkHeading.value),
+                                style: roundFont(14, Color(darkHeading.value),
                                     FontWeight.w500),
                               )),
                         ],

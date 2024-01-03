@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/views/ui/driver_verification/add_vehicle/addBike.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -62,12 +61,13 @@ class _Step3State extends State<Step3> with TickerProviderStateMixin {
                 color: Colors.black12,
               ),
               child: TabBar(
+                indicatorSize: TabBarIndicatorSize.tab,
                 indicator: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.black45),
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.black45,
+                ),
                 controller: tabController,
-                isScrollable: true,
-                labelPadding: EdgeInsets.symmetric(horizontal: width * 0.09),
+                isScrollable: false,
                 labelColor: Colors.white,
                 unselectedLabelColor: Colors.black,
                 onTap: (index) {

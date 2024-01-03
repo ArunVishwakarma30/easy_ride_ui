@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 
+// Toast message
 showToastMessage(BuildContext context, String msg, IconData icon) {
   FToast fToast = FToast();
   fToast.init(context);
@@ -13,7 +15,6 @@ showToastMessage(BuildContext context, String msg, IconData icon) {
       mainAxisSize: MainAxisSize.max,
       children: [
         Icon(
-
           icon,
           color: Colors.white,
         ),
@@ -33,4 +34,22 @@ showToastMessage(BuildContext context, String msg, IconData icon) {
       child: toast,
       toastDuration: const Duration(seconds: 2),
       gravity: ToastGravity.TOP);
+}
+
+// Snackbar message
+ShowSnackbar( {
+  required String? title,
+  required String? message,
+  required IconData? icon,
+  Color? textColor = Colors.white,
+  Color? bgColor = Colors.redAccent,
+}) {
+  Get.snackbar(title!, message!, margin: const EdgeInsets.only(top: 15, left: 20, right:  20),
+      colorText: textColor,
+
+      backgroundColor: bgColor,
+      icon: Icon(
+        icon,
+        color: Colors.white,
+      ));
 }

@@ -43,7 +43,7 @@ class CaptureImageAlertDialog extends StatelessWidget {
                 onTap: () async {
                   Navigator.of(context).pop();
                   File? vehicleImage =
-                  await captureImage(isImageSourceGallery: true);
+                      await captureImage(isImageSourceGallery: true);
                   capturedImage(vehicleImage!);
                 },
                 child: ReuseableText(

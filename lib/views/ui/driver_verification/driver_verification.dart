@@ -40,8 +40,8 @@ class _DriverVerificationState extends State<DriverVerification> {
   final _exception = TextEditingController();
   Map<String, String> selectedCar = {};
   Map<String, String> selectedBike = {};
-  File? uploadedCarImage = null;
-  File? uploadedBikeImage = null;
+  File? uploadedCarImage;
+  File? uploadedBikeImage;
 
   // Callback function to set the selected vehicle value from the drop down
   void onCarSelected(Map<String, String> car) {
@@ -82,7 +82,7 @@ class _DriverVerificationState extends State<DriverVerification> {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     // TODO: implement dispose
     super.dispose();
     _firstNameController.dispose();
@@ -333,6 +333,7 @@ class _DriverVerificationState extends State<DriverVerification> {
                         Expanded(
                           child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(loginPageColor.value),
                                 shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.all(
                                         Radius.circular(10.0))),

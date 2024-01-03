@@ -1,4 +1,6 @@
 import 'package:easy_ride/controllers/auth_provider.dart';
+import 'package:easy_ride/models/request/sign_up_req_model.dart';
+import 'package:easy_ride/views/common/toast_msg.dart';
 import 'package:easy_ride/views/ui/auth/login.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_ride/views/common/app_style.dart';
@@ -6,6 +8,7 @@ import 'package:easy_ride/views/common/customTextField.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/common/shadow_btn.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _phoneNumber = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
   String num = "";
 
   @override
@@ -39,16 +43,18 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final currentFocus = FocusScope.of(context);
+
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return GestureDetector(onTap: () {
       // This closes the keyboard when tapping outside of text fields
-      final currentFocus = FocusScope.of(context);
       if (!currentFocus.hasPrimaryFocus) {
         currentFocus.unfocus();
       }
     }, child: Consumer<AuthProvider>(builder: (context, authProvider, child) {
       return Scaffold(
+
           // resizeToAvoidBottomInset: false, //
           body: SingleChildScrollView(
         child: Container(
@@ -129,8 +135,16 @@ class _RegisterPageState extends State<RegisterPage> {
                                     controller: _fullName,
                                     textSce: false,
                                     validator: (value) {
-                                      if (value == null || value.isEmpty) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
                                         return 'Please enter Your Full Name';
+                                      }
+
+                                      // Spliting the entered value in to words
+                                      List<String> nameParts =
+                                          value.trim().split(' ');
+                                      if (nameParts.length < 2) {
+                                        return 'Please enter both First Name and Last Name';
                                       }
 
                                       return null; // Validation passed
@@ -147,8 +161,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                         return 'Please enter an email address';
                                       }
                                       // Regular expression to validate email format
-                                      final emailRegex = RegExp(
-                                        regEx  );
+                                      final emailRegex = RegExp(regEx);
                                       if (!emailRegex.hasMatch(value)) {
                                         return 'Please enter a valid email address';
                                       }
@@ -175,7 +188,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                     ),
                                     initialCountryCode: 'IN',
                                     onChanged: (phone) {
-                                      print(phone.completeNumber);
                                       num = phone.completeNumber;
                                     },
                                     controller: _phoneNumber,
@@ -207,75 +219,103 @@ class _RegisterPageState extends State<RegisterPage> {
                                       return null; // Validation passed
                                     },
                                   ),
-                                  
                                 ],
                               ),
                             ),
                           ),
                           Expanded(
                               flex: 1,
-                              child: Container(
-                                child: Column(
-                                  children: [
-                                    ShadowBtn(
-                                      onTap: () {
-                                        if (_formKey.currentState!.validate()) {
-                                          print("Validated");
+                              child: Column(
+                                children: [
+                                  ShadowBtn(
+                                    onTap: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        if (_phoneNumber.text.isEmpty) {
+                                          ShowSnackbar(
+                                              title: "Required",
+                                              message:
+                                                  "Please Enter Phone Number",
+                                              icon:
+                                                  Icons.error_outline_outlined);
+                                        } else {
+                                          if (!currentFocus.hasPrimaryFocus) {
+                                            currentFocus.unfocus();
+                                          }
+                                          authProvider.setWaiting(
+                                              true); // this is set to true, so we can show the progressIndicator till user is registered
+                                          int spaceIndex = _fullName.text
+                                              .toString()
+                                              .indexOf(' ');
+                                          String firstName = _fullName.text
+                                              .toString()
+                                              .substring(0, spaceIndex);
+                                          String lastName = _fullName.text
+                                              .toString()
+                                              .substring(spaceIndex + 1);
+
+                                          SignUpReqModel model = SignUpReqModel(
+                                              firstName: firstName.trim(),
+                                              lastName: lastName.trim(),
+                                              email: _email.text.toString(),
+                                              phoneNumber: num.toString(),
+                                              password: _password.text);
+
+                                          authProvider.signUp(model);
                                         }
-                                      },
-                                      gradientColor1: const Color.fromARGB(
-                                          255, 65, 100, 189),
-                                      gradientColor2:
-                                          Color(loginPageColor.value),
-                                      size: 18.0,
-                                      height: 55,
-                                      width: width * 0.4,
-                                      child: Text(
-                                        'Register',
-                                        style: GoogleFonts.varelaRound(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 20.0,
-                                          letterSpacing: 0.0,
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                                      }
+                                    },
+                                    gradientColor1:
+                                        const Color.fromARGB(255, 65, 100, 189),
+                                    gradientColor2: Color(loginPageColor.value),
+                                    size: 18.0,
+                                    height: 55,
+                                    width: width * 0.4,
+                                    child: authProvider.waiting
+                                        ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
+                                        : Text(
+                                            'Register',
+                                            style: GoogleFonts.varelaRound(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 20.0,
+                                              letterSpacing: 0.0,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                  ),
+                                  const HeightSpacer(size: 15),
+                                  Flexible(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        ReuseableText(
+                                            text: "Already an user? ",
+                                            style: roundFont(
+                                                17,
+                                                Color(loginPageColor.value),
+                                                FontWeight.w600)),
+                                        InkWell(
+                                            onTap: () {
+                                              Get.off(() => LoginPage(),
+                                                  transition: Transition.fade);
+                                            },
+                                            child: ReuseableText(
+                                                text: "Login",
+                                                style: roundFont(
+                                                        16,
+                                                        Color(loginPageColor
+                                                            .value),
+                                                        FontWeight.bold)
+                                                    .copyWith(
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline)))
+                                      ],
                                     ),
-                                    const HeightSpacer(size: 15),
-                                    Flexible(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          ReuseableText(
-                                              text: "Already an user? ",
-                                              style: roundFont(
-                                                  17,
-                                                  Color(loginPageColor.value),
-                                                  FontWeight.w600)),
-                                          InkWell(
-                                              onTap: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const LoginPage()));
-                                              },
-                                              child: ReuseableText(
-                                                  text: "Login",
-                                                  style: roundFont(
-                                                          16,
-                                                          Color(loginPageColor
-                                                              .value),
-                                                          FontWeight.bold)
-                                                      .copyWith(
-                                                          decoration:
-                                                              TextDecoration
-                                                                  .underline)))
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
+                                  )
+                                ],
                               ))
                         ],
                       ),

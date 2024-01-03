@@ -28,7 +28,7 @@ Future<DateTime?> pickDate(BuildContext context) {
   return showDatePicker(
       switchToInputEntryModeIcon: Icon(
         Icons.add,
-        color: Color(loginPageColor.value),
+        color:Color(0xffeee8f4),
       ),
       context: context,
       initialDate: DateTime.now(),
@@ -43,10 +43,18 @@ Future<TimeOfDay?> pickTime(BuildContext context) {
           TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute));
 }
 
-Future pickDateTime(BuildContext context) async {
-  DateTime? date = await pickDate(context);
-  if (date == null) return;
-
-  TimeOfDay? time = await pickTime(context);
-  if (time == null) return;
+Future<TimeOfDay?> pickTime12HrsFormat(BuildContext context) {
+  return showTimePicker(
+    context: context,
+    initialTime: TimeOfDay(
+      hour: DateTime.now().hour,
+      minute: DateTime.now().minute,
+    ),
+    builder: (BuildContext context, Widget? child) {
+      return MediaQuery(
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+        child: child!,
+      );
+    },
+  );
 }

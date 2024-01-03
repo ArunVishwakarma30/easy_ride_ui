@@ -28,16 +28,16 @@ class CustomRadio extends StatelessWidget {
                   : Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0))),
-          child: Center(
-              child: ReuseableText(
-            text: index.toString(),
+          child: Text(
+            textAlign: TextAlign.center,
+            index.toString(),
             style: roundFont(
                 20,
                 addVehicleProvider.numOfSeatSelected == index
                     ? Colors.white
                     : Color(loginPageColor.value),
                 FontWeight.normal),
-          )),
+          ),
         ),
       ),
     );

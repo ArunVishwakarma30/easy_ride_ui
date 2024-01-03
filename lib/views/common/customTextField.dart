@@ -4,16 +4,19 @@ import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 
 class CustomTextField extends StatelessWidget {
-  const CustomTextField(
-      {super.key,
-      required this.label,
-      this.suffixIcon,
-      this.validator,
-      this.controller,
-      required this.keyType,
-      required this.textSce,
-      this.prefixIcon});
+  const CustomTextField({
+    super.key,
+    required this.label,
+    this.suffixIcon,
+    this.validator,
+    this.controller,
+    required this.keyType,
+    required this.textSce,
+    this.prefixIcon, this.focusNode,
+  });
+
   final String label;
+  final FocusNode? focusNode;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
   final TextInputType keyType;
@@ -24,6 +27,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      focusNode: focusNode,
       controller: controller,
       style: roundFont(19, Colors.black, FontWeight.w400),
       decoration: InputDecoration(
@@ -31,7 +35,13 @@ class CustomTextField extends StatelessWidget {
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         border: const OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.black, width: 1, style: BorderStyle.solid), // Custom border color
+          borderSide: BorderSide(
+              color: Colors.black,
+              width: 1,
+              style: BorderStyle.solid), // Custom border color
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(width: 1, color: darkLoginPageCol), //
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(

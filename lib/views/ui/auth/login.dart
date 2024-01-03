@@ -1,4 +1,5 @@
 import 'package:easy_ride/controllers/auth_provider.dart';
+import 'package:easy_ride/models/request/login_req_model.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/customTextField.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
@@ -7,6 +8,7 @@ import 'package:easy_ride/views/common/shadow_btn.dart';
 import 'package:easy_ride/views/ui/auth/register.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -34,12 +36,13 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final currentFocus = FocusScope.of(context);
+
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
     return GestureDetector(onTap: () {
       // This closes the keyboard when tapping outside of text fields
-      final currentFocus = FocusScope.of(context);
       if (!currentFocus.hasPrimaryFocus) {
         currentFocus.unfocus();
       }
@@ -126,18 +129,18 @@ class _LoginPageState extends State<LoginPage> {
                                             const Icon(Icons.person_rounded),
                                         controller: _email,
                                         textSce: false,
-                                        // validator: (value) {
-                                        //   if (value == null || value.isEmpty) {
-                                        //     return 'Please enter an email address';
-                                        //   }
-                                        //   // Regular expression to validate email format
-                                        //   final emailRegex = RegExp(
-                                        //       r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
-                                        //   if (!emailRegex.hasMatch(value)) {
-                                        //     return 'Please enter a valid email address';
-                                        //   }
-                                        //   return null; // Validation passed
-                                        // },
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter an email address!';
+                                          }
+                                          // Regular expression to validate email format
+                                          final emailRegex = RegExp(
+                                              r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
+                                          if (!emailRegex.hasMatch(value)) {
+                                            return 'Please enter a valid email address';
+                                          }
+                                          return null; // Validation passed
+                                        },
                                       ),
                                     ),
                                     CustomTextField(
@@ -153,6 +156,11 @@ class _LoginPageState extends State<LoginPage> {
                                             ? const Icon(Icons.visibility_off)
                                             : const Icon(Icons.visibility),
                                       ),
+                                      validator: (value) {
+                                        if (_password.text.isEmpty) {
+                                          return "Please enter password!";
+                                        }
+                                      },
                                       textSce:
                                           authProvider.secure ? true : false,
                                     ),
@@ -167,11 +175,14 @@ class _LoginPageState extends State<LoginPage> {
                                     ShadowBtn(
                                       onTap: () {
                                         if (_formKey.currentState!.validate()) {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: ((context) =>
-                                                      const MainPage())));
+                                          if (!currentFocus.hasPrimaryFocus) {
+                                            currentFocus.unfocus();
+                                          }
+                                          authProvider.setWaiting(true);
+                                          LoginReqModel model = LoginReqModel(
+                                              email: _email.text,
+                                              password: _password.text);
+                                          authProvider.login(model);
                                         }
                                       },
                                       gradientColor1: const Color.fromARGB(
@@ -181,15 +192,19 @@ class _LoginPageState extends State<LoginPage> {
                                       size: 18.0,
                                       height: 55,
                                       width: width * 0.4,
-                                      child: Text(
-                                        'Login',
-                                        style: GoogleFonts.varelaRound(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 20.0,
-                                          letterSpacing: 0.0,
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                                      child: authProvider.waiting
+                                          ? const CircularProgressIndicator(
+                                              color: Colors.white,
+                                            )
+                                          : Text(
+                                              'Login',
+                                              style: GoogleFonts.varelaRound(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 20.0,
+                                                letterSpacing: 0.0,
+                                                color: Colors.white,
+                                              ),
+                                            ),
                                     ),
                                     const HeightSpacer(size: 15),
                                     Flexible(
@@ -205,11 +220,10 @@ class _LoginPageState extends State<LoginPage> {
                                                   FontWeight.w600)),
                                           InkWell(
                                               onTap: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const RegisterPage()));
+                                                Get.off(
+                                                    () => const RegisterPage(),
+                                                    transition:
+                                                        Transition.downToUp);
                                               },
                                               child: ReuseableText(
                                                   text: "Sign Up",

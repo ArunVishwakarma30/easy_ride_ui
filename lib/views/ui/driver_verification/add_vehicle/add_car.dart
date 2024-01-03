@@ -77,11 +77,13 @@ class _AddCarState extends State<AddCar> {
             child: Column(
               children: [
                 SizedBox(
-                  height: width * 0.5,
-                  child: capturedImage?.path == '' || capturedImage == null
-                      ? Image.asset(selectedCar["Img"] ?? '')
-                      : ClipOval(child: Image.file(capturedImage!)),
-                ),
+                    height: width * 0.5,
+                    child: capturedImage?.path == '' || capturedImage == null
+                        ? Image.asset(selectedCar["Img"] ?? '')
+                        : CircleAvatar(
+                            radius: 80,
+                            backgroundImage: FileImage(capturedImage!),
+                          )),
                 Center(
                   child: ReuseableText(
                       text: "Update Picture",

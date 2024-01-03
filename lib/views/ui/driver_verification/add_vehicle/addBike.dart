@@ -80,7 +80,7 @@ class _AddBikeState extends State<AddBike> {
                   height: width * 0.5,
                   child: capturedImage?.path == '' || capturedImage == null
                       ? Image.asset(selectedBike["Img"] ?? '')
-                      : ClipOval(child: Image.file(capturedImage!)),
+                      : CircleAvatar(radius: 80, backgroundImage: FileImage(capturedImage!),),
                 ),
                 Center(
                   child: ReuseableText(

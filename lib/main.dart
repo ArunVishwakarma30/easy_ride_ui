@@ -4,7 +4,6 @@ import 'package:easy_ride/controllers/driver_verification_provider.dart';
 import 'package:easy_ride/controllers/onboarding_provider.dart';
 import 'package:easy_ride/views/ui/auth/login.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
-import 'package:easy_ride/views/ui/departure_info_pages/car_design.dart';
 import 'package:easy_ride/views/ui/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +18,18 @@ import 'controllers/find_pool_provider.dart';
 
 Widget defaultHome = const OnBoardingScreen();
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final entryPoint = prefs.getBool("entrypoint") ?? false;
+  final loggedIn = prefs.getBool("loggedIn") ?? false;
+
+  if ((entryPoint == true) && (loggedIn == false)) {
+    defaultHome = const LoginPage();
+  } else if ((entryPoint == true) && (loggedIn == true)) {
+    defaultHome = const MainPage();
+  }
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => OnBoardingProvider()),
@@ -41,12 +51,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Future<bool> _checkEntryPoint() async {
-    var prefs = await SharedPreferences.getInstance();
-    var entrypoint = prefs.getBool('entrypoint') ?? false;
-    return entrypoint;
-  }
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -55,33 +59,20 @@ class _MyAppState extends State<MyApp> {
               Color(loginPageColor.value)), // Change color as needed
     );
 
-    return FutureBuilder<bool>(
-      future: _checkEntryPoint(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // Show a loading indicator if data is being fetched
-        } else if (snapshot.hasError) {
-          return const Scaffold(
-              body: Center(child: Text('Error fetching data')));
-        } else {
-          defaultHome = snapshot.data == true
-              ? const LoginPage()
-              : const OnBoardingScreen();
-          return GetMaterialApp(
-              builder: FToastBuilder(),
-              title: 'Flutter Demo',
-              debugShowCheckedModeBanner: false,
-              theme: ThemeData(
-                scaffoldBackgroundColor: Color(backgroundGrey.value),
-                primarySwatch: customColor,
-                iconTheme: IconThemeData(color: Color(loginPageColor.value)),
-              ),
-              // home: defaultHome);
-              home: MainPage());
-          // home: const MapScreen());
-        }
-      },
-    );
+    // Set the status bar color globally
+
+    return GetMaterialApp(
+        builder: FToastBuilder(),
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          scaffoldBackgroundColor: Color(backgroundGrey.value),
+          primarySwatch: Colors.lightBlue,
+          iconTheme: IconThemeData(color: Color(loginPageColor.value)),
+        ),
+        home: defaultHome);
+    // home: MainPage());
+    // home: const MapScreen());
   }
 }
 

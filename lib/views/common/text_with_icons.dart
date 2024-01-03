@@ -11,7 +11,8 @@ class TextWithIcons extends StatelessWidget {
       this.textStyle,
       this.onTextTap,
       this.onPostFixTap,
-      required this.containerWidth})
+      this.iconColor = Colors.black,
+      required this.containerWidth, this.onWidgetTap})
       : super(key: key);
 
   final IconData? preFixIcon;
@@ -21,49 +22,54 @@ class TextWithIcons extends StatelessWidget {
   final TextStyle? textStyle;
   final VoidCallback? onTextTap;
   final VoidCallback? onPostFixTap;
+  final Color? iconColor;
+  final VoidCallback? onWidgetTap;
 
   @override
   Widget build(BuildContext context) {
     double iconSize = containerWidth < 600 ? 24 : 30;
-    return Row(
-      children: [
-        if (preFixIcon != null)
-          SizedBox(
-            child: GestureDetector(
-              onTap: onTextTap,
-              child: Icon(
-                preFixIcon,
-                size: iconSize,
-                color: Colors.black,
+    return GestureDetector(
+      onTap: onWidgetTap,
+      child: Row(
+        children: [
+          if (preFixIcon != null)
+            SizedBox(
+              child: GestureDetector(
+                onTap: onTextTap,
+                child: Icon(
+                  preFixIcon,
+                  size: iconSize,
+                  color: iconColor,
+                ),
+              ),
+            ),
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.only(left: 13),
+              child: GestureDetector(
+                onTap: onTextTap,
+                child: Text(
+                  text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textStyle ?? const TextStyle(color: Colors.black),
+                ),
               ),
             ),
           ),
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.only(left: 13),
-            child: GestureDetector(
-              onTap: onTextTap,
-              child: Text(
-                text,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: textStyle ?? const TextStyle(color: Colors.black),
+          if (postFixIcon != null)
+            SizedBox(
+              child: GestureDetector(
+                onTap: onPostFixTap,
+                child: Icon(
+                  postFixIcon,
+                  size: 30,
+                  color: Color(loginPageColor.value),
+                ),
               ),
             ),
-          ),
-        ),
-        if (postFixIcon != null)
-          SizedBox(
-            child: GestureDetector(
-              onTap: onPostFixTap,
-              child: Icon(
-                postFixIcon,
-                size: 30,
-                color: Color(loginPageColor.value),
-              ),
-            ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }
