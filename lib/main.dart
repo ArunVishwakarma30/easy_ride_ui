@@ -1,10 +1,14 @@
 import 'package:easy_ride/controllers/add_vehicle_provider.dart';
 import 'package:easy_ride/controllers/auth_provider.dart';
 import 'package:easy_ride/controllers/driver_verification_provider.dart';
+import 'package:easy_ride/controllers/image_uploader.dart';
 import 'package:easy_ride/controllers/onboarding_provider.dart';
+import 'package:easy_ride/controllers/profile_page_provider.dart';
+import 'package:easy_ride/firebase_options.dart';
 import 'package:easy_ride/views/ui/auth/login.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
 import 'package:easy_ride/views/ui/onboarding/onboarding_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,6 +24,8 @@ Widget defaultHome = const OnBoardingScreen();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final entryPoint = prefs.getBool("entrypoint") ?? false;
   final loggedIn = prefs.getBool("loggedIn") ?? false;
@@ -38,6 +44,8 @@ void main() async {
       ChangeNotifierProvider(create: (create) => DriverVerificationProvider()),
       ChangeNotifierProvider(create: (create) => AddVehicle()),
       ChangeNotifierProvider(create: (create) => FindPoolProvider()),
+      ChangeNotifierProvider(create: (create) => ImageUploader()),
+      ChangeNotifierProvider(create: (create) => ProfileProvider()),
     ],
     child: const MyApp(),
   ));

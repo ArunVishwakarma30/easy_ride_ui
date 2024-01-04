@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1089601481748",
+    "project_id": "easy-ride-flutter-app",
+    "storage_bucket": "easy-ride-flutter-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1089601481748:android:bc0b96cbe3ebc8d1ee0b01",
+        "android_client_info": {
+          "package_name": "com.example.easy_ride"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9hyP5S2HcSvmKsa-TNLl2VvwjcTPu3rw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

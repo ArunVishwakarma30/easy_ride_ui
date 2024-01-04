@@ -258,7 +258,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                               lastName: lastName.trim(),
                                               email: _email.text.toString(),
                                               phoneNumber: num.toString(),
-                                              password: _password.text);
+                                              password:
+                                                  _password.text.toString());
 
                                           authProvider.signUp(model);
                                         }

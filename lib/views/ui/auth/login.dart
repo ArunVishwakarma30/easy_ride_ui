@@ -180,8 +180,8 @@ class _LoginPageState extends State<LoginPage> {
                                           }
                                           authProvider.setWaiting(true);
                                           LoginReqModel model = LoginReqModel(
-                                              email: _email.text,
-                                              password: _password.text);
+                                              email: _email.text.toString(),
+                                              password: _password.text.toString());
                                           authProvider.login(model);
                                         }
                                       },
