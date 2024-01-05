@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/controllers/image_uploader.dart';
+import 'package:easy_ride/services/helper/auth_helper.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
@@ -51,13 +52,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
                     : ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             elevation: 0, backgroundColor: backgroundGrey),
-                        onPressed: () {
-                          // todo : save the image into database
+                        onPressed: () async {
                           print(_image);
-                          imageProvider.imageUpload(_image!);
-                          Get.back(
-                              result:
-                                  true); // going back with capturing the image and saving it into database;
+                          String? imageUrl =
+                              await imageProvider.imageUpload(_image!);
+
+                          print("The final Image Url  : " + imageUrl!);
                         },
                         child: ReuseableText(
                           text: "Save",

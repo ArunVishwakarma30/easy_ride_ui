@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../constants/app_constants.dart';
+import '../../../models/response/get_user_model.dart';
 import '../../common/text_with_icons.dart';
 import 'edit_mini_bio.dart';
 
@@ -19,9 +20,21 @@ class EditPersonalDetail extends StatefulWidget {
 }
 
 class _EditPersonalDetailState extends State<EditPersonalDetail> {
+  late GetUser userData;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userData = Get.arguments;
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+
+    String? miniBio = userData.miniBio;
+
     return SafeArea(
       child: Scaffold(
           body: Padding(
@@ -96,18 +109,18 @@ class _EditPersonalDetailState extends State<EditPersonalDetail> {
             ),
             const HeightSpacer(size: 20),
 
-            // todo : here First get mini bio from data base , check if it is empty or not, if it is empty then show  "TextWithIcons" else get the mini bio from the database and show "CustomListTile"
-            CustomListTile(
+            miniBio.isNotEmpty ? CustomListTile(
                 heading: "Bio",
                 value:
-                    "Get the data from database and show here or make it invisible",
+                miniBio,
                 onTap: () {
-                  Get.to(() => const EditMiniBio(),
-                      transition: Transition.downToUp);
-                }),
+                  Get.to(() => EditMiniBio(),
+                      transition: Transition.downToUp, arguments: userData);
+                }):
             TextWithIcons(
               onWidgetTap: () {
-                Get.to(() => EditMiniBio(), transition: Transition.downToUp);
+                Get.to(() => EditMiniBio(),
+                    transition: Transition.downToUp, arguments: userData);
               },
               text: "Add mini bio",
               containerWidth: width,

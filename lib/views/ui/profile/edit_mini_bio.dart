@@ -28,7 +28,7 @@ class _EditMiniBioState extends State<EditMiniBio> {
     super.initState();
     _controller = TextEditingController();
     userData = Get.arguments;
-    if(userData.miniBio.isNotEmpty){
+    if (userData.miniBio.isNotEmpty) {
       _controller.text = userData.miniBio;
     }
   }
@@ -75,7 +75,8 @@ class _EditMiniBioState extends State<EditMiniBio> {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20.0),
                           color: Color(backgroundGrey.value)),
-                      child: TextFormField(
+                      child:
+                      TextFormField(
                         cursorColor: Color(loginPageColor.value),
                         style: roundFont(
                             16, Color(darkHeading.value), FontWeight.bold),

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:easy_ride/constants/app_constants.dart';
-import 'package:easy_ride/controllers/add_vehicle_provider.dart';
 import 'package:easy_ride/controllers/onboarding_provider.dart';
 import 'package:easy_ride/controllers/profile_page_provider.dart';
 import 'package:easy_ride/views/common/app_style.dart';
@@ -10,7 +9,6 @@ import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/common/text_with_icons.dart';
 import 'package:easy_ride/views/ui/onboarding/onboarding_screen.dart';
 import 'package:easy_ride/views/ui/profile/add_vehicle.dart';
-import 'package:easy_ride/views/ui/profile/edit_personal_detail.dart';
 import 'package:easy_ride/views/ui/profile/profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -69,76 +67,53 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ReuseableText(
-                                      text: userData!.firstName,
-                                      style: roundFont(
-                                          28,
-                                          Color(darkHeading.value),
-                                          FontWeight.bold)),
-                                  const HeightSpacer(size: 10),
-                                  ReuseableText(
-                                      text: "Newcomer",
-                                      style: roundFont(
-                                          18,
-                                          Color(textColor.value),
-                                          FontWeight.w100))
-                                ],
-                              ),
-                              const Expanded(child: SizedBox(width: 5)),
-                              CircleAvatar(
-                                radius: 40,
-                                backgroundColor: Colors.white,
-                                backgroundImage: profileImage == null
-                                    ? const AssetImage(
-                                            "assets/icons/person.png")
-                                        as ImageProvider
-                                    : FileImage(profileImage),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                color: Color(darkHeading.value),
-                              )
-                            ],
-                          ),
-                          const HeightSpacer(size: 20),
                           GestureDetector(
                             onTap: () {
                               Get.to(() => const ProfilePicture(),
-                                      transition: Transition.rightToLeft)
-                                  ?.then((result) {
-                                // user came back with some result
-                                if (result != null && result is bool) {
-                                  //result !=null this will handle the error , in case user came back using device's back button
-                                  // todo :  get the user's profile image from database, and store it in the 'profileImage';
-                                  setState(() {});
-                                }
-                              });
+                                  transition: Transition.rightToLeft);
                             },
-                            child: ReuseableText(
-                                text: "Edit profile picture",
-                                style: roundFont(
-                                    17, loginPageColor, FontWeight.bold)),
+                            child: Row(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ReuseableText(
+                                        text: userData.firstName,
+                                        style: roundFont(
+                                            28,
+                                            Color(darkHeading.value),
+                                            FontWeight.bold)),
+                                    const HeightSpacer(size: 10),
+                                    ReuseableText(
+                                        text: "Newcomer",
+                                        style: roundFont(
+                                            18,
+                                            Color(textColor.value),
+                                            FontWeight.w100))
+                                  ],
+                                ),
+                                const Expanded(child: SizedBox(width: 5)),
+                                CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor: Colors.white,
+                                  backgroundImage: profileImage == null
+                                      ? const AssetImage(
+                                              "assets/icons/person.png")
+                                          as ImageProvider
+                                      : FileImage(profileImage),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Color(darkHeading.value),
+                                )
+                              ],
+                            ),
                           ),
-                          const HeightSpacer(size: 25),
-                          GestureDetector(
-                            onTap: () {
-                              Get.to(() => const EditPersonalDetail(),
-                                  transition: Transition.downToUp);
-                            },
-                            child: ReuseableText(
-                                text: "Edit personal details",
-                                style: roundFont(
-                                    17, loginPageColor, FontWeight.bold)),
-                          ),
-                          const HeightSpacer(size: 20),
+                          const HeightSpacer(size: 14),
+
                           Divider(
                             color: Color(backGroundLight.value),
                             thickness: 2,
@@ -202,30 +177,36 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           const HeightSpacer(size: 22),
                           ReuseableText(
-                              text: "About",
+                              text: "Bio",
                               style: roundFont(24, Color(darkHeading.value),
                                   FontWeight.bold)),
-                          const HeightSpacer(size: 22),
-                          TextWithIcons(
-                            onWidgetTap: () {
-                              Get.to(() => const EditMiniBio(),
-                                  transition: Transition.downToUp, arguments: userData);
-                            },
-                            text: miniBio.isEmpty ? "Add mini bio" : miniBio,
-                            containerWidth: width,
-                            textStyle: roundFont(
-                                17,
-                                miniBio.isEmpty
-                                    ? loginPageColor
-                                    : Colors.black45,
-                                FontWeight.bold),
-                            preFixIcon: miniBio.isEmpty
-                                ? Icons.add_circle_outline_outlined
-                                : Icons.check_circle,
-                            iconColor: miniBio.isEmpty
-                                ? Color(loginPageColor.value)
-                                : Colors.green,
-                          ),
+                          const HeightSpacer(size: 15),
+                          miniBio.isNotEmpty
+                              ? InkWell(
+                                  onTap: () {
+                                    Get.to(() => const EditMiniBio(),
+                                        transition: Transition.downToUp,
+                                        arguments: userData);
+                                  },
+                                  child: Text(
+                                    miniBio,
+                                    style: roundFont(
+                                        17, Colors.black45, FontWeight.bold),
+                                  ),
+                                )
+                              : TextWithIcons(
+                                  onWidgetTap: () {
+                                    Get.to(() => const EditMiniBio(),
+                                        transition: Transition.downToUp,
+                                        arguments: userData);
+                                  },
+                                  text: "Add mini bio",
+                                  containerWidth: width,
+                                  textStyle: roundFont(
+                                      17, loginPageColor, FontWeight.bold),
+                                  preFixIcon: Icons.add_circle_outline_outlined,
+                                  iconColor: Color(loginPageColor.value),
+                                ),
                           // const HeightSpacer(size: 32),
                           // // todo : Create a list view builder to show all the travel preferences
                           // GestureDetector(
