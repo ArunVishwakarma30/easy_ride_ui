@@ -64,12 +64,14 @@ class _MyAllVehiclesState extends State<MyAllVehicles> {
                   itemCount: vehicleData!.length,
                   itemBuilder: (context, index) {
                     var vehicleAtCurrentIndex = vehicleData[index];
+
                     return MyVehiclesListTile(
                         modelName: vehicleAtCurrentIndex.model,
                         registrationNumber:
                             vehicleAtCurrentIndex.registrationNumber,
                         isDefault: vehicleAtCurrentIndex.isDefault,
                         popupMenuButton: CustomPopupMenuButton(
+                          isDefault: vehicleAtCurrentIndex.isDefault,
                             onMenuItemSelected: handleMenuItemSelected),
                         vehicleImage: vehicleAtCurrentIndex.image,
                         exception: vehicleAtCurrentIndex.exception,

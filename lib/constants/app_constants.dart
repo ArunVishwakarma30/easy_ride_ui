@@ -49,7 +49,7 @@ List<Map<String, String>> carTypeAndImg = [
   {'Name': "Sedan", "Img": "assets/images/sedan_car.png"},
   {'Name': "Suv", "Img": "assets/images/suv_car.png"},
   {'Name': "Premium", "Img": "assets/images/premium_car.png"},
-  {'Name': "Passenger Auto Rickshaw", "Img": "assets/images/auto_rikshaw.png"},
+  {'Name': "Auto Rickshaw", "Img": "assets/images/auto_rikshaw.png"},
 ];
 
 // Bike Model names and image paths

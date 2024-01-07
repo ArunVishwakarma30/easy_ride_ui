@@ -77,7 +77,6 @@ Future<void> CaptureImageDialog(BuildContext context) {
               children: [
                 GestureDetector(
                   onTap: () async {
-                    print("hehe");
                     vehicleImage =
                         await captureImage(isImageSourceGallery: false);
                   },

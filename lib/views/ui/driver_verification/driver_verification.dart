@@ -221,7 +221,8 @@ class _DriverVerificationState extends State<DriverVerification> {
                         // here set share prefs
                         setDriverVerification();
                       }
-                    } else {
+                    }
+                    else {
                       if ((selectedBike['Name'] == null) ||
                           (selectedBike['Name'] == 'Select Type') ||
                           (vehicleRegistrationNumber.isEmpty) ||
