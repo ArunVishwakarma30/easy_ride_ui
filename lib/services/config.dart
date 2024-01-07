@@ -4,4 +4,6 @@ class Config {
   static const String signupUrl = '/register';
   static const String loginUrl = '/login';
   static const String userUrl = '/user';
+  static const String vehicleUrl = '/vehicle';
+  static const String getVehicleUrl = '/vehicle/user';
 }

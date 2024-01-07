@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import 'package:easy_ride/constants/app_constants.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,14 +8,15 @@ import 'package:image_picker/image_picker.dart';
 Future<File?> captureImage({required bool isImageSourceGallery}) async {
   try {
     final image = await ImagePicker().pickImage(
-        source:
-            isImageSourceGallery ? ImageSource.gallery : ImageSource.camera);
+        source: isImageSourceGallery ? ImageSource.gallery : ImageSource.camera);
     if (image == null) {
       return null;
     }
 
     final imageTemporary = File(image.path);
-    return imageTemporary;
+    File compressedImage = await compressImage(imageTemporary);
+    print("compressedImage :  $compressedImage");
+    return compressedImage;
   } on PlatformException catch (e) {
     // this code will run , if user denied the permission to access the camera
     print('Filed to pick image: $e');
@@ -24,11 +24,28 @@ Future<File?> captureImage({required bool isImageSourceGallery}) async {
   }
 }
 
+// code to compress image
+Future<File> compressImage(File file) async {
+  const String targetPath = "/storage/emulated/0/Download/";
+  var result = await FlutterImageCompress.compressAndGetFile(
+    file.absolute.path,
+    '$targetPath/EzRideFile.jpg',
+
+  );
+
+  // result is in the form of XFile, and we want to return File
+
+  // code to convert XFile to file is -->
+  File compressedFile = File(result!.path);
+
+  return compressedFile;
+}
+
 Future<DateTime?> pickDate(BuildContext context) {
   return showDatePicker(
-      switchToInputEntryModeIcon: Icon(
+      switchToInputEntryModeIcon: const Icon(
         Icons.add,
-        color:Color(0xffeee8f4),
+        color: Color(0xffeee8f4),
       ),
       context: context,
       initialDate: DateTime.now(),

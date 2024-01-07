@@ -1,8 +1,11 @@
+import 'package:easy_ride/models/response/get_vehicle_res_model.dart';
+import 'package:easy_ride/services/helper/vehicle_helper.dart';
 import 'package:flutter/widgets.dart';
 
 class AddVehicle extends ChangeNotifier {
   // for seats
   int _numOfSeatSelected = 1;
+  late Future<List<GetVehicleResModel>>? allVehicles;
 
   get numOfSeatSelected => _numOfSeatSelected;
 
@@ -29,5 +32,9 @@ class AddVehicle extends ChangeNotifier {
   void setCarryHelmet(int value) {
     _carryHelmet = value;
     notifyListeners();
+  }
+
+  getAllVehicles() {
+    allVehicles = VehicleHelper.getAllVehicles();
   }
 }

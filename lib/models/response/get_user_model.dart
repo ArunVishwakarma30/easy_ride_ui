@@ -11,8 +11,6 @@ class GetUser {
   final String phoneNumber;
   final String email;
   final String profile;
-  final String identityType;
-  final String identityImage;
   final String miniBio;
   final List<dynamic> vehicles;
   final List<dynamic> rides;
@@ -24,8 +22,6 @@ class GetUser {
     required this.phoneNumber,
     required this.email,
     required this.profile,
-    required this.identityType,
-    required this.identityImage,
     required this.miniBio,
     required this.vehicles,
     required this.rides,
@@ -38,8 +34,6 @@ class GetUser {
     phoneNumber: json["phoneNumber"],
     email: json["email"],
     profile: json["profile"],
-    identityType: json["identityType"],
-    identityImage: json["identityImage"],
     miniBio: json["miniBio"],
     vehicles: List<dynamic>.from(json["vehicles"].map((x) => x)),
     rides: List<dynamic>.from(json["rides"].map((x) => x)),
@@ -52,8 +46,6 @@ class GetUser {
     "phoneNumber": phoneNumber,
     "email": email,
     "profile": profile,
-    "identityType": identityType,
-    "identityImage": identityImage,
     "miniBio": miniBio,
     "vehicles": List<dynamic>.from(vehicles.map((x) => x)),
     "rides": List<dynamic>.from(rides.map((x) => x)),

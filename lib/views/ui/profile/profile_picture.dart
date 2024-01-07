@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/controllers/image_uploader.dart';
+import 'package:easy_ride/models/request/update_image_req.dart';
 import 'package:easy_ride/services/helper/auth_helper.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
@@ -53,11 +54,17 @@ class _ProfilePictureState extends State<ProfilePicture> {
                         style: ElevatedButton.styleFrom(
                             elevation: 0, backgroundColor: backgroundGrey),
                         onPressed: () async {
+                          imageProvider.setWaiting(true);
+
                           print(_image);
+
                           String? imageUrl =
                               await imageProvider.imageUpload(_image!);
 
                           print("The final Image Url  : " + imageUrl!);
+                          UpdateProfileImageReq model =
+                              UpdateProfileImageReq(profile: imageUrl);
+                          imageProvider.saveImageToServer(model);
                         },
                         child: ReuseableText(
                           text: "Save",
@@ -70,9 +77,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   radius: 70,
                   backgroundColor: Color(backGroundLight.value),
                   backgroundImage: _image == null
-                      ? AssetImage("assets/images/profile_person.png")
+                      ? const AssetImage("assets/images/profile_person.png")
                           as ImageProvider
                       : FileImage(_image!),
+                  child: imageProvider.waiting
+                      ? const CircularProgressIndicator(color: Colors.white, )
+                      : const SizedBox.shrink(),
                 ),
               ),
               const HeightSpacer(size: 20),

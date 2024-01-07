@@ -9,6 +9,7 @@ import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/common/text_with_icons.dart';
 import 'package:easy_ride/views/ui/onboarding/onboarding_screen.dart';
 import 'package:easy_ride/views/ui/profile/add_vehicle.dart';
+import 'package:easy_ride/views/ui/profile/get_all_vehicles.dart';
 import 'package:easy_ride/views/ui/profile/profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -38,15 +39,15 @@ class _ProfilePageState extends State<ProfilePage> {
     double width = MediaQuery.of(context).size.width;
     bool isIdVerified = false;
 
-    File? profileImage;
     late String miniBio;
     List<String> travelPreferences = [];
     var onBoardingProvider = Provider.of<OnBoardingProvider>(context);
-
+    int vehicleCount = 0;
     return SafeArea(
       child: Scaffold(body: Consumer<ProfileProvider>(
         builder: (context, profileNotifier, child) {
           profileNotifier.getUser();
+
           return FutureBuilder(
               future: profileNotifier.getUserRes,
               builder: (context, snapshot) {
@@ -59,7 +60,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 } else {
                   var userData = snapshot.data;
-                  miniBio = userData!.miniBio;
+                  vehicleCount = userData!.vehicles.length;
+                  miniBio = userData.miniBio;
                   return SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -96,11 +98,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                 CircleAvatar(
                                   radius: 40,
                                   backgroundColor: Colors.white,
-                                  backgroundImage: profileImage == null
+                                  backgroundImage: userData.profile.isEmpty
                                       ? const AssetImage(
                                               "assets/icons/person.png")
                                           as ImageProvider
-                                      : FileImage(profileImage),
+                                      : NetworkImage(userData.profile),
                                 ),
                                 const SizedBox(
                                   width: 10,
@@ -231,9 +233,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               style: roundFont(24, Color(darkHeading.value),
                                   FontWeight.bold)),
                           const HeightSpacer(size: 22),
+
                           TextWithIcons(
                             onWidgetTap: () {
-                              // todo : go to add vehicle page
                               Get.to(() => const AddVehiclePage(),
                                   transition: Transition.rightToLeft);
                             },
@@ -244,9 +246,23 @@ class _ProfilePageState extends State<ProfilePage> {
                             preFixIcon: Icons.add_circle_outline_outlined,
                             iconColor: Color(loginPageColor.value),
                           ),
-                          const HeightSpacer(size: 20),
-                          // todo : here create a list view to get the all the vehicles from the database, user added till now,
 
+                          HeightSpacer(size: vehicleCount > 0 ? 22 : 0),
+                          vehicleCount > 0
+                              ? TextWithIcons(
+                                  onWidgetTap: () {
+                                    Get.to(() => const MyAllVehicles(),
+                                        transition: Transition.rightToLeft);
+                                  },
+                                  text: "My Vehicles",
+                                  containerWidth: width,
+                                  textStyle: roundFont(
+                                      17, loginPageColor, FontWeight.bold),
+                                  preFixIcon: Icons.menu,
+                                  iconColor: Color(loginPageColor.value),
+                                )
+                              : const SizedBox.shrink(),
+                          const HeightSpacer(size: 20),
                           Divider(
                             color: Color(backGroundLight.value),
                             thickness: 2,

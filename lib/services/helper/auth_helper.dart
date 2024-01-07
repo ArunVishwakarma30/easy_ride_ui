@@ -70,6 +70,7 @@ class AuthHelper {
   static Future<GetUser> getUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
+    print(token);
 
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
