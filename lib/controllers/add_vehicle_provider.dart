@@ -1,4 +1,5 @@
 import 'package:easy_ride/models/request/add_vehicle_req_model.dart';
+import 'package:easy_ride/models/request/update_is_default_req_model.dart';
 import 'package:easy_ride/models/response/get_vehicle_res_model.dart';
 import 'package:easy_ride/services/helper/vehicle_helper.dart';
 import 'package:flutter/material.dart';
@@ -73,5 +74,43 @@ class AddVehicle extends ChangeNotifier {
 
   getAllVehicles() {
     allVehicles = VehicleHelper.getAllVehicles();
+  }
+
+  deleteVehicle(String vehicleId) {
+    VehicleHelper.deleteVehicle(vehicleId).then((isDeleted) {
+      if (isDeleted) {
+        notifyListeners();
+        ShowSnackbar(
+            title: "Success",
+            message: "Vehicle Successfully Removed!",
+            icon: Icons.done_outline,
+            bgColor: Colors.green,
+            textColor: Colors.white);
+      } else {
+        ShowSnackbar(
+            title: "Something went wrong",
+            message: "Please try again later!",
+            icon: Icons.add_alert);
+      }
+    });
+  }
+
+  updateIsDefault(UpdateIsDefaultReq model, String vehicleId) {
+    VehicleHelper.updateIsDefault(model, vehicleId).then((isUpdated) {
+      if (isUpdated) {
+        notifyListeners();
+        ShowSnackbar(
+            title: "Success",
+            message: "Vehicle Successfully Removed!",
+            icon: Icons.done_outline,
+            bgColor: Colors.green,
+            textColor: Colors.white);
+      } else {
+        ShowSnackbar(
+            title: "Something went wrong",
+            message: "Please try again later!",
+            icon: Icons.add_alert);
+      }
+    });
   }
 }

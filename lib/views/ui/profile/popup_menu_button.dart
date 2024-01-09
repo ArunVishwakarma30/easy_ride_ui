@@ -1,3 +1,4 @@
+import 'package:easy_ride/models/request/update_is_default_req_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,10 +10,13 @@ class CustomPopupMenuButton extends StatelessWidget {
     Key? key,
     required this.onMenuItemSelected,
     required this.isDefault,
+    required this.vehicleId, required this.updateIsDefaultModel,
   }) : super(key: key);
 
-  final Function(String) onMenuItemSelected;
+  final Function(String, String, UpdateIsDefaultReq) onMenuItemSelected;
   final bool isDefault;
+  final String vehicleId;
+  final UpdateIsDefaultReq updateIsDefaultModel;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +54,7 @@ class CustomPopupMenuButton extends StatelessWidget {
         return menuItems;
       },
       onSelected: (value) {
-        onMenuItemSelected(value);
+        onMenuItemSelected(value, vehicleId, updateIsDefaultModel);
       },
     );
   }

@@ -1,6 +1,5 @@
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/views/common/app_style.dart';
-import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,8 @@ class MyVehiclesListTile extends StatelessWidget {
       this.numberOfSeats,
       required this.popupMenuButton,
       required this.vehicleImage,
-      required this.onTap})
+      required this.onTap,
+      required this.isImageEmpty})
       : super(key: key);
   final String modelName;
   final String registrationNumber;
@@ -26,6 +26,7 @@ class MyVehiclesListTile extends StatelessWidget {
   final int? numberOfSeats;
   final Widget popupMenuButton;
   final String vehicleImage;
+  final bool isImageEmpty;
   final VoidCallback onTap;
 
   @override
@@ -40,7 +41,9 @@ class MyVehiclesListTile extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage(vehicleImage),
+              backgroundImage: isImageEmpty
+                  ? AssetImage(vehicleImage)
+                  : NetworkImage(vehicleImage) as ImageProvider,
             ),
             const SizedBox(
               width: 20,
@@ -85,12 +88,12 @@ class MyVehiclesListTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 popupMenuButton,
-                numberOfSeats != null
-                    ? ReuseableText(
+                (modelName == 'Bike') || modelName == ('Scooter')
+                    ? const SizedBox.shrink()
+                    : ReuseableText(
                         text: "$numberOfSeats Seats",
                         style: roundFont(13, darkHeading, FontWeight.normal),
                       )
-                    : const SizedBox.shrink(),
               ],
             )
           ],

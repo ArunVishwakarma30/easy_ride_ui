@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/models/request/add_vehicle_req_model.dart';
+import 'package:easy_ride/models/response/get_vehicle_res_model.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/ui/driver_verification/step_three.dart';
@@ -39,12 +40,6 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getPrefs();
-  }
-
-  void getPrefs() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString('userId');
   }
 
   // Callback function to set the selected vehicle value from the drop down
@@ -139,7 +134,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                       print(selectedCar['Name'] == null
                           ? carTypeAndImg[0]
                           : selectedCar);
-                      print(selectedCar['Name'] == "Passenger Auto Rickshaw"
+                      print(selectedCar['Name'] == "Auto Rickshaw"
                           ? "Auto"
                           : "Car");
 
@@ -152,7 +147,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
 
                       AddVehicleReqModel model = AddVehicleReqModel(
                           userId: userId!,
-                          type: selectedCar['Name'] == "Passenger Auto Rickshaw"
+                          type: selectedCar['Name'] == "Auto Rickshaw"
                               ? "Auto Rickshaw"
                               : "Car",
                           image: imageUrl!,
@@ -209,7 +204,9 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                   }
                 },
                 child: addVehicleProvider.waiting
-                    ? const CircularProgressIndicator(color: Colors.white,)
+                    ? const CircularProgressIndicator(
+                        color: Colors.white,
+                      )
                     : Text(
                         "Add",
                         style: roundFont(
