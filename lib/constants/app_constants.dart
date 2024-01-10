@@ -30,9 +30,10 @@ const seatColor = Color(0xffffb60f);
 
 String regEx = r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$';
 
-String map_key = "AIzaSyCpBewCrd7Um9Ll4xs8Ddq3GZCCvCRMQ_E";
+// String map_key = "AIzaSyCpBewCrd7Um9Ll4xs8Ddq3GZCCvCRMQ_E";
 
-// arunv3009 key = AIzaSyAN_7KYgIrv-Ebq9_bzs6-4bhcHjTEp4TM // here almost all useful API's are enabled
+// String map_key = "AIzaSyAN_7KYgIrv-Ebq9_bzs6-4bhcHjTEp4TM"; //arunv3009 here almost all useful API's are enabled
+String map_key = "AIzaSyCXQqWbnOiCbOaBeeDd5-hTF5uEdRegxhQ"; // recently added card to this api key google account  = avishwakarma3009
 
 // Dropdown options for driver verification step two widget:
 List<String> documentOptions = [

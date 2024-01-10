@@ -1,10 +1,14 @@
 import 'dart:async';
 
 import 'package:easy_ride/constants/app_constants.dart';
+import 'package:easy_ride/models/map/directions_model.dart';
+import 'package:easy_ride/services/helper/map_helper.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoder2/geocoder2.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:location/location.dart' as loc;
 
@@ -17,19 +21,108 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   LatLng? pickLocation;
-
-  // loc.Location location = loc.Location();
   String? _address;
 
+  // loc.Location location = loc.Location();
+
   final Completer<GoogleMapController> _googleMapController = Completer();
-  static const CameraPosition cameraPosition =
-      CameraPosition(target: LatLng(19.0968823, 72.882016), zoom: 15.4746);
+  GoogleMapController? newGoogleMapController;
+
+  CameraPosition cameraPosition = const CameraPosition(
+      target: LatLng(49.0968823, 62.882016), zoom: 15.4746);
 
   GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
 
   double searchLocationContainerHeight = 220;
   double waitingResponseFromDriverContainerHeight = 0;
   double assignedDriverInfoContainerHeight = 0;
+
+  Position? userCurrentLocation;
+  var geoLocation = Geolocator();
+
+  LocationPermission? _locationPermission;
+  double bottomPaddingOfMap = 0;
+
+  List<LatLng> pLineCoordinationList = [];
+  Set<Polyline> polylineSet = {};
+
+  Set<Marker> markerSet = {};
+  Set<Circle> circleSet = {};
+
+  String userName = "";
+  String userEmail = "";
+
+  bool openNavigationDrawer = true;
+  bool activeNearbyDriverKeysLoaded = false;
+
+  BitmapDescriptor? activeNearbyIcon;
+
+  void locateUserPosition() async {
+    Position cPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    userCurrentLocation = cPosition;
+
+    LatLng latLngPosition =
+        LatLng(userCurrentLocation!.latitude, userCurrentLocation!.longitude);
+    cameraPosition = CameraPosition(target: latLngPosition, zoom: 15);
+    newGoogleMapController!
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+
+    print(userCurrentLocation);
+    // ignore: use_build_context_synchronously
+    String humanReadableAddress = await searchAddressForGeoGraphicCoOrdination(
+        userCurrentLocation!, context);
+
+    print("User Current Address : $humanReadableAddress ");
+  }
+
+  void getAddressFromLatLang() async {}
+
+  Future<String> searchAddressForGeoGraphicCoOrdination(
+      Position position, context) async {
+    String apiKey =
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude}, ${position.longitude}&key=${map_key}";
+    String humanReadableAddress = "";
+    var apiRes = await MapHelper.getUserAddress(apiKey);
+    if (apiRes != "Error occurred , Failed to get response") {
+      humanReadableAddress = apiRes['results'][0]['formatted_address'];
+
+      Directions userPickUpAddress = Directions(
+          humanReadableAddress: humanReadableAddress,
+          locationLatitude: position.latitude,
+          locationLongitude: position.longitude);
+    }
+    return humanReadableAddress;
+  }
+
+  void getAddressFromLatLag() async {
+    try {
+      GeoData data = await Geocoder2.getDataFromCoordinates(
+          latitude: pickLocation!.latitude,
+          longitude: pickLocation!.longitude,
+          googleMapApiKey: map_key);
+
+      _address = data.address;
+      setState(() {});
+    } catch (e) {
+      print(
+          "Error occurred in function getAddressFromLatLag to get address : $e");
+    }
+  }
+
+  checkIfLocationPermissionAllowed() async {
+    _locationPermission = await Geolocator.requestPermission();
+    if (_locationPermission == LocationPermission.denied) {
+      _locationPermission = await Geolocator.requestPermission();
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkIfLocationPermissionAllowed();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +139,60 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ),
       ),
-      body: GoogleMap(
-        onMapCreated: (GoogleMapController controller) {
-          _googleMapController.complete(controller);
-        },
-        initialCameraPosition: cameraPosition,
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: cameraPosition,
+            mapType: MapType.normal,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+            zoomGesturesEnabled: true,
+            zoomControlsEnabled: false,
+            polylines: polylineSet,
+            circles: circleSet,
+            onMapCreated: (GoogleMapController controller) {
+              _googleMapController.complete(controller);
+              newGoogleMapController = controller;
+              locateUserPosition();
+            },
+            onCameraMove: (CameraPosition? position) {
+              if (pickLocation != position!.target) {
+                setState(() {
+                  pickLocation = position.target;
+                });
+              }
+            },
+            onCameraIdle: () {
+              getAddressFromLatLag();
+            },
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 35),
+              child: Image.asset(
+                "assets/icons/location.png",
+                height: 50,
+                width: 50,
+              ),
+            ),
+          ),
+          Positioned(
+              top: 0,
+              right: 20,
+              left: 20,
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                    border: Border.all(width: 1, color: Colors.black),
+                    color: Colors.white),
+                child: Text(
+                  _address ?? "Set your pickup location",
+                  overflow: TextOverflow.visible,
+                  softWrap: true,
+                ),
+              ))
+        ],
       ),
     );
   }

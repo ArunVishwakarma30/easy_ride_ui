@@ -7,6 +7,7 @@ import 'package:easy_ride/controllers/profile_page_provider.dart';
 import 'package:easy_ride/firebase_options.dart';
 import 'package:easy_ride/views/ui/auth/login.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
+import 'package:easy_ride/views/ui/offer_pool/map_screen.dart';
 import 'package:easy_ride/views/ui/onboarding/onboarding_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +80,7 @@ class _MyAppState extends State<MyApp> {
           iconTheme: IconThemeData(color: Color(loginPageColor.value)),
         ),
         home: defaultHome);
+        // home: MapScreen());
     // home: MainPage());
     // home: const MapScreen());
   }
