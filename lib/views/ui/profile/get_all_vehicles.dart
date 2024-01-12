@@ -38,6 +38,7 @@ class _MyAllVehiclesState extends State<MyAllVehicles> {
       if (value == "set default") {
         vehicleProvider.updateIsDefault(model, vehicleId);
       } else {
+        print(vehicleId);
         vehicleProvider.deleteVehicle(vehicleId);
       }
     }
@@ -116,7 +117,7 @@ class _MyAllVehiclesState extends State<MyAllVehicles> {
                       makeAndCategory: vehicleAtCurrentIndex.makeAndCategory,
                       numberOfSeats: vehicleAtCurrentIndex.offeringSeat,
                       onTap: () {
-                        print("// Code to update a vehicle");
+                        print("Go to vehicle update page");
                       },
                       isImageEmpty: isImageEmpty,
                     );

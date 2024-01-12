@@ -49,8 +49,8 @@ dependencies:
   dotted_border: ^2.1.0
   google_maps_flutter: ^2.4.0
   geolocator: ^10.1.0
-#  location: ^5.0.3
-#  flutter_geofire: ^2.0.3
+  #  location: ^5.0.3
+  #  flutter_geofire: ^2.0.3
   flutter_polyline_points:
   firebase_core: ^2.15.0
   firebase_storage: ^11.5.6
@@ -58,6 +58,8 @@ dependencies:
   cloud_firestore: ^4.13.6
   flutter_image_compress: ^2.1.0
   geocoder2:
+  flutter_typeahead: ^5.0.2
+  flutter_google_places: ^0.3.0
 
 
 

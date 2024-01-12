@@ -1,14 +1,14 @@
 class Directions {
   String? humanReadableAddress;
-  String? locationName;
+  String? locationDescription;
   String? locationId;
   double? locationLatitude;
   double? locationLongitude;
 
   Directions(
       {this.humanReadableAddress,
-      this.locationName,
-      this.locationId,
-      this.locationLatitude,
-      this.locationLongitude});
+        this.locationDescription,
+        this.locationId,
+        this.locationLatitude,
+        this.locationLongitude});
 }

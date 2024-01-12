@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:easy_ride/constants/app_constants.dart';
-import 'package:easy_ride/models/map/directions_model.dart';
+import 'package:easy_ride/models/map/direction_model.dart';
 import 'package:easy_ride/services/helper/map_helper.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
@@ -57,6 +57,9 @@ class _MapScreenState extends State<MapScreen> {
 
   BitmapDescriptor? activeNearbyIcon;
 
+  void getAddressFromLatLang() async {}
+
+  // this is also written in map_provider, both functions are sane with some changes to work in the page where google map is not present
   void locateUserPosition() async {
     Position cPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
@@ -76,12 +79,11 @@ class _MapScreenState extends State<MapScreen> {
     print("User Current Address : $humanReadableAddress ");
   }
 
-  void getAddressFromLatLang() async {}
-
+  // this is also written in map_provider, both functions are sane with some changes to work in the page where google map is not present
   Future<String> searchAddressForGeoGraphicCoOrdination(
       Position position, context) async {
     String apiKey =
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude}, ${position.longitude}&key=${map_key}";
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude}, ${position.longitude}&key=$map_key";
     String humanReadableAddress = "";
     var apiRes = await MapHelper.getUserAddress(apiKey);
     if (apiRes != "Error occurred , Failed to get response") {

@@ -10,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controllers/add_vehicle_provider.dart';
 import '../../../controllers/find_pool_provider.dart';
 import '../../common/travel_detail_widget.dart';
-import '../find_pool/car_design.dart';
 
 class OfferPool extends StatefulWidget {
   const OfferPool({super.key});

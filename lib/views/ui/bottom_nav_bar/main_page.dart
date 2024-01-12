@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:provider/provider.dart';
 
+import '../../../controllers/map_provider.dart';
+
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -51,6 +53,7 @@ class _MainPageState extends State<MainPage> {
       ),
     ];
     return Consumer<BottomNavNotifier>(builder: (context, navNotifier, child) {
+      final mapProvider = Provider.of<MapProvider>(context);
       return Scaffold(
         extendBody: true,
         backgroundColor: const Color.fromARGB(255, 234, 228, 228),
@@ -58,6 +61,7 @@ class _MainPageState extends State<MainPage> {
         bottomNavigationBar: CurvedNavigationBar(
           onTap: (value) => {
             navNotifier.setCurrentIndex(value),
+            mapProvider.setDirectionsNull()
           },
           items: items,
           height: 60,

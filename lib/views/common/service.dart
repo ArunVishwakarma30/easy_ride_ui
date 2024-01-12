@@ -8,15 +8,15 @@ import 'package:image_picker/image_picker.dart';
 Future<File?> captureImage({required bool isImageSourceGallery}) async {
   try {
     final image = await ImagePicker().pickImage(
-        source: isImageSourceGallery ? ImageSource.gallery : ImageSource.camera);
+        source: isImageSourceGallery ? ImageSource.gallery : ImageSource.camera, imageQuality: 50);
     if (image == null) {
       return null;
     }
 
     final imageTemporary = File(image.path);
-    File compressedImage = await compressImage(imageTemporary);
-    print("compressedImage :  $compressedImage");
-    return compressedImage;
+    // File compressedImage = await compressImage(imageTemporary);
+    // print("compressedImage :  $compressedImage");
+    return imageTemporary;
   } on PlatformException catch (e) {
     // this code will run , if user denied the permission to access the camera
     print('Filed to pick image: $e');
@@ -30,15 +30,18 @@ Future<File> compressImage(File file) async {
   var result = await FlutterImageCompress.compressAndGetFile(
     file.absolute.path,
     '$targetPath/EzRideFile.jpg',
-
   );
 
-  // result is in the form of XFile, and we want to return File
+// Check if result is not null before accessing its properties
+  if (result != null) {
+    // result is in the form of XFile, and we want to return File
+    File compressedFile = File(result.path);
+    return compressedFile;
+  } else {
+    // Handle the case where compression failed
+    throw Exception('Image compression failed');
+  }
 
-  // code to convert XFile to file is -->
-  File compressedFile = File(result!.path);
-
-  return compressedFile;
 }
 
 Future<DateTime?> pickDate(BuildContext context) {

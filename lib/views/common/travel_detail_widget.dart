@@ -1,9 +1,10 @@
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/controllers/find_pool_provider.dart';
+import 'package:easy_ride/controllers/map_provider.dart';
+import 'package:easy_ride/models/map/direction_model.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/common/text_with_icons.dart';
-import 'package:easy_ride/views/ui/find_pool/car_design.dart';
 import 'package:easy_ride/views/ui/find_pool/find_location_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -57,6 +58,7 @@ class _TravelDetailsState extends State<TravelDetails> {
     final findPoolProvider = Provider.of<FindPoolProvider>(context);
     final addVehicleProvider = Provider.of<AddVehicle>(context);
     int numOfSeatsSelected = addVehicleProvider.numOfSeatSelected;
+    final mapProvider = Provider.of<MapProvider>(context);
 
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Colors.white, // Background color for the status bar
@@ -147,23 +149,16 @@ class _TravelDetailsState extends State<TravelDetails> {
                                   onTextTap: () async {
                                     print("Leaving from text pressed");
 
-                                    // Use Get.to to navigate to FindLocationPage
-                                    String result = await Get.to(
-                                        const FindLocationPage(),
+                                    Directions? result = await Get.to(
+                                        () => const FindLocationPage(),
                                         transition: Transition.downToUp,
                                         duration:
                                             const Duration(milliseconds: 600),
-                                        arguments: leaveFrom);
+                                        arguments: "myLocation");
 
-                                    // Handle the result (data sent back from FindLocationPage)
                                     if (result != null) {
-                                      // Do something with the result, such as updating a variable
-                                      print(
-                                          "Data from FindLocationPage: $result");
-                                      setState(() {
-                                        leaveFrom =
-                                            result; // Update the leaveFrom variable with the result
-                                      });
+                                      leaveFrom = result.locationDescription!;
+                                      setState(() {});
                                     }
                                   },
                                   onPostFixTap: () {
@@ -172,6 +167,12 @@ class _TravelDetailsState extends State<TravelDetails> {
                                       String temp = leaveFrom;
                                       leaveFrom = goingTo;
                                       goingTo = temp;
+                                      Directions tempDirection =
+                                          mapProvider.destinationDirection!;
+                                      mapProvider.destinationDirection =
+                                          mapProvider.myLocationDirection!;
+                                      mapProvider.myLocationDirection =
+                                          tempDirection;
                                       setState(() {});
                                     }
                                   },
@@ -197,13 +198,22 @@ class _TravelDetailsState extends State<TravelDetails> {
                                       goingTo != "Going To"
                                           ? FontWeight.w500
                                           : FontWeight.bold),
-                                  onTextTap: () {
+                                  onTextTap: () async {
                                     print("Going to text  pressed");
-                                    Get.to(const FindLocationPage(),
+
+                                    Directions? result = await Get.to(
+                                        () => const FindLocationPage(),
                                         transition: Transition.downToUp,
                                         duration:
                                             const Duration(milliseconds: 600),
-                                        arguments: goingTo);
+                                        arguments: "destination");
+
+                                    if (result != null) {
+                                      print(
+                                          "Data from FindLocationPage: $result!");
+                                      goingTo = result.locationDescription!;
+                                      setState(() {});
+                                    }
                                   },
                                 ),
                                 Container(
