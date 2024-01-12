@@ -23,7 +23,7 @@ class _FindLocationPageState extends State<FindLocationPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // TODO: write a code to, for allow user permission (already written in map_screen)
     super.initState();
     _searchLocationController = TextEditingController();
 
