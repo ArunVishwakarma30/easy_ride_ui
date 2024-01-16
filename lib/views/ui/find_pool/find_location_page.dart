@@ -1,5 +1,4 @@
 import 'package:easy_ride/controllers/map_provider.dart';
-import 'package:easy_ride/models/map/direction_model.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/common/toast_msg.dart';
 import 'package:flutter/cupertino.dart';

@@ -1,10 +1,14 @@
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/controllers/find_pool_provider.dart';
+import 'package:easy_ride/views/common/toast_msg.dart';
+import 'package:easy_ride/views/ui/find_pool/get_all_available_rides.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import '../../../controllers/add_vehicle_provider.dart';
+import '../../../controllers/map_provider.dart';
 import '../../common/travel_detail_widget.dart';
 import 'car_design.dart';
 
@@ -25,10 +29,17 @@ class _FindPoolPageState extends State<FindPoolPage> {
   // on Find pool search Button Pressed
   void searchBtnPressed() {
     print("Find Pool Button Pressed");
-    print(leaveFromLocation);
-    print(dropLocation);
-    print(numOfSeatsSelected);
-    print(providerDateTime);
+    if (context.read<MapProvider>().myLocationDirection != null && context.read<MapProvider>().destinationDirection != null) {
+
+      print(leaveFromLocation);
+      print(dropLocation);
+      print(numOfSeatsSelected);
+      print(providerDateTime);
+     Get.to(()=>const GetAllAvailableRides(), transition: Transition.rightToLeft);
+    }else{
+      ShowSnackbar(title: "Failed", message: "Please Enter Both Locations", icon: Icons.error_outline);
+
+    }
   }
 
   // on Recent Search Item tapped
