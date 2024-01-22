@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants/app_constants.dart';
+import '../../../models/map/direction_model.dart';
 import '../../common/app_style.dart';
 
 class FindLocationPage extends StatefulWidget {
@@ -146,54 +147,60 @@ class _FindLocationPageState extends State<FindLocationPage> {
             child: Padding(
               padding: const EdgeInsets.only(top: 5.0, left: 8.0, right: 8.0),
               child: Column(children: [
-                ListTile(
-                  onTap: () async {
-                    mapProvider.setWaiting(true);
-                    mapProvider
-                        .searchAddressForGeoGraphicCoOrdination()
-                        .then((value) async {
-                      if (value != null) {
-                        if (Get.arguments == "myLocation") {
-                          mapProvider.myLocationDirection =
-                              await mapProvider.getPlaceDirectionDetails(value);
-                          mapProvider.setWaiting(false);
+                Get.arguments == "stopOver"
+                    ? const SizedBox.shrink()
+                    : ListTile(
+                        onTap: () async {
+                          mapProvider.setWaiting(true);
+                          mapProvider
+                              .searchAddressForGeoGraphicCoOrdination()
+                              .then((value) async {
+                            if (value != null) {
+                              if (Get.arguments == "myLocation") {
+                                mapProvider.myLocationDirection =
+                                    await mapProvider
+                                        .getPlaceDirectionDetails(value);
+                                mapProvider.setWaiting(false);
 
-                          Get.back(result: mapProvider.myLocationDirection);
-                        } else if (Get.arguments == "destination") {
-                          mapProvider.destinationDirection =
-                              await mapProvider.getPlaceDirectionDetails(value);
-                          mapProvider.setWaiting(false);
-                          Get.back(result: mapProvider.destinationDirection);
-                        }
-                        // Get.back(result: mapProvider.myLocationDirection);
-                      } else {
-                        ShowSnackbar(
-                            title: "Something went wrong!",
-                            message: "Please type location in field!",
-                            icon: Icons.error_outline_outlined);
-                      }
-                    });
-                  },
-                  leading: const Icon(
-                    Icons.my_location,
-                    color: Colors.grey,
-                  ),
-                  title: ReuseableText(
-                    text: "Use current location",
-                    style: roundFont(18, darkHeading, FontWeight.normal),
-                  ),
-                  trailing: mapProvider.waiting
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.grey,
-                          ))
-                      : const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 20,
+                                Get.back(
+                                    result: mapProvider.myLocationDirection);
+                              } else if (Get.arguments == "destination") {
+                                mapProvider.destinationDirection =
+                                    await mapProvider
+                                        .getPlaceDirectionDetails(value);
+                                mapProvider.setWaiting(false);
+                                Get.back(
+                                    result: mapProvider.destinationDirection);
+                              }
+                              // Get.back(result: mapProvider.myLocationDirection);
+                            } else {
+                              ShowSnackbar(
+                                  title: "Something went wrong!",
+                                  message: "Please type location in field!",
+                                  icon: Icons.error_outline_outlined);
+                            }
+                          });
+                        },
+                        leading: const Icon(
+                          Icons.my_location,
+                          color: Colors.grey,
                         ),
-                ),
+                        title: ReuseableText(
+                          text: "Use current location",
+                          style: roundFont(18, darkHeading, FontWeight.normal),
+                        ),
+                        trailing: mapProvider.waiting
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.grey,
+                                ))
+                            : const Icon(
+                                Icons.arrow_forward_ios,
+                                size: 20,
+                              ),
+                      ),
                 mapProvider.predictPlacesList.isNotEmpty
                     ? Expanded(
                         child: ListView.builder(
@@ -223,6 +230,12 @@ class _FindLocationPageState extends State<FindLocationPage> {
                                     Get.back(
                                         result:
                                             mapProvider.destinationDirection);
+                                  } else if (Get.arguments == "stopOver") {
+                                    Directions? stopOver = await mapProvider
+                                        .getPlaceDirectionDetails(
+                                            locationAtCurrentIndex.place_id);
+                                    mapProvider.stopOver.add(stopOver!);
+                                    Get.back();
                                   }
                                   mapProvider.setPredictListToEmpty();
                                 },

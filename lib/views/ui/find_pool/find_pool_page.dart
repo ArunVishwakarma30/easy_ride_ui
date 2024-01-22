@@ -1,4 +1,3 @@
-import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/controllers/find_pool_provider.dart';
 import 'package:easy_ride/views/common/toast_msg.dart';
 import 'package:easy_ride/views/ui/find_pool/get_all_available_rides.dart';

@@ -25,7 +25,6 @@ class FindPoolProvider extends ChangeNotifier {
         _travelDateTime = dateTime;
       }
     }
-
     notifyListeners();
   }
 
@@ -33,5 +32,37 @@ class FindPoolProvider extends ChangeNotifier {
     searchResult = CreateRideHelper.searchRides(model);
   }
 
+  String getStateFromAddress(String address) {
+    // Split the address by commas
+    final addressComponents = address.split(',');
+
+    // Check if there are enough components
+    if (addressComponents.length >= 3) {
+      // The state name is the last but one component after trimming any leading or trailing whitespace
+      final state = addressComponents[addressComponents.length - 3].trim();
+      return state;
+    } else {
+      // Return an empty string or throw an exception based on your use case
+      return '';
+    }
+  }
+
+  String extractAddressPart(String address) {
+    // Split the address into a list using commas as delimiters
+    List<String> addressParts = address.split(',');
+
+    // Find the indices of the second last comma and 4th last comma
+    int secondLastCommaIndex = addressParts.length - 2;
+    int fourthLastCommaIndex = addressParts.length - 4;
+
+    // Extract the values from 4th last comma to 2nd last comma
+    List<String> desiredValues =
+    addressParts.sublist(fourthLastCommaIndex, secondLastCommaIndex);
+
+    // Join the extracted values into a single string
+    String result = desiredValues.join(',');
+
+    return result.trim(); // Trim to remove leading and trailing whitespaces
+  }
 
 }

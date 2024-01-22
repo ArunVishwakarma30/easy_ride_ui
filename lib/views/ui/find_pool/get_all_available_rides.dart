@@ -1,6 +1,7 @@
 import 'package:easy_ride/controllers/map_provider.dart';
 import 'package:easy_ride/models/request/search_rides_req_model.dart';
 import 'package:easy_ride/views/common/app_style.dart';
+import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/ui/find_pool/get_all_rides_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,21 +26,6 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
   late Directions? myLocation;
   late Directions? destination;
 
-  String getStateFromAddress(String address) {
-    // Split the address by commas
-    final addressComponents = address.split(',');
-
-    // Check if there are enough components
-    if (addressComponents.length >= 3) {
-      // The state name is the last but one component after trimming any leading or trailing whitespace
-      final state = addressComponents[addressComponents.length - 3].trim();
-      return state;
-    } else {
-      // Return an empty string or throw an exception based on your use case
-      return '';
-    }
-  }
-
 // Function to convert IST to UTC
   tz.TZDateTime convertISTtoUTC(DateTime istDateTime) {
     tz.TZDateTime utcDateTime = tz.TZDateTime.from(istDateTime, tz.UTC);
@@ -55,13 +41,14 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+
     final findPoolProvider = Provider.of<FindPoolProvider>(context);
     final addVehicleProvider = Provider.of<AddVehicle>(context);
     DateTime? dateTime = findPoolProvider.travelDateTime!;
     DateTime? istDateTime =
         DateTime(dateTime!.year, dateTime.month, dateTime.day, 0, 0);
 
-    DateTime utcDateTime = convertISTtoUTC(istDateTime);
 
     int? seatsSelected = addVehicleProvider.numOfSeatSelected;
     return Consumer<MapProvider>(
@@ -70,14 +57,15 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
         destination = mapProvider.destinationDirection;
         String destinationDescription =
             destination!.locationDescription!.substring(0, 20);
-        String? myState = getStateFromAddress(myLocation!.locationDescription!);
-        String? desState =
-            getStateFromAddress(destination!.locationDescription!);
+        String? myState = findPoolProvider
+            .getStateFromAddress(myLocation!.locationDescription!);
+        String? desState = findPoolProvider
+            .getStateFromAddress(destination!.locationDescription!);
         SearchRidesReqModel model = SearchRidesReqModel(
             departure: myState,
             destination: desState,
             seatsRequired: seatsSelected!,
-            schedule: utcDateTime);
+            schedule: dateTime);
 
         findPoolProvider.getSearchResult(model);
         return Scaffold(
@@ -133,12 +121,12 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
                           Row(
                             children: [
                               Text(
-                                "${dateTime!.day}/${dateTime.month}/${dateTime.year}, ${dateTime.hour}:${dateTime.minute},   ",
+                                "${dateTime.day}/${dateTime.month}/${dateTime.year}, ${dateTime.hour}:${dateTime.minute},   ",
                                 style: roundFont(
                                     14, darkHeading, FontWeight.normal),
                               ),
                               Text(
-                                "$seatsSelected ${seatsSelected! > 1 ? "Passengers" : "Passenger"}",
+                                "$seatsSelected ${seatsSelected > 1 ? "Passengers" : "Passenger"}",
                                 style: roundFont(
                                     14, darkHeading, FontWeight.normal),
                               )
@@ -167,32 +155,50 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
                   ),
                 );
               } else if (snapshot.data!.isEmpty) {
-                return Center(
-                  child: Text(
-                    "Empty result",
-                    style: roundFont(18, darkHeading, FontWeight.bold),
-                  ),
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                   HeightSpacer(size: height*0.18,),
+                    Image.asset('assets/images/no_rides_found.png', width: 150,),
+                    const HeightSpacer(size: 30,),
+                    Center(
+                      child: Text(
+                        "Not rides yet. Drivers usually \npublish their ride 2-3 days \nbefore departure.",
+                        textAlign: TextAlign.center,
+                        style: roundFont(25, darkHeading, FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 );
               } else {
                 var availableRide = snapshot.data;
                 return ListView.builder(
                   itemCount: availableRide!.length,
                   itemBuilder: (context, index) {
+                    var rideAtCurrentIndex = availableRide[index];
+                    String? departVal = findPoolProvider
+                        .extractAddressPart(rideAtCurrentIndex.stopBy[0].address);
+                    String? destVal = findPoolProvider.extractAddressPart(
+                        rideAtCurrentIndex
+                            .stopBy[rideAtCurrentIndex.stopBy.length - 1].address);
                     return GetAllRidesContainer(
                       onCardTap: () {
                         print("Working");
                       },
-                      startTime: DateTime.now(),
+                      startTime: rideAtCurrentIndex.schedule,
                       travelingHrs: 2,
+                      // todo : calculate traveling hrs and minutes
                       travelingMin: 40,
-                      departureName: "Navi Mumbai kj",
+                      departureName: departVal,
                       departDisFromPassLoc: 0,
+                      // todo : set this value dynamically after calculating km dis between user entered and available rides
                       destDisFromPassLoc: 2,
-                      destinationName: "Pune , mumbai",
-                      driverName: "Arun Vishwakarma",
-                      pricePerSeat: 600,
-                      driverRating: 4,
-                      urgentBooking: true,
+                      destinationName: destVal,
+                      driverName: rideAtCurrentIndex.driverId.firstName,
+                      pricePerSeat: rideAtCurrentIndex.pricePerPass,
+                      driverRating: null,
+                      urgentBooking: rideAtCurrentIndex.directBooking,
+                      profileImage: rideAtCurrentIndex.driverId.profile,
                     );
                   },
                 );

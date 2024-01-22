@@ -1,8 +1,13 @@
 import 'package:easy_ride/constants/app_constants.dart';
+import 'package:easy_ride/controllers/add_vehicle_provider.dart';
+import 'package:easy_ride/controllers/map_provider.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
+import 'package:easy_ride/views/ui/offer_pool/instant_booking_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 class MyVehiclesListTile extends StatelessWidget {
   const MyVehiclesListTile(
@@ -16,7 +21,9 @@ class MyVehiclesListTile extends StatelessWidget {
       required this.popupMenuButton,
       required this.vehicleImage,
       required this.onTap,
-      required this.isImageEmpty})
+      required this.isImageEmpty,
+      required this.selectingVehicle,
+      required this.vehicleId})
       : super(key: key);
   final String modelName;
   final String registrationNumber;
@@ -28,13 +35,17 @@ class MyVehiclesListTile extends StatelessWidget {
   final String vehicleImage;
   final bool isImageEmpty;
   final VoidCallback onTap;
+  final bool selectingVehicle;
+  final String vehicleId;
 
   @override
   Widget build(BuildContext context) {
+    var mapProvider = Provider.of<MapProvider>(context);
+    var addVehicleProvider = Provider.of<AddVehicle>(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
+      child: GestureDetector(
+        // borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -87,7 +98,18 @@ class MyVehiclesListTile extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                popupMenuButton,
+                selectingVehicle
+                    ? IconButton(
+                        onPressed: () {
+                          mapProvider.vehicleId = vehicleId;
+                          addVehicleProvider
+                              .updateSelectedSeats(numberOfSeats!);
+                          Get.to(() => const InstantBooking(), transition: Transition.rightToLeft);
+                          print(mapProvider.vehicleId);
+                          print(addVehicleProvider.numOfSeatSelected);
+                        },
+                        icon: const Icon(Icons.chevron_right_outlined))
+                    : popupMenuButton,
                 (modelName == 'Bike') || modelName == ('Scooter')
                     ? const SizedBox.shrink()
                     : ReuseableText(

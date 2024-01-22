@@ -1,6 +1,12 @@
+import 'package:easy_ride/models/request/create_ride_req_model.dart';
+import 'package:easy_ride/services/helper/create_ride_helper.dart';
+import 'package:easy_ride/views/common/toast_msg.dart';
+import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_constants.dart';
 import '../models/map/direction_model.dart';
@@ -11,8 +17,47 @@ class MapProvider extends ChangeNotifier {
   List<PredictPlaces> predictPlacesList = [];
   Directions? myLocationDirection;
   Directions? destinationDirection;
+  List<Directions> stopOver = [];
+  String? vehicleId;
+  String? driverId;
+  bool instantBooking = false;
+  int _pricePerSeat = 20;
+  String aboutRide = "null";
 
   bool _waiting = false;
+
+  int get pricePerSeat => _pricePerSeat;
+
+  void increment(int value) {
+    _pricePerSeat += value;
+    notifyListeners();
+  }
+
+  void setPriceOnChange(int value) {
+    _pricePerSeat = value;
+  }
+
+  void decrement(int value) {
+    _pricePerSeat -= value;
+    notifyListeners();
+  }
+
+  getPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    driverId = prefs.getString("userId");
+    print("fjisfa : $driverId");
+  }
+
+  // TODO : just before sending the create Ride request call this Function;
+  insertLocationAndDestinationToStopOver() {
+    stopOver.insert(0, myLocationDirection!);
+    stopOver.add(destinationDirection!);
+  }
+
+  removeStopOver(int index) {
+    stopOver.removeAt(index);
+    notifyListeners();
+  }
 
   get waiting => _waiting;
 
@@ -29,6 +74,30 @@ class MapProvider extends ChangeNotifier {
   void setPredictListToEmpty() {
     predictPlacesList = [];
     notifyListeners();
+  }
+
+  // publish ride
+  publishRide(CreateRideReqModel model) {
+    CreateRideHelper.publishRide(model).then((isRideCreated) {
+      if (isRideCreated) {
+        // Get.to(()=>const RidePublishedPage(), transition: Transition.fade);
+        ShowSnackbar(
+            title: "Published",
+            message: "Ride Successfully Created!",
+            icon: Icons.check_circle,
+            bgColor: Colors.green,
+            textColor: Colors.white);
+        Get.offAll(() => const MainPage());
+      } else {
+        ShowSnackbar(
+            title: "Failed",
+            message: "Something went wrong",
+            icon: Icons.error,
+            bgColor: Colors.red,
+            textColor: Colors.white);
+        Get.offAll(() => const MainPage());
+      }
+    });
   }
 
   findPlaceAutoCompleteSearch(String inputText) async {

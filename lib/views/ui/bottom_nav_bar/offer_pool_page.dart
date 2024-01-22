@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:easy_ride/views/ui/driver_verification/driver_verification.dart';
+import 'package:easy_ride/views/ui/offer_pool/add_stopover_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../controllers/add_vehicle_provider.dart';
 import '../../../controllers/find_pool_provider.dart';
+import '../../../controllers/map_provider.dart';
+import '../../common/toast_msg.dart';
 import '../../common/travel_detail_widget.dart';
 
 class OfferPool extends StatefulWidget {
@@ -51,12 +54,19 @@ class _OfferPoolState extends State<OfferPool> {
     bool isTrue = prefs.getBool("isDriverVerified") ?? false;
     if (!isTrue) {
       Get.to(() => const DriverVerification());
+    } else if (context.read<MapProvider>().myLocationDirection == null ||
+        context.read<MapProvider>().destinationDirection == null) {
+      ShowSnackbar(
+          title: "Failed",
+          message: "Please Enter Both Locations",
+          icon: Icons.error_outline);
     } else {
       print("offer Pool Button Pressed");
       print(leaveFromLocation);
       print(dropLocation);
-      print(numOfSeatsSelected);
       print(providerDateTime);
+      Get.to((() => AddStopOverPage()),
+          transition: Transition.rightToLeftWithFade);
     }
   }
 

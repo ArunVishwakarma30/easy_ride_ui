@@ -199,7 +199,7 @@ class GetAllRidesContainer extends StatelessWidget {
                     backgroundColor: Colors.white,
                   ),
                   title: ReuseableText(
-                    text: "Arun",
+                    text: driverName,
                     style: roundFont(17, darkHeading, FontWeight.bold),
                   ),
                   subtitle: driverRating != null
