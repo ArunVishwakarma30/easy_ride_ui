@@ -61,7 +61,8 @@ class _MainPageState extends State<MainPage> {
         bottomNavigationBar: CurvedNavigationBar(
           onTap: (value) => {
             navNotifier.setCurrentIndex(value),
-            mapProvider.setDirectionsNull()
+            mapProvider.setDirectionsNull(),
+            mapProvider.setWaiting(false)
           },
           items: items,
           height: 60,

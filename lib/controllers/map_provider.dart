@@ -2,6 +2,7 @@ import 'package:easy_ride/models/request/create_ride_req_model.dart';
 import 'package:easy_ride/services/helper/create_ride_helper.dart';
 import 'package:easy_ride/views/common/toast_msg.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
+import 'package:easy_ride/views/ui/offer_pool/successfully_ride_created_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -81,13 +82,8 @@ class MapProvider extends ChangeNotifier {
     CreateRideHelper.publishRide(model).then((isRideCreated) {
       if (isRideCreated) {
         // Get.to(()=>const RidePublishedPage(), transition: Transition.fade);
-        ShowSnackbar(
-            title: "Published",
-            message: "Ride Successfully Created!",
-            icon: Icons.check_circle,
-            bgColor: Colors.green,
-            textColor: Colors.white);
-        Get.offAll(() => const MainPage());
+
+        Get.to(() => const RideCreated(), transition: Transition.fadeIn);
       } else {
         ShowSnackbar(
             title: "Failed",
@@ -95,8 +91,9 @@ class MapProvider extends ChangeNotifier {
             icon: Icons.error,
             bgColor: Colors.red,
             textColor: Colors.white);
-        Get.offAll(() => const MainPage());
+        Get.offAll(() => const MainPage(), transition: Transition.fade);
       }
+      setWaiting(false);
     });
   }
 

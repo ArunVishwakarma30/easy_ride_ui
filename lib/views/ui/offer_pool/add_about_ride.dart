@@ -22,7 +22,6 @@ class AddAboutYourRide extends StatefulWidget {
 class _AddAboutYourRideState extends State<AddAboutYourRide> {
   late TextEditingController _aboutRideController;
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -40,8 +39,10 @@ class _AddAboutYourRideState extends State<AddAboutYourRide> {
       inputDateTime.month,
       inputDateTime.day,
       inputDateTime.hour,
-      0, // Set the minute to 0
-      0, // Set the second to 0
+      0,
+      // Set the minute to 0
+      0,
+      // Set the second to 0
       0, // Set the millisecond to 0
     );
 
@@ -55,10 +56,8 @@ class _AddAboutYourRideState extends State<AddAboutYourRide> {
     _aboutRideController.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     var mapProvider = Provider.of<MapProvider>(context);
     var findPoolProvider = Provider.of<FindPoolProvider>(context);
     var addVehicleProvider = Provider.of<AddVehicle>(context);
@@ -123,6 +122,7 @@ class _AddAboutYourRideState extends State<AddAboutYourRide> {
               alignment: Alignment.bottomCenter,
               child: ElevatedButton(
                   onPressed: () {
+                    mapProvider.setWaiting(true);
                     mapProvider.insertLocationAndDestinationToStopOver();
                     if (_aboutRideController.text.trim().isNotEmpty) {
                       mapProvider.aboutRide = _aboutRideController.text;
@@ -137,14 +137,14 @@ class _AddAboutYourRideState extends State<AddAboutYourRide> {
                       // Add the created StopBy instance to the stopBy list
                       stopBy.add(stopByInstance);
                     }
-                    print("All values");
 
                     CreateRideReqModel model = CreateRideReqModel(
                         departure: mapProvider
                             .myLocationDirection!.locationDescription!,
                         destination: mapProvider
                             .destinationDirection!.locationDescription!,
-                        schedule: convertToCustomFormat(findPoolProvider.travelDateTime.toString()),
+                        schedule: convertToCustomFormat(
+                            findPoolProvider.travelDateTime.toString()),
                         aboutRide: mapProvider.aboutRide,
                         directBooking: mapProvider.instantBooking,
                         stopBy: stopBy,
@@ -152,29 +152,13 @@ class _AddAboutYourRideState extends State<AddAboutYourRide> {
                         seatsAvailable: addVehicleProvider.numOfSeatSelected,
                         driverId: mapProvider.driverId!,
                         vehicleId: mapProvider.vehicleId!,
-                    pricePerPass: mapProvider.pricePerSeat
-                    );
-
-                    print( "from ${model.departure}");
-                    print("to ${model.destination}");
-                    print("time :  ${model.schedule}");
-                    print("about : ${model.aboutRide}");
-                    print("directbooking :${model.directBooking}");
-                    print("seats of f  :${model.seatsOffering}");
-                    print("Driver id : ${model.driverId}");
-                    print("vehicle id : ${model.vehicleId}");
-                    int temp = 0;
-                    for (StopBy i in model.stopBy) {
-                      print("address at index $temp : ${i.address}");
-                      print("addressId at index $temp : ${i.gMapAddressId}");
-                      temp++;
-                    }
+                        pricePerPass: mapProvider.pricePerSeat);
 
                     mapProvider.publishRide(model);
                   },
                   style:
                       ElevatedButton.styleFrom(backgroundColor: loginPageColor),
-                  child: ReuseableText(
+                  child: mapProvider.waiting ? const CircularProgressIndicator(color: Colors.white,) : ReuseableText(
                     text: "Publish",
                     style: roundFont(18, Colors.white, FontWeight.bold),
                   )),
