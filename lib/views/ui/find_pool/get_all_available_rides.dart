@@ -3,6 +3,7 @@ import 'package:easy_ride/models/request/search_rides_req_model.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/ui/find_pool/get_all_rides_container.dart';
+import 'package:easy_ride/views/ui/find_pool/get_ride_detail_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -183,7 +184,7 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
                             .stopBy[rideAtCurrentIndex.stopBy.length - 1].address);
                     return GetAllRidesContainer(
                       onCardTap: () {
-                        print("Working");
+                        Get.to(()=>RideDetailsPage(searchResult: rideAtCurrentIndex), transition: Transition.rightToLeft, arguments: 'SearchRide');
                       },
                       startTime: rideAtCurrentIndex.schedule,
                       travelingHrs: 2,
