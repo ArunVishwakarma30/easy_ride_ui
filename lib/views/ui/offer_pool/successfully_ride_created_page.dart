@@ -3,6 +3,7 @@ import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
+import 'package:easy_ride/views/ui/find_pool/get_ride_detail_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:get/get.dart';
 
 class RideCreated extends StatelessWidget {
   const RideCreated({Key? key}) : super(key: key);
+  // final rideDetials;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +64,9 @@ class RideCreated extends StatelessWidget {
               ),
               const Expanded(child: HeightSpacer(size: 1)),
               ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Get.offAll(() => RideDetailsPage(searchResult: ), transition: Transition.leftToRight);
+                  },
                   style: ElevatedButton.styleFrom(elevation: 6),
                   child: ReuseableText(
                       text: "See my ride offer",

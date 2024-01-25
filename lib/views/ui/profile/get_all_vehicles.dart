@@ -29,6 +29,7 @@ class _MyAllVehiclesState extends State<MyAllVehicles> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: ReuseableText(
           text: "My Vehicles",
           style: roundFont(20, darkHeading, FontWeight.bold),

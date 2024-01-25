@@ -31,7 +31,6 @@ class _MyVehicleListState extends State<MyVehicleList> {
       if (value == "set default") {
         vehicleProvider.updateIsDefault(model, vehicleId);
       } else {
-        print(vehicleId);
         vehicleProvider.deleteVehicle(vehicleId);
       }
     }
@@ -45,7 +44,6 @@ class _MyVehicleListState extends State<MyVehicleList> {
           future: vehicleProvider.allVehicles,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              print("Userid : :::::::::::::${widget.userId}");
 
               return const Center(
                 child: CircularProgressIndicator(),
@@ -60,7 +58,6 @@ class _MyVehicleListState extends State<MyVehicleList> {
             } else if (snapshot.data!.isEmpty) {
               return const SizedBox.shrink();
             } else {
-              print("Userid : :::::::::::::${widget.userId}");
 
               var vehicleData = snapshot.data;
               return ListView.builder(
@@ -87,7 +84,6 @@ class _MyVehicleListState extends State<MyVehicleList> {
                       vehicleImage = selectedBikeImg['Img'].toString();
                     }
                   }
-                  print("Userid : :::::::::::::${widget.userId}");
 
                   UpdateIsDefaultReq model = UpdateIsDefaultReq(
                       userId: widget.userId!, isDefault: true);

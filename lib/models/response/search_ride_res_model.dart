@@ -1,8 +1,3 @@
-// To parse this JSON data, do
-//
-//     final searchRidesResModel = searchRidesResModelFromJson(jsonString);
-
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 List<SearchRidesResModel> searchRidesResModelFromJson(String str) => List<SearchRidesResModel>.from(json.decode(str).map((x) => SearchRidesResModel.fromJson(x)));
@@ -57,7 +52,7 @@ class SearchRidesResModel {
     pricePerPass: json["pricePerPass"],
     driverId: DriverId.fromJson(json["driverId"]),
     vehicleId: VehicleId.fromJson(json["vehicleId"]),
-    passangersId: List<dynamic>.from(json["passangersId"].map((x) => x)),
+    passangersId: List<PassangersId>.from(json["passangersId"].map((x) => PassangersId.fromJson(x))),
     isCanceled: json["isCanceled"],
     isFinished: json["isFinished"],
   );
@@ -75,7 +70,7 @@ class SearchRidesResModel {
     "pricePerPass": pricePerPass,
     "driverId": driverId.toJson(),
     "vehicleId": vehicleId.toJson(),
-    "passangersId": List<dynamic>.from(passangersId.map((x) => x)),
+    "passangersId": List<dynamic>.from(passangersId.map((x) => x.toJson())),
     "isCanceled": isCanceled,
     "isFinished": isFinished,
   };
@@ -90,7 +85,7 @@ class DriverId {
   final String profile;
   final String miniBio;
   final List<String> vehicles;
-  final List<dynamic> rides;
+  // final List<dynamic> rides;
   final List<String> createdRide;
 
   DriverId({
@@ -102,7 +97,7 @@ class DriverId {
     required this.profile,
     required this.miniBio,
     required this.vehicles,
-    required this.rides,
+    // required this.rides,
     required this.createdRide,
   });
 
@@ -115,7 +110,7 @@ class DriverId {
     profile: json["profile"],
     miniBio: json["miniBio"],
     vehicles: List<String>.from(json["vehicles"].map((x) => x)),
-    rides: List<dynamic>.from(json["rides"].map((x) => x)),
+    // rides: List<dynamic>.from(json["rides"].map((x) => x)),
     createdRide: List<String>.from(json["createdRide"].map((x) => x)),
   );
 
@@ -128,8 +123,104 @@ class DriverId {
     "profile": profile,
     "miniBio": miniBio,
     "vehicles": List<dynamic>.from(vehicles.map((x) => x)),
-    "rides": List<dynamic>.from(rides.map((x) => x)),
+    // "rides": List<dynamic>.from(rides.map((x) => x)),
     "createdRide": List<dynamic>.from(createdRide.map((x) => x)),
+  };
+}
+
+class PassangersId {
+  final IdentityDocument identityDocument;
+  final String miniBio;
+  final List<dynamic> createdRide;
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String phoneNumber;
+  final String email;
+  final String password;
+  final String profile;
+  final List<String> vehicles;
+  // final List<dynamic> rides;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int v;
+  final List<dynamic> requestedRide;
+
+  PassangersId({
+    required this.identityDocument,
+    required this.miniBio,
+    required this.createdRide,
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.phoneNumber,
+    required this.email,
+    required this.password,
+    required this.profile,
+    required this.vehicles,
+    // required this.rides,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.v,
+    required this.requestedRide,
+  });
+
+  factory PassangersId.fromJson(Map<String, dynamic> json) => PassangersId(
+    identityDocument: IdentityDocument.fromJson(json["identityDocument"]),
+    miniBio: json["miniBio"],
+    createdRide: List<dynamic>.from(json["createdRide"].map((x) => x)),
+    id: json["_id"],
+    firstName: json["firstName"],
+    lastName: json["lastName"],
+    phoneNumber: json["phoneNumber"],
+    email: json["email"],
+    password: json["password"],
+    profile: json["profile"],
+    vehicles: List<String>.from(json["vehicles"].map((x) => x)),
+    // rides: List<dynamic>.from(json["rides"].map((x) => x)),
+    createdAt: DateTime.parse(json["createdAt"]),
+    updatedAt: DateTime.parse(json["updatedAt"]),
+    v: json["__v"],
+    requestedRide: List<dynamic>.from(json["requestedRide"].map((x) => x)),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "identityDocument": identityDocument.toJson(),
+    "miniBio": miniBio,
+    "createdRide": List<dynamic>.from(createdRide.map((x) => x)),
+    "_id": id,
+    "firstName": firstName,
+    "lastName": lastName,
+    "phoneNumber": phoneNumber,
+    "email": email,
+    "password": password,
+    "profile": profile,
+    "vehicles": List<dynamic>.from(vehicles.map((x) => x)),
+    // "rides": List<dynamic>.from(rides.map((x) => x)),
+    "createdAt": createdAt.toIso8601String(),
+    "updatedAt": updatedAt.toIso8601String(),
+    "__v": v,
+    "requestedRide": List<dynamic>.from(requestedRide.map((x) => x)),
+  };
+}
+
+class IdentityDocument {
+  final String documentType;
+  final String documentImg;
+
+  IdentityDocument({
+    required this.documentType,
+    required this.documentImg,
+  });
+
+  factory IdentityDocument.fromJson(Map<String, dynamic> json) => IdentityDocument(
+    documentType: json["documentType"],
+    documentImg: json["documentImg"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "documentType": documentType,
+    "documentImg": documentImg,
   };
 }
 

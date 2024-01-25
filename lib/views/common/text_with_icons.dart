@@ -12,7 +12,7 @@ class TextWithIcons extends StatelessWidget {
       this.onTextTap,
       this.onPostFixTap,
       this.iconColor = Colors.black,
-      required this.containerWidth, this.onWidgetTap})
+      required this.containerWidth, this.onWidgetTap, this.maxLines = 1})
       : super(key: key);
 
   final IconData? preFixIcon;
@@ -24,6 +24,7 @@ class TextWithIcons extends StatelessWidget {
   final VoidCallback? onPostFixTap;
   final Color? iconColor;
   final VoidCallback? onWidgetTap;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,7 @@ class TextWithIcons extends StatelessWidget {
                 onTap: onTextTap,
                 child: Text(
                   text,
-                  maxLines: 1,
+                  maxLines: maxLines,
                   overflow: TextOverflow.ellipsis,
                   style: textStyle ?? const TextStyle(color: Colors.black),
                 ),

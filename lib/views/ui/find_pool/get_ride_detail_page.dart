@@ -3,12 +3,16 @@ import 'package:easy_ride/models/response/search_ride_res_model.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
+import 'package:easy_ride/views/common/text_with_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import '../../../controllers/add_vehicle_provider.dart';
 import '../../common/walk_icon.dart';
+import '../profile/my_vehicles_list_tile.dart';
 
 class RideDetailsPage extends StatelessWidget {
   RideDetailsPage({Key? key, required this.searchResult}) : super(key: key);
@@ -26,20 +30,39 @@ class RideDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var vehicleProvider = Provider.of<AddVehicle>(context);
+
     argument = args ?? "";
     String? schedule = formatDateTimeString(searchResult.schedule);
     var stopBy = searchResult.stopBy;
+
+    String? vehicleImage = "";
+    bool isImageEmpty = false;
+    if (searchResult.vehicleId.image.isEmpty) {
+      isImageEmpty = true;
+      if (searchResult.vehicleId.type == 'Auto Rickshaw' ||
+          searchResult.vehicleId.type == 'Car') {
+        Map<String, String>? selectedCarImg = carTypeAndImg
+            .firstWhere((car) => car['Name'] == searchResult.vehicleId.model);
+
+        vehicleImage = selectedCarImg['Img'].toString();
+      } else {
+        Map<String, String>? selectedBikeImg = bikeTypeAndImg
+            .firstWhere((car) => car['Name'] == searchResult.vehicleId.model);
+
+        vehicleImage = selectedBikeImg['Img'].toString();
+      }
+    }
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        scrolledUnderElevation: 0.0,
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: loginPageColor),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Stack(
-            fit: StackFit.expand,
-            children: [
+        child: Stack(fit: StackFit.expand, children: [
           SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,35 +208,42 @@ class RideDetailsPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          ReuseableText(
-                              text: searchResult.driverId.firstName,
-                              style:
-                                  roundFont(17, darkHeading, FontWeight.bold)),
-                          const Expanded(
-                              child: SizedBox(
-                            width: 1,
-                          )),
-                          CircleAvatar(
-                            radius: 25,
-                            backgroundColor: Colors.white,
-                            backgroundImage: searchResult
-                                    .driverId.profile.isNotEmpty
-                                ? NetworkImage(searchResult.driverId.profile)
-                                : const AssetImage('assets/icons/person.png')
-                                    as ImageProvider,
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 18,
-                            color: darkHeading,
-                          )
-                        ],
+                      InkWell(
+                        radius: 0,
+                        onTap: () {
+                          print(
+                              "Go to the drivers page and show required personal details to the passenger");
+                        },
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ReuseableText(
+                                text: searchResult.driverId.firstName,
+                                style: roundFont(
+                                    17, darkHeading, FontWeight.bold)),
+                            const Expanded(
+                                child: SizedBox(
+                              width: 1,
+                            )),
+                            CircleAvatar(
+                              radius: 25,
+                              backgroundColor: Colors.white,
+                              backgroundImage: searchResult
+                                      .driverId.profile.isNotEmpty
+                                  ? NetworkImage(searchResult.driverId.profile)
+                                  : const AssetImage('assets/icons/person.png')
+                                      as ImageProvider,
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 18,
+                              color: darkHeading,
+                            )
+                          ],
+                        ),
                       ),
                       const HeightSpacer(size: 10),
                       const Divider(),
@@ -223,15 +253,184 @@ class RideDetailsPage extends StatelessWidget {
                         style: roundFont(18, darkHeading, FontWeight.normal),
                       ),
                       const HeightSpacer(size: 20),
-                      GestureDetector(onTap: (){
-                        print("Send to the chat page and initiate the chat between users");
-                      }, child: ReuseableText(text: "Contact ${searchResult.driverId.firstName}", style: roundFont(18, loginPageColor, FontWeight.bold))),
+                      GestureDetector(
+                          onTap: () {
+                            print(
+                                "Send to the chat page and initiate the chat between users");
+                          },
+                          child: ReuseableText(
+                              text:
+                                  "Contact ${searchResult.driverId.firstName}",
+                              style: roundFont(
+                                  18, loginPageColor, FontWeight.bold))),
                       const HeightSpacer(size: 10),
                       const Divider(),
-
+                      const HeightSpacer(size: 20),
+                      TextWithIcons(
+                        text: searchResult.directBooking
+                            ? "Your booking will be confirmed instantly."
+                            : "Your booking won't be confirmed until the driver approves your request",
+                        maxLines: 3,
+                        textStyle:
+                            roundFont(18, darkHeading, FontWeight.normal),
+                        containerWidth: MediaQuery.of(context).size.width - 100,
+                        preFixIcon: searchResult.directBooking
+                            ? Icons.electric_bolt_outlined
+                            : Icons.time_to_leave_outlined,
+                        iconColor: Colors.black45,
+                      ),
+                      const HeightSpacer(size: 20),
+                      const Divider(),
+                      const HeightSpacer(size: 10),
+                      MyVehiclesListTile(
+                        modelName: searchResult.vehicleId.model,
+                        registrationNumber:
+                            searchResult.vehicleId.registrationNumber,
+                        isDefault: false,
+                        viewVehicleDetails: true,
+                        vehicleImage: isImageEmpty
+                            ? vehicleImage
+                            : searchResult.vehicleId.image,
+                        exception: searchResult.vehicleId.exception,
+                        makeAndCategory: searchResult.vehicleId.makeAndCategory,
+                        numberOfSeats: vehicleProvider.numOfSeatSelected,
+                        onTap: () {},
+                        isImageEmpty: searchResult.vehicleId.image.isEmpty,
+                        selectingVehicle: true,
+                        vehicleId: searchResult.vehicleId.id,
+                      ),
+                      const Divider(),
+                      const HeightSpacer(size: 10),
+                      searchResult.vehicleId.features.isNotEmpty
+                          ? TextWithIcons(
+                              text: searchResult.vehicleId.features,
+                              maxLines: 3,
+                              textStyle:
+                                  roundFont(18, darkHeading, FontWeight.normal),
+                              containerWidth:
+                                  MediaQuery.of(context).size.width - 100,
+                              iconColor: Colors.black45,
+                              preFixIcon: Icons.star_border_purple500,
+                            )
+                          : const SizedBox.shrink(),
+                      searchResult.vehicleId.features.isNotEmpty
+                          ? const HeightSpacer(size: 15)
+                          : const SizedBox.shrink(),
+                      searchResult.vehicleId.exception.isNotEmpty
+                          ? TextWithIcons(
+                              text: searchResult.vehicleId.exception,
+                              maxLines: 3,
+                              textStyle:
+                                  roundFont(18, darkHeading, FontWeight.normal),
+                              containerWidth:
+                                  MediaQuery.of(context).size.width - 100,
+                              iconColor: Colors.black45,
+                              preFixIcon: Icons.not_interested,
+                            )
+                          : const SizedBox.shrink(),
+                      (searchResult.vehicleId.type == 'Bike' ||
+                              searchResult.vehicleId.type == 'Scooter')
+                          ? const HeightSpacer(size: 15)
+                          : const SizedBox.shrink(),
+                      (searchResult.vehicleId.type == 'Bike' ||
+                              searchResult.vehicleId.type == 'Scooter')
+                          ? TextWithIcons(
+                              text: searchResult.vehicleId.requiredHelmet
+                                  ? "You have to carry helmet"
+                                  : "You don't have to carry helmet",
+                              maxLines: 3,
+                              textStyle:
+                                  roundFont(18, darkHeading, FontWeight.normal),
+                              containerWidth:
+                                  MediaQuery.of(context).size.width - 100,
+                              iconColor: Colors.black45,
+                              preFixIcon: Icons.label_important,
+                            )
+                          : const SizedBox.shrink(),
                     ],
                   ),
-                )
+                ),
+                searchResult.passangersId.isNotEmpty
+                    ? const Divider(
+                        thickness: 10,
+                        color: Colors.black12,
+                      )
+                    : const SizedBox.shrink(),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const HeightSpacer(size: 10),
+                      searchResult.passangersId.isNotEmpty
+                          ? ReuseableText(
+                              text: "Passengers",
+                              style:
+                                  roundFont(22, darkHeading, FontWeight.bold))
+                          : const SizedBox.shrink(),
+                      const HeightSpacer(size: 10),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: searchResult.passangersId.length,
+                        itemBuilder: (context, index) {
+                          return Column(
+                            children: [
+                              InkWell(
+                                radius: 0,
+                                onTap: () {
+                                  print(
+                                      "Go to the passengers page and show required personal details to the passenger");
+                                },
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    ReuseableText(
+                                        text: searchResult
+                                            .passangersId[index].firstName,
+                                        style: roundFont(
+                                            17, darkHeading, FontWeight.bold)),
+                                    const Expanded(
+                                        child: SizedBox(
+                                      width: 1,
+                                    )),
+                                    CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: Colors.white,
+                                      backgroundImage: searchResult
+                                              .passangersId[index]
+                                              .profile
+                                              .isNotEmpty
+                                          ? NetworkImage(searchResult
+                                              .passangersId[index].profile)
+                                          : const AssetImage(
+                                                  'assets/icons/person.png')
+                                              as ImageProvider,
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    ),
+                                    const Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 18,
+                                      color: darkHeading,
+                                    )
+                                  ],
+                                ),
+                              ),
+                              const HeightSpacer(size: 5),
+                              index < searchResult.passangersId.length - 1
+                                  ? const Divider()
+                                  : const SizedBox.shrink(),
+                            ],
+                          );
+                        },
+                      )
+                    ],
+                  ),
+                ),
+                const HeightSpacer(size: 50)
               ],
             ),
           ),
@@ -249,19 +448,27 @@ class RideDetailsPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      "assets/icons/event.png",
-                      height: 20,
-                    ),
+                    searchResult.directBooking
+                        ? const Icon(
+                            Icons.electric_bolt_outlined,
+                            color: Colors.white,
+                            size: 17,
+                          )
+                        : Image.asset(
+                            "assets/icons/event.png",
+                            height: 20,
+                          ),
                     const SizedBox(
                       width: 10,
                     ),
                     ReuseableText(
-                        text: "Request to book",
+                        text: searchResult.directBooking
+                            ? "Book"
+                            : "Request to book",
                         style: roundFont(19, Colors.white, FontWeight.normal))
                   ],
                 ),
-              ))
+              )),
         ]),
       ),
     );

@@ -1,3 +1,8 @@
+// To parse this JSON data, do
+//
+//     final getUser = getUserFromJson(jsonString);
+
+import 'package:meta/meta.dart';
 import 'dart:convert';
 
 GetUser getUserFromJson(String str) => GetUser.fromJson(json.decode(str));
@@ -5,6 +10,7 @@ GetUser getUserFromJson(String str) => GetUser.fromJson(json.decode(str));
 String getUserToJson(GetUser data) => json.encode(data.toJson());
 
 class GetUser {
+  final IdentityDocument identityDocument;
   final String id;
   final String firstName;
   final String lastName;
@@ -13,9 +19,13 @@ class GetUser {
   final String profile;
   final String miniBio;
   final List<dynamic> vehicles;
-  final List<dynamic> rides;
+  final List<dynamic> createdRide;
+  final List<dynamic> requestedRide;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   GetUser({
+    required this.identityDocument,
     required this.id,
     required this.firstName,
     required this.lastName,
@@ -24,10 +34,14 @@ class GetUser {
     required this.profile,
     required this.miniBio,
     required this.vehicles,
-    required this.rides,
+    required this.createdRide,
+    required this.requestedRide,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory GetUser.fromJson(Map<String, dynamic> json) => GetUser(
+    identityDocument: IdentityDocument.fromJson(json["identityDocument"]),
     id: json["_id"],
     firstName: json["firstName"],
     lastName: json["lastName"],
@@ -36,10 +50,14 @@ class GetUser {
     profile: json["profile"],
     miniBio: json["miniBio"],
     vehicles: List<dynamic>.from(json["vehicles"].map((x) => x)),
-    rides: List<dynamic>.from(json["rides"].map((x) => x)),
+    createdRide: List<dynamic>.from(json["createdRide"].map((x) => x)),
+    requestedRide: List<dynamic>.from(json["requestedRide"].map((x) => x)),
+    createdAt: DateTime.parse(json["createdAt"]),
+    updatedAt: DateTime.parse(json["updatedAt"]),
   );
 
   Map<String, dynamic> toJson() => {
+    "identityDocument": identityDocument.toJson(),
     "_id": id,
     "firstName": firstName,
     "lastName": lastName,
@@ -48,6 +66,29 @@ class GetUser {
     "profile": profile,
     "miniBio": miniBio,
     "vehicles": List<dynamic>.from(vehicles.map((x) => x)),
-    "rides": List<dynamic>.from(rides.map((x) => x)),
+    "createdRide": List<dynamic>.from(createdRide.map((x) => x)),
+    "requestedRide": List<dynamic>.from(requestedRide.map((x) => x)),
+    "createdAt": createdAt.toIso8601String(),
+    "updatedAt": updatedAt.toIso8601String(),
+  };
+}
+
+class IdentityDocument {
+  final String documentType;
+  final String documentImg;
+
+  IdentityDocument({
+    required this.documentType,
+    required this.documentImg,
+  });
+
+  factory IdentityDocument.fromJson(Map<String, dynamic> json) => IdentityDocument(
+    documentType: json["documentType"],
+    documentImg: json["documentImg"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "documentType": documentType,
+    "documentImg": documentImg,
   };
 }

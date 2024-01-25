@@ -18,12 +18,13 @@ class MyVehiclesListTile extends StatelessWidget {
       this.exception,
       required this.isDefault,
       this.numberOfSeats,
-      required this.popupMenuButton,
+      this.popupMenuButton,
       required this.vehicleImage,
       required this.onTap,
       required this.isImageEmpty,
       required this.selectingVehicle,
-      required this.vehicleId})
+      required this.vehicleId,
+      this.viewVehicleDetails = false})
       : super(key: key);
   final String modelName;
   final String registrationNumber;
@@ -31,12 +32,13 @@ class MyVehiclesListTile extends StatelessWidget {
   final String? exception;
   final bool isDefault;
   final int? numberOfSeats;
-  final Widget popupMenuButton;
+  final Widget? popupMenuButton;
   final String vehicleImage;
   final bool isImageEmpty;
   final VoidCallback onTap;
   final bool selectingVehicle;
   final String vehicleId;
+  final bool viewVehicleDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -99,20 +101,28 @@ class MyVehiclesListTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 selectingVehicle
-                    ? IconButton(
-                        onPressed: () {
-                          mapProvider.vehicleId = vehicleId;
-                          addVehicleProvider
-                              .updateSelectedSeats(numberOfSeats!);
-                          Get.to(() => const InstantBooking(), transition: Transition.rightToLeft);
-                          print(mapProvider.vehicleId);
-                          print(addVehicleProvider.numOfSeatSelected);
-                        },
-                        icon: const Icon(Icons.chevron_right_outlined))
-                    : popupMenuButton,
+                    ? Visibility(
+                  visible: !viewVehicleDetails,
+                        child: IconButton(
+                            onPressed: () {
+                              mapProvider.vehicleId = vehicleId;
+                              if( (modelName == 'Bike') || modelName == ('Scooter')){
+                               addVehicleProvider.updateSelectedSeats(1);
+                              }else{
+                                addVehicleProvider
+                                    .updateSelectedSeats(numberOfSeats!);
+                              }
+                              Get.to(() => const InstantBooking(),
+                                  transition: Transition.rightToLeft);
+                              print(mapProvider.vehicleId);
+                              print(addVehicleProvider.numOfSeatSelected);
+                            },
+                            icon: const Icon(Icons.chevron_right_outlined)),
+                      )
+                    : popupMenuButton!,
                 (modelName == 'Bike') || modelName == ('Scooter')
                     ? const SizedBox.shrink()
-                    : ReuseableText(
+                    :  ReuseableText(
                         text: "$numberOfSeats Seats",
                         style: roundFont(13, darkHeading, FontWeight.normal),
                       )

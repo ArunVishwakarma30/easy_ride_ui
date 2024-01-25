@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/controllers/onboarding_provider.dart';
 import 'package:easy_ride/controllers/profile_page_provider.dart';
@@ -12,6 +10,7 @@ import 'package:easy_ride/views/ui/profile/add_vehicle.dart';
 import 'package:easy_ride/views/ui/profile/get_all_vehicles.dart';
 import 'package:easy_ride/views/ui/profile/profile_picture.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,258 +42,270 @@ class _ProfilePageState extends State<ProfilePage> {
     List<String> travelPreferences = [];
     var onBoardingProvider = Provider.of<OnBoardingProvider>(context);
     int vehicleCount = 0;
-    return SafeArea(
-      child: Scaffold(body: Consumer<ProfileProvider>(
-        builder: (context, profileNotifier, child) {
-          profileNotifier.getUser();
 
-          return FutureBuilder(
-              future: profileNotifier.getUserRes,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text(snapshot.error.toString(),
-                        style: appStyle(20, Colors.black45, FontWeight.bold)),
-                  );
-                } else {
-                  var userData = snapshot.data;
-                  vehicleCount = userData!.vehicles.length;
-                  miniBio = userData.miniBio;
-                  return SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Get.to(() => const ProfilePicture(),
-                                  transition: Transition.rightToLeft);
-                            },
-                            child: Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.white, // Change this to the desired color
+      ),
+    );
+    return SafeArea(
+      child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Consumer<ProfileProvider>(
+            builder: (context, profileNotifier, child) {
+              profileNotifier.getUser();
+
+              return FutureBuilder(
+                  future: profileNotifier.getUserRes,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text(snapshot.error.toString(),
+                            style:
+                                appStyle(20, Colors.black45, FontWeight.bold)),
+                      );
+                    } else {
+                      var userData = snapshot.data;
+                      vehicleCount = userData!.vehicles.length;
+                      miniBio = userData.miniBio;
+                      return SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Get.to(() => const ProfilePicture(),
+                                      transition: Transition.rightToLeft);
+                                },
+                                child: Row(
                                   children: [
-                                    ReuseableText(
-                                        text: userData.firstName,
-                                        style: roundFont(
-                                            28,
-                                            Color(darkHeading.value),
-                                            FontWeight.bold)),
-                                    const HeightSpacer(size: 10),
-                                    ReuseableText(
-                                        text: "Newcomer",
-                                        style: roundFont(
-                                            18,
-                                            Color(textColor.value),
-                                            FontWeight.w100))
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ReuseableText(
+                                            text: userData.firstName,
+                                            style: roundFont(
+                                                28,
+                                                Color(darkHeading.value),
+                                                FontWeight.bold)),
+                                        const HeightSpacer(size: 10),
+                                        ReuseableText(
+                                            text: "Newcomer",
+                                            style: roundFont(
+                                                18,
+                                                Color(textColor.value),
+                                                FontWeight.w100))
+                                      ],
+                                    ),
+                                    const Expanded(child: SizedBox(width: 5)),
+                                    CircleAvatar(
+                                      radius: 40,
+                                      backgroundColor: Colors.white,
+                                      backgroundImage: userData.profile.isEmpty
+                                          ? const AssetImage(
+                                                  "assets/icons/person.png")
+                                              as ImageProvider
+                                          : NetworkImage(userData.profile),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Color(darkHeading.value),
+                                    )
                                   ],
                                 ),
-                                const Expanded(child: SizedBox(width: 5)),
-                                CircleAvatar(
-                                  radius: 40,
-                                  backgroundColor: Colors.white,
-                                  backgroundImage: userData.profile.isEmpty
-                                      ? const AssetImage(
-                                              "assets/icons/person.png")
-                                          as ImageProvider
-                                      : NetworkImage(userData.profile),
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Color(darkHeading.value),
-                                )
-                              ],
-                            ),
-                          ),
-                          const HeightSpacer(size: 14),
+                              ),
+                              const HeightSpacer(size: 14),
 
-                          Divider(
-                            color: Color(backGroundLight.value),
-                            thickness: 2,
-                          ),
-                          const HeightSpacer(size: 22),
-                          ReuseableText(
-                              text: "Verify your profile",
-                              style: roundFont(24, Color(darkHeading.value),
-                                  FontWeight.bold)),
-                          const HeightSpacer(size: 22),
-                          GestureDetector(
-                            onTap: () {
-                              if (!isIdVerified) {
-                                // todo : verify user identity here
-                              }
-                            },
-                            child: TextWithIcons(
-                              onWidgetTap: () {
-                                Get.to(() => const VerifyUserId(),
-                                    transition: Transition.rightToLeft);
-                              },
-                              text:
-                                  isIdVerified ? "Id Verified" : "Verify my ID",
-                              containerWidth: width,
-                              textStyle: roundFont(
-                                  17, loginPageColor, FontWeight.bold),
-                              preFixIcon: isIdVerified
-                                  ? Icons.check_circle
-                                  : Icons.add_circle_outline_outlined,
-                              iconColor: isIdVerified
-                                  ? Colors.green
-                                  : Color(loginPageColor.value),
-                            ),
-                          ),
-                          const HeightSpacer(size: 32),
-                          TextWithIcons(
-                            onWidgetTap: () {
-                              getPrefs();
-                              print(token);
-                            },
-                            text: userData.email,
-                            containerWidth: width,
-                            textStyle:
-                                roundFont(17, Colors.black45, FontWeight.bold),
-                            preFixIcon: Icons.check_circle,
-                            iconColor: Colors.green,
-                          ),
-                          const HeightSpacer(size: 32),
-                          TextWithIcons(
-                            text: userData.phoneNumber,
-                            containerWidth: width,
-                            textStyle:
-                                roundFont(17, Colors.black45, FontWeight.bold),
-                            preFixIcon: Icons.check_circle,
-                            iconColor: Colors.green,
-                          ),
-                          const HeightSpacer(size: 15),
-                          Divider(
-                            color: Color(backGroundLight.value),
-                            thickness: 2,
-                          ),
-                          const HeightSpacer(size: 22),
-                          ReuseableText(
-                              text: "Bio",
-                              style: roundFont(24, Color(darkHeading.value),
-                                  FontWeight.bold)),
-                          const HeightSpacer(size: 15),
-                          miniBio.isNotEmpty
-                              ? InkWell(
-                                  onTap: () {
-                                    Get.to(() => const EditMiniBio(),
-                                        transition: Transition.downToUp,
-                                        arguments: userData);
-                                  },
-                                  child: Text(
-                                    miniBio,
-                                    style: roundFont(
-                                        17, Colors.black45, FontWeight.bold),
-                                  ),
-                                )
-                              : TextWithIcons(
+                              Divider(
+                                color: Color(backGroundLight.value),
+                                thickness: 2,
+                              ),
+                              const HeightSpacer(size: 22),
+                              ReuseableText(
+                                  text: "Verify your profile",
+                                  style: roundFont(24, Color(darkHeading.value),
+                                      FontWeight.bold)),
+                              const HeightSpacer(size: 22),
+                              GestureDetector(
+                                onTap: () {
+                                  if (!isIdVerified) {
+                                    // todo : verify user identity here
+                                  }
+                                },
+                                child: TextWithIcons(
                                   onWidgetTap: () {
-                                    Get.to(() => const EditMiniBio(),
-                                        transition: Transition.downToUp,
-                                        arguments: userData);
-                                  },
-                                  text: "Add mini bio",
-                                  containerWidth: width,
-                                  textStyle: roundFont(
-                                      17, loginPageColor, FontWeight.bold),
-                                  preFixIcon: Icons.add_circle_outline_outlined,
-                                  iconColor: Color(loginPageColor.value),
-                                ),
-                          // const HeightSpacer(size: 32),
-                          // // todo : Create a list view builder to show all the travel preferences
-                          // GestureDetector(
-                          //   onTap: () {},
-                          //   child: TextWithIcons(
-                          //     text:
-                          //         "${travelPreferences.isEmpty ? "Add" : "Edit"} travel preferences",
-                          //     containerWidth: width,
-                          //     textStyle: roundFont(17, loginPageColor, FontWeight.bold),
-                          //     preFixIcon: Icons.add_circle_outline_outlined,
-                          //     iconColor: loginPageColor,
-                          //   ),
-                          // ),
-                          const HeightSpacer(size: 15),
-                          Divider(
-                            color: Color(backGroundLight.value),
-                            thickness: 2,
-                          ),
-                          const HeightSpacer(size: 22),
-                          ReuseableText(
-                              text: "Vehicles",
-                              style: roundFont(24, Color(darkHeading.value),
-                                  FontWeight.bold)),
-                          const HeightSpacer(size: 22),
-
-                          TextWithIcons(
-                            onWidgetTap: () {
-                              Get.to(() => const AddVehiclePage(),
-                                  transition: Transition.rightToLeft);
-                            },
-                            text: "Add Vehicle",
-                            containerWidth: width,
-                            textStyle:
-                                roundFont(17, loginPageColor, FontWeight.bold),
-                            preFixIcon: Icons.add_circle_outline_outlined,
-                            iconColor: Color(loginPageColor.value),
-                          ),
-
-                          HeightSpacer(size: vehicleCount > 0 ? 22 : 0),
-                          vehicleCount > 0
-                              ? TextWithIcons(
-                                  onWidgetTap: () {
-                                    Get.to(() => const MyAllVehicles(),
+                                    Get.to(() => const VerifyUserId(),
                                         transition: Transition.rightToLeft);
                                   },
-                                  text: "My Vehicles",
+                                  text: isIdVerified
+                                      ? "Id Verified"
+                                      : "Verify my ID",
                                   containerWidth: width,
                                   textStyle: roundFont(
                                       17, loginPageColor, FontWeight.bold),
-                                  preFixIcon: Icons.menu,
-                                  iconColor: Color(loginPageColor.value),
-                                )
-                              : const SizedBox.shrink(),
-                          const HeightSpacer(size: 20),
-                          Divider(
-                            color: Color(backGroundLight.value),
-                            thickness: 2,
-                          ),
-                          const HeightSpacer(size: 18),
-                          TextWithIcons(
-                            onWidgetTap: () async {
-                              var prefs = await SharedPreferences.getInstance();
-                              prefs.setBool('loggedIn', false);
-                              prefs.setBool('entrypoint', false);
+                                  preFixIcon: isIdVerified
+                                      ? Icons.check_circle
+                                      : Icons.add_circle_outline_outlined,
+                                  iconColor: isIdVerified
+                                      ? Colors.green
+                                      : Color(loginPageColor.value),
+                                ),
+                              ),
+                              const HeightSpacer(size: 32),
+                              TextWithIcons(
+                                onWidgetTap: () {
+                                  getPrefs();
+                                },
+                                text: userData.email,
+                                containerWidth: width,
+                                textStyle: roundFont(
+                                    17, Colors.black45, FontWeight.bold),
+                                preFixIcon: Icons.check_circle,
+                                iconColor: Colors.green,
+                              ),
+                              const HeightSpacer(size: 32),
+                              TextWithIcons(
+                                text: userData.phoneNumber,
+                                containerWidth: width,
+                                textStyle: roundFont(
+                                    17, Colors.black45, FontWeight.bold),
+                                preFixIcon: Icons.check_circle,
+                                iconColor: Colors.green,
+                              ),
+                              const HeightSpacer(size: 15),
+                              Divider(
+                                color: Color(backGroundLight.value),
+                                thickness: 2,
+                              ),
+                              const HeightSpacer(size: 22),
+                              ReuseableText(
+                                  text: "Bio",
+                                  style: roundFont(24, Color(darkHeading.value),
+                                      FontWeight.bold)),
+                              const HeightSpacer(size: 15),
+                              miniBio.isNotEmpty
+                                  ? InkWell(
+                                      onTap: () {
+                                        Get.to(() => const EditMiniBio(),
+                                            transition: Transition.downToUp,
+                                            arguments: userData);
+                                      },
+                                      child: Text(
+                                        miniBio,
+                                        style: roundFont(17, Colors.black45,
+                                            FontWeight.bold),
+                                      ),
+                                    )
+                                  : TextWithIcons(
+                                      onWidgetTap: () {
+                                        Get.to(() => const EditMiniBio(),
+                                            transition: Transition.downToUp,
+                                            arguments: userData);
+                                      },
+                                      text: "Add mini bio",
+                                      containerWidth: width,
+                                      textStyle: roundFont(
+                                          17, loginPageColor, FontWeight.bold),
+                                      preFixIcon:
+                                          Icons.add_circle_outline_outlined,
+                                      iconColor: Color(loginPageColor.value),
+                                    ),
+                              // const HeightSpacer(size: 32),
+                              // // todo : Create a list view builder to show all the travel preferences
+                              // GestureDetector(
+                              //   onTap: () {},
+                              //   child: TextWithIcons(
+                              //     text:
+                              //         "${travelPreferences.isEmpty ? "Add" : "Edit"} travel preferences",
+                              //     containerWidth: width,
+                              //     textStyle: roundFont(17, loginPageColor, FontWeight.bold),
+                              //     preFixIcon: Icons.add_circle_outline_outlined,
+                              //     iconColor: loginPageColor,
+                              //   ),
+                              // ),
+                              const HeightSpacer(size: 15),
+                              Divider(
+                                color: Color(backGroundLight.value),
+                                thickness: 2,
+                              ),
+                              const HeightSpacer(size: 22),
+                              ReuseableText(
+                                  text: "Vehicles",
+                                  style: roundFont(24, Color(darkHeading.value),
+                                      FontWeight.bold)),
+                              const HeightSpacer(size: 22),
 
-                              onBoardingProvider.setLastPage(false);
+                              TextWithIcons(
+                                onWidgetTap: () {
+                                  Get.to(() => const AddVehiclePage(),
+                                      transition: Transition.rightToLeft);
+                                },
+                                text: "Add Vehicle",
+                                containerWidth: width,
+                                textStyle: roundFont(
+                                    17, loginPageColor, FontWeight.bold),
+                                preFixIcon: Icons.add_circle_outline_outlined,
+                                iconColor: Color(loginPageColor.value),
+                              ),
 
-                              Get.offAll(() => const OnBoardingScreen(),
-                                  transition: Transition.fade);
-                            },
-                            text: "Logout",
-                            containerWidth: width,
-                            textStyle:
-                                roundFont(17, loginPageColor, FontWeight.bold),
-                            preFixIcon: Icons.logout,
-                            iconColor: Color(loginPageColor.value),
+                              HeightSpacer(size: vehicleCount > 0 ? 22 : 0),
+                              vehicleCount > 0
+                                  ? TextWithIcons(
+                                      onWidgetTap: () {
+                                        Get.to(() => const MyAllVehicles(),
+                                            transition: Transition.rightToLeft);
+                                      },
+                                      text: "My Vehicles",
+                                      containerWidth: width,
+                                      textStyle: roundFont(
+                                          17, loginPageColor, FontWeight.bold),
+                                      preFixIcon: Icons.menu,
+                                      iconColor: Color(loginPageColor.value),
+                                    )
+                                  : const SizedBox.shrink(),
+                              const HeightSpacer(size: 20),
+                              Divider(
+                                color: Color(backGroundLight.value),
+                                thickness: 2,
+                              ),
+                              const HeightSpacer(size: 18),
+                              TextWithIcons(
+                                onWidgetTap: () async {
+                                  var prefs =
+                                      await SharedPreferences.getInstance();
+                                  prefs.setBool('loggedIn', false);
+                                  prefs.setBool('entrypoint', false);
+
+                                  onBoardingProvider.setLastPage(false);
+
+                                  Get.offAll(() => const OnBoardingScreen(),
+                                      transition: Transition.fade);
+                                },
+                                text: "Logout",
+                                containerWidth: width,
+                                textStyle: roundFont(
+                                    17, loginPageColor, FontWeight.bold),
+                                preFixIcon: Icons.logout,
+                                iconColor: Color(loginPageColor.value),
+                              ),
+                              const HeightSpacer(size: 20),
+                            ],
                           ),
-                          const HeightSpacer(size: 20),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-              });
-        },
-      )),
+                        ),
+                      );
+                    }
+                  });
+            },
+          )),
     );
   }
 }
