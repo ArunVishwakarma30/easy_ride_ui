@@ -5,6 +5,7 @@ import 'package:easy_ride/services/helper/vehicle_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../views/common/toast_msg.dart';
 import '../views/ui/bottom_nav_bar/main_page.dart';
@@ -13,9 +14,15 @@ class AddVehicle extends ChangeNotifier {
   // for seats
   int _numOfSeatSelected = 1;
   late Future<List<GetVehicleResModel>>? allVehicles;
+  String? userId = "";
 
   bool _waiting = false;
 
+  void getPrefs()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userId = prefs.getString('userId');
+    print("AddVehicleProvider $userId");
+  }
   get waiting => _waiting;
 
   void setWaiting(bool value) {
@@ -101,7 +108,7 @@ class AddVehicle extends ChangeNotifier {
         notifyListeners();
         ShowSnackbar(
             title: "Success",
-            message: "Vehicle Successfully Removed!",
+            message: "Vehicle Set as default",
             icon: Icons.done_outline,
             bgColor: Colors.green,
             textColor: Colors.white);

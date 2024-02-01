@@ -27,7 +27,8 @@ class _MyVehicleListState extends State<MyVehicleList> {
     // on popup menu item selected
     void handleMenuItemSelected(
         String value, String vehicleId, UpdateIsDefaultReq model) {
-      // todo : -->
+      model =
+          UpdateIsDefaultReq(userId: vehicleProvider.userId!, isDefault: true);
       if (value == "set default") {
         vehicleProvider.updateIsDefault(model, vehicleId);
       } else {
@@ -36,15 +37,14 @@ class _MyVehicleListState extends State<MyVehicleList> {
     }
 
     return Consumer<AddVehicle>(
-
       builder: (context, vehicleProvider, child) {
         vehicleProvider.getAllVehicles();
+        vehicleProvider.getPrefs();
 
         return FutureBuilder(
           future: vehicleProvider.allVehicles,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-
               return const Center(
                 child: CircularProgressIndicator(),
               );
@@ -58,7 +58,6 @@ class _MyVehicleListState extends State<MyVehicleList> {
             } else if (snapshot.data!.isEmpty) {
               return const SizedBox.shrink();
             } else {
-
               var vehicleData = snapshot.data;
               return ListView.builder(
                 padding: const EdgeInsets.all(15),
@@ -108,7 +107,8 @@ class _MyVehicleListState extends State<MyVehicleList> {
                       print("Go to vehicle update page");
                     },
                     isImageEmpty: isImageEmpty,
-                    selectingVehicle: widget.selectingVehicle, vehicleId: vehicleAtCurrentIndex.id,
+                    selectingVehicle: widget.selectingVehicle,
+                    vehicleId: vehicleAtCurrentIndex.id,
                   );
                 },
               );

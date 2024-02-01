@@ -54,6 +54,7 @@ class CustomPopupMenuButton extends StatelessWidget {
         return menuItems;
       },
       onSelected: (value) {
+
         onMenuItemSelected(value, vehicleId, updateIsDefaultModel);
       },
     );

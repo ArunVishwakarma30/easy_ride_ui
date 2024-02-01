@@ -140,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                         return 'Please enter Your Full Name';
                                       }
 
-                                      // Spliting the entered value in to words
+                                      // Splitting the entered value in to words
                                       List<String> nameParts =
                                           value.trim().split(' ');
                                       if (nameParts.length < 2) {

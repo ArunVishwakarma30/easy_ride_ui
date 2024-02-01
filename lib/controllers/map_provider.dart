@@ -1,3 +1,4 @@
+import 'package:easy_ride/models/map/DirectionDetailsInfo.dart';
 import 'package:easy_ride/models/request/create_ride_req_model.dart';
 import 'package:easy_ride/services/helper/create_ride_helper.dart';
 import 'package:easy_ride/views/common/toast_msg.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_constants.dart';
@@ -49,7 +51,6 @@ class MapProvider extends ChangeNotifier {
     print("fjisfa : $driverId");
   }
 
-  // TODO : just before sending the create Ride request call this Function;
   insertLocationAndDestinationToStopOver() {
     stopOver.insert(0, myLocationDirection!);
     stopOver.add(destinationDirection!);
@@ -137,9 +138,9 @@ class MapProvider extends ChangeNotifier {
       directions.locationDescription = res['result']['formatted_address'];
       directions.locationId = placeId;
       directions.locationLatitude =
-          res['result']['geometry']['location']['lat'];
+      res['result']['geometry']['location']['lat'];
       directions.locationLongitude =
-          res['result']['geometry']['location']['lng'];
+      res['result']['geometry']['location']['lng'];
       return directions;
     }
     return null;
@@ -151,12 +152,30 @@ class MapProvider extends ChangeNotifier {
         desiredAccuracy: LocationAccuracy.high);
 
     String apiKey =
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude}, ${position.longitude}&key=$map_key";
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position
+        .latitude}, ${position.longitude}&key=$map_key";
     var apiRes = await MapHelper.getUserAddress(apiKey);
     if (apiRes != "Error occurred , Failed to get response") {
       String? placeId = apiRes['results'][0]['place_id'];
       return placeId;
     }
     return null;
+  }
+
+  // here find the route for the travelling
+  Future<DirectionDetailsInfo?> getOriginToDetinationDirectionDetails(
+      LatLng originPosition, LatLng destinationPosition) async {
+    String routeApiUrl =
+        "https://maps.googleapis.com/maps/api/directions/json?origin=${originPosition
+        .latitude},${originPosition.longitude}&destination=${destinationPosition
+        .latitude},${destinationPosition.longitude}&key=$map_key";
+
+    var response = await MapHelper.getUserAddress(routeApiUrl);
+    if (response == "Error occurred , Failed to get response") {
+      return null;
+    }
+
+    DirectionDetailsInfo routeInfo = DirectionDetailsInfo();
+    // routeInfo.ePoints = response['']
   }
 }

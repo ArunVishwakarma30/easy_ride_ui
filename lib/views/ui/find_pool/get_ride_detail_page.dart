@@ -4,15 +4,20 @@ import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/common/text_with_icons.dart';
+import 'package:easy_ride/views/ui/offer_pool/map_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../controllers/add_vehicle_provider.dart';
+import '../../../controllers/map_provider.dart';
+import '../../../models/map/direction_model.dart';
 import '../../common/walk_icon.dart';
 import '../profile/my_vehicles_list_tile.dart';
+import 'map_locaiton_page.dart';
 
 class RideDetailsPage extends StatelessWidget {
   RideDetailsPage({Key? key, required this.searchResult}) : super(key: key);
@@ -80,8 +85,36 @@ class RideDetailsPage extends StatelessWidget {
                   itemCount: stopBy.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
-                      onTap: () {
-                        print("Show address in map");
+                      onTap: () async {
+                        List<LatLng> coordinates = [];
+
+                        // Assuming stopBy is a List<StopBy> in your rideDetails
+                        for (StopBy stop in searchResult.stopBy) {
+                          String? placeId = stop.gMapAddressId;
+
+                          // Call the getPlaceDirectionDetails method to get coordinates
+                          Directions? coordinatesDetails = await MapProvider().getPlaceDirectionDetails(placeId);
+
+                          // Add coordinates to the list if available
+                          if (coordinatesDetails != null &&
+                              coordinatesDetails.locationLatitude != null &&
+                              coordinatesDetails.locationLongitude != null) {
+                            coordinates.add(
+                              LatLng(
+                                coordinatesDetails.locationLatitude!,
+                                coordinatesDetails.locationLongitude!,
+                              ),
+                            );
+                          }
+                        }
+
+                    Get.to(()=>RouteScreen(places : coordinates));
+
+                        // Navigate to RouteScreen with coordinates
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => RouteScreen(coordinates: coordinates)),
+                        // );
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
