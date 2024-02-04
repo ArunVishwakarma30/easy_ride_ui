@@ -7,6 +7,7 @@ import 'package:easy_ride/views/ui/find_pool/get_ride_detail_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants/app_constants.dart';
@@ -40,6 +41,13 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
     tzdata.initializeTimeZones();
   }
 
+  Future<void> getRouteDetails(List<LatLng> locations) async {
+    var mapProvider = Provider.of<MapProvider>(context);
+    var directionDetailInfo =
+        await mapProvider.getOriginToDestinationDirectionDetails(locations);
+
+  }
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -47,9 +55,6 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
     final findPoolProvider = Provider.of<FindPoolProvider>(context);
     final addVehicleProvider = Provider.of<AddVehicle>(context);
     DateTime? dateTime = findPoolProvider.travelDateTime!;
-    DateTime? istDateTime =
-        DateTime(dateTime!.year, dateTime.month, dateTime.day, 0, 0);
-
 
     int? seatsSelected = addVehicleProvider.numOfSeatSelected;
     return Consumer<MapProvider>(
@@ -66,7 +71,7 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
             departure: myState,
             destination: desState,
             seatsRequired: seatsSelected!,
-            schedule: dateTime);
+            schedule: dateTime!);
 
         findPoolProvider.getSearchResult(model);
         return Scaffold(
@@ -159,9 +164,16 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                   HeightSpacer(size: height*0.18,),
-                    Image.asset('assets/images/no_rides_found.png', width: 150,),
-                    const HeightSpacer(size: 30,),
+                    HeightSpacer(
+                      size: height * 0.18,
+                    ),
+                    Image.asset(
+                      'assets/images/no_rides_found.png',
+                      width: 150,
+                    ),
+                    const HeightSpacer(
+                      size: 30,
+                    ),
                     Center(
                       child: Text(
                         "Not rides yet. Drivers usually \npublish their ride 2-3 days \nbefore departure.",
@@ -177,14 +189,19 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
                   itemCount: availableRide!.length,
                   itemBuilder: (context, index) {
                     var rideAtCurrentIndex = availableRide[index];
-                    String? departVal = findPoolProvider
-                        .extractAddressPart(rideAtCurrentIndex.stopBy[0].address);
+                    String? departVal = findPoolProvider.extractAddressPart(
+                        rideAtCurrentIndex.stopBy[0].address);
                     String? destVal = findPoolProvider.extractAddressPart(
                         rideAtCurrentIndex
-                            .stopBy[rideAtCurrentIndex.stopBy.length - 1].address);
+                            .stopBy[rideAtCurrentIndex.stopBy.length - 1]
+                            .address);
                     return GetAllRidesContainer(
                       onCardTap: () {
-                        Get.to(()=>RideDetailsPage(searchResult: rideAtCurrentIndex), transition: Transition.rightToLeft, arguments: 'SearchRide');
+                        Get.to(
+                            () => RideDetailsPage(
+                                searchResult: rideAtCurrentIndex),
+                            transition: Transition.rightToLeft,
+                            arguments: 'SearchRide');
                       },
                       startTime: rideAtCurrentIndex.schedule,
                       travelingHrs: 2,

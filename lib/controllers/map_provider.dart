@@ -17,6 +17,7 @@ import '../models/map/predict_place_model.dart';
 import '../services/helper/map_helper.dart';
 
 class MapProvider extends ChangeNotifier {
+  DirectionDetailsInfo? tripDirectionInfo;
   List<PredictPlaces> predictPlacesList = [];
   Directions? myLocationDirection;
   Directions? destinationDirection;
@@ -138,9 +139,9 @@ class MapProvider extends ChangeNotifier {
       directions.locationDescription = res['result']['formatted_address'];
       directions.locationId = placeId;
       directions.locationLatitude =
-      res['result']['geometry']['location']['lat'];
+          res['result']['geometry']['location']['lat'];
       directions.locationLongitude =
-      res['result']['geometry']['location']['lng'];
+          res['result']['geometry']['location']['lng'];
       return directions;
     }
     return null;
@@ -152,8 +153,7 @@ class MapProvider extends ChangeNotifier {
         desiredAccuracy: LocationAccuracy.high);
 
     String apiKey =
-        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position
-        .latitude}, ${position.longitude}&key=$map_key";
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude}, ${position.longitude}&key=$map_key";
     var apiRes = await MapHelper.getUserAddress(apiKey);
     if (apiRes != "Error occurred , Failed to get response") {
       String? placeId = apiRes['results'][0]['place_id'];
@@ -163,12 +163,18 @@ class MapProvider extends ChangeNotifier {
   }
 
   // here find the route for the travelling
-  Future<DirectionDetailsInfo?> getOriginToDetinationDirectionDetails(
-      LatLng originPosition, LatLng destinationPosition) async {
+  Future<DirectionDetailsInfo?> getOriginToDestinationDirectionDetails(
+      List<LatLng> locations) async {
+    // Extract waypoints excluding the origin and destination
+    List<String> waypoints = locations
+        .sublist(1, locations.length - 1)
+        .map((location) => "${location.latitude},${location.longitude}")
+        .toList();
+
+    // Join waypoints using '|'
+    String waypointsString = waypoints.join('|');
     String routeApiUrl =
-        "https://maps.googleapis.com/maps/api/directions/json?origin=${originPosition
-        .latitude},${originPosition.longitude}&destination=${destinationPosition
-        .latitude},${destinationPosition.longitude}&key=$map_key";
+        "https://maps.googleapis.com/maps/api/directions/json?origin=${locations[0].latitude},${locations[0].longitude}&destination=${locations[locations.length - 1].latitude},${locations[locations.length - 1].longitude}&mode=driving&waypoints=$waypointsString&key=$map_key";
 
     var response = await MapHelper.getUserAddress(routeApiUrl);
     if (response == "Error occurred , Failed to get response") {
@@ -176,6 +182,18 @@ class MapProvider extends ChangeNotifier {
     }
 
     DirectionDetailsInfo routeInfo = DirectionDetailsInfo();
-    // routeInfo.ePoints = response['']
+    routeInfo.ePoints = response['routes'][0]['overview_polyline']['points'];
+
+    routeInfo.distanceText =
+        response['routes'][0]['legs'][0]['distance']['text'];
+    routeInfo.distanceValue =
+        response['routes'][0]['legs'][0]['distance']['value'];
+
+    routeInfo.durationText =
+        response['routes'][0]['legs'][0]['duration']['text'];
+    routeInfo.durationValue =
+        response['routes'][0]['legs'][0]['duration']['value'];
+
+    return routeInfo;
   }
 }

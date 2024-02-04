@@ -1,10 +1,16 @@
 import 'dart:async';
-import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
+import 'package:easy_ride/controllers/map_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
 import '../../../constants/app_constants.dart';
 import '../../common/app_style.dart';
@@ -26,6 +32,7 @@ class _RouteScreenState extends State<RouteScreen> {
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyline = {};
   LocationPermission? _locationPermission;
+  final List<LatLng> pLineCoordinatedList = [];
 
   checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
@@ -41,22 +48,80 @@ class _RouteScreenState extends State<RouteScreen> {
     checkIfLocationPermissionAllowed();
     cameraPosition = CameraPosition(
         target: LatLng(widget.places[0].latitude, widget.places[0].longitude),
-        zoom: 14.4746);
+        zoom: 12.4746);
     setState(() {
-      for (int i = 0; i < widget.places.length; i++) {
-        _markers.add(
-          Marker(
-              markerId: MarkerId(i.toString()),
-              position: widget.places[i],
-              infoWindow: InfoWindow(title: "fjasfa"),
-              icon: BitmapDescriptor.defaultMarker),
-        );
-      }
+      _generateMarkers();
+      drawPolyLines();
+    });
+  }
 
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
+  }
+
+  _generateMarkers() async {
+    for (int i = 0; i < widget.places.length; i++) {
+      late final Uint8List markerIcon;
+      if (i == 0) {
+        markerIcon = await getBytesFromAsset(
+            'assets/icons/my_location.png', 100);
+      } else if (i == widget.places.length - 1) {
+        markerIcon = await getBytesFromAsset(
+            'assets/icons/destination_location.png', 100);
+      } else {
+        markerIcon = await getBytesFromAsset(
+            'assets/icons/pick_location.png', 200);
+      }
+      _markers.add(
+        Marker(
+          markerId: MarkerId(i.toString()),
+          position: widget.places[i],
+          consumeTapEvents: false,
+          infoWindow: InfoWindow(
+            title: "fjasfa",
+            snippet: "fjiasoflasf",
+          ),
+          icon: BitmapDescriptor.fromBytes(markerIcon),
+        ),
+      );
+    }
+  }
+
+  Future<void> drawPolyLines() async {
+    var mapProvider = Provider.of<MapProvider>(context, listen: false);
+    var originLatLong = widget.places[0];
+    var destinationLatLong = widget.places[widget.places.length - 1];
+
+    var directionDetailInfo =
+        await mapProvider.getOriginToDestinationDirectionDetails(
+            widget.places);
+    PolylinePoints pPoints = PolylinePoints();
+    List<PointLatLng> decodedPolyPointResult =
+        pPoints.decodePolyline(directionDetailInfo!.ePoints!);
+
+    if (decodedPolyPointResult.isNotEmpty) {
+      decodedPolyPointResult.forEach((PointLatLng pointLatLng) {
+        pLineCoordinatedList
+            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+      });
+    }
+
+    setState(() {
       _polyline.add(Polyline(
-          polylineId: PolylineId('1'),
+          polylineId: const PolylineId('2'),
+          jointType: JointType.round,
           color: loginPageColor,
-          points: widget.places));
+          startCap: Cap.roundCap,
+          endCap: Cap.roundCap,
+          geodesic: true,
+          width: 5,
+          points: pLineCoordinatedList));
     });
   }
 
