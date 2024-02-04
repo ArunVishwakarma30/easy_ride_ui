@@ -19,8 +19,11 @@ import '../profile/my_vehicles_list_tile.dart';
 import 'map_locaiton_page.dart';
 
 class RideDetailsPage extends StatelessWidget {
-  RideDetailsPage({Key? key, required this.searchResult}) : super(key: key);
+  RideDetailsPage(
+      {Key? key, required this.searchResult, required this.routeInfo})
+      : super(key: key);
   final SearchRidesResModel searchResult;
+  final List<dynamic> routeInfo;
   String? argument = "";
   var args = Get.arguments;
 
@@ -35,6 +38,14 @@ class RideDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var vehicleProvider = Provider.of<AddVehicle>(context);
+    List<LatLng> directions = routeInfo[0];
+    String polyLines = routeInfo[1];
+    List<int> hrs = routeInfo[2];
+    List<int> mins = routeInfo[3];
+    print(directions);
+    print(hrs);
+    print(mins);
+    print(polyLines);
 
     argument = args ?? "";
     String? schedule = formatDateTimeString(searchResult.schedule);
@@ -83,31 +94,41 @@ class RideDetailsPage extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: stopBy.length,
                   itemBuilder: (context, index) {
+                    late String travelDurationString;
+                    // Calculating next location time
+                    DateTime travelTime = searchResult.schedule;
+                    String travelTimeString =
+                        "${travelTime.hour.toString()}:${travelTime.minute.toString()}";
+                    if (index > 0 && index < searchResult.stopBy.length) {
+                      DateTime newTravelTime = travelTime.add(Duration(
+                          hours: hrs[index - 1], minutes: mins[index - 1]));
+                      travelTimeString =
+                          "${newTravelTime.hour.toString()}:${newTravelTime.minute.toString()}";
+                    }
+                    if (index < searchResult.stopBy.length - 1) {
+                      travelDurationString = hrs[index] == 0
+                          ? "${mins[index].toString()}min"
+                          : "${hrs[index].toString()}h${mins[index].toString()}";
+                    } else {
+                      travelDurationString = "";
+                    }
+                    // Calculating next location duration
+                    //  if(index > 0 && index < searchResult.stopBy.length){
+                    //   DateTime newTravelTime = travelTime.add(
+                    //       Duration(hours: hrs[index], minutes: mins[index]));
+                    //   travelTimeString = newTravelTime.hour == 0
+                    //       ? "${newTravelTime.minute.toString()}min"
+                    //       : "${newTravelTime.hour}h${newTravelTime.minute.toString()}";
+                    // } else {
+                    //   travelTimeString = travelTime.hour == 0
+                    //       ? "${travelTime.minute.toString()}min"
+                    //       : "${travelTime.hour}h${travelTime.minute.toString()}";
+                    // }
+
                     return GestureDetector(
                       onTap: () async {
-                        List<LatLng> coordinates = [];
 
-                        // Assuming stopBy is a List<StopBy> in your rideDetails
-                        for (StopBy stop in searchResult.stopBy) {
-                          String? placeId = stop.gMapAddressId;
-
-                          // Call the getPlaceDirectionDetails method to get coordinates
-                          Directions? coordinatesDetails = await MapProvider().getPlaceDirectionDetails(placeId);
-
-                          // Add coordinates to the list if available
-                          if (coordinatesDetails != null &&
-                              coordinatesDetails.locationLatitude != null &&
-                              coordinatesDetails.locationLongitude != null) {
-                            coordinates.add(
-                              LatLng(
-                                coordinatesDetails.locationLatitude!,
-                                coordinatesDetails.locationLongitude!,
-                              ),
-                            );
-                          }
-                        }
-
-                    Get.to(()=>RouteScreen(places : coordinates));
+                        Get.to(() => RouteScreen(places: directions, polyLinePoints: polyLines,));
 
                         // Navigate to RouteScreen with coordinates
                         // Navigator.push(
@@ -128,12 +149,11 @@ class RideDetailsPage extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     ReuseableText(
-                                        text:
-                                            "${searchResult.schedule.hour.toString()}:${searchResult.schedule.minute.toString()}",
+                                        text: travelTimeString,
                                         style: roundFont(
                                             17, darkHeading, FontWeight.bold)),
                                     ReuseableText(
-                                        text: "${2}h${30}",
+                                        text: travelDurationString,
                                         style: roundFont(
                                             17,
                                             stopBy.length - 1 == index

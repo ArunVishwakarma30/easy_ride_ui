@@ -163,7 +163,7 @@ class MapProvider extends ChangeNotifier {
   }
 
   // here find the route for the travelling
-  Future<DirectionDetailsInfo?> getOriginToDestinationDirectionDetails(
+  Future<List<DirectionDetailsInfo?>?>? getOriginToDestinationDirectionDetails(
       List<LatLng> locations) async {
     // Extract waypoints excluding the origin and destination
     List<String> waypoints = locations
@@ -180,20 +180,24 @@ class MapProvider extends ChangeNotifier {
     if (response == "Error occurred , Failed to get response") {
       return null;
     }
+    List<DirectionDetailsInfo> routeInfos = [];
+    for (int i = 0; i < response['routes'][0]['legs'].length; i++) {
+      DirectionDetailsInfo routeInfo = DirectionDetailsInfo();
+      routeInfo.ePoints = response['routes'][0]['overview_polyline']['points'];
 
-    DirectionDetailsInfo routeInfo = DirectionDetailsInfo();
-    routeInfo.ePoints = response['routes'][0]['overview_polyline']['points'];
+      routeInfo.distanceText =
+          response['routes'][0]['legs'][i]['distance']['text'];
+      routeInfo.distanceValue =
+          response['routes'][0]['legs'][i]['distance']['value'];
 
-    routeInfo.distanceText =
-        response['routes'][0]['legs'][0]['distance']['text'];
-    routeInfo.distanceValue =
-        response['routes'][0]['legs'][0]['distance']['value'];
+      routeInfo.durationText =
+          response['routes'][0]['legs'][i]['duration']['text'];
+      routeInfo.durationValue =
+          response['routes'][0]['legs'][i]['duration']['value'];
 
-    routeInfo.durationText =
-        response['routes'][0]['legs'][0]['duration']['text'];
-    routeInfo.durationValue =
-        response['routes'][0]['legs'][0]['duration']['value'];
+      routeInfos.add(routeInfo);
+    }
 
-    return routeInfo;
+    return routeInfos.isNotEmpty ? routeInfos : null;
   }
 }

@@ -17,8 +17,11 @@ import '../../common/app_style.dart';
 import '../../common/reuseable_text_widget.dart';
 
 class RouteScreen extends StatefulWidget {
-  const RouteScreen({Key? key, required this.places}) : super(key: key);
+  const RouteScreen(
+      {Key? key, required this.places, required this.polyLinePoints})
+      : super(key: key);
   final List<LatLng> places;
+  final String polyLinePoints;
 
   @override
   State<RouteScreen> createState() => _RouteScreenState();
@@ -69,14 +72,14 @@ class _RouteScreenState extends State<RouteScreen> {
     for (int i = 0; i < widget.places.length; i++) {
       late final Uint8List markerIcon;
       if (i == 0) {
-        markerIcon = await getBytesFromAsset(
-            'assets/icons/my_location.png', 100);
+        markerIcon =
+            await getBytesFromAsset('assets/icons/my_location.png', 100);
       } else if (i == widget.places.length - 1) {
         markerIcon = await getBytesFromAsset(
             'assets/icons/destination_location.png', 100);
       } else {
-        markerIcon = await getBytesFromAsset(
-            'assets/icons/pick_location.png', 200);
+        markerIcon =
+            await getBytesFromAsset('assets/icons/pick_location.png', 200);
       }
       _markers.add(
         Marker(
@@ -91,19 +94,13 @@ class _RouteScreenState extends State<RouteScreen> {
         ),
       );
     }
+    setState(() {});
   }
 
-  Future<void> drawPolyLines() async {
-    var mapProvider = Provider.of<MapProvider>(context, listen: false);
-    var originLatLong = widget.places[0];
-    var destinationLatLong = widget.places[widget.places.length - 1];
-
-    var directionDetailInfo =
-        await mapProvider.getOriginToDestinationDirectionDetails(
-            widget.places);
+  drawPolyLines() {
     PolylinePoints pPoints = PolylinePoints();
     List<PointLatLng> decodedPolyPointResult =
-        pPoints.decodePolyline(directionDetailInfo!.ePoints!);
+        pPoints.decodePolyline(widget.polyLinePoints);
 
     if (decodedPolyPointResult.isNotEmpty) {
       decodedPolyPointResult.forEach((PointLatLng pointLatLng) {
@@ -134,9 +131,14 @@ class _RouteScreenState extends State<RouteScreen> {
             style: roundFont(22, Color(darkHeading.value), FontWeight.bold)),
         leading: Container(
           margin: const EdgeInsets.only(left: 15),
-          child: const Icon(
-            Icons.arrow_back_ios,
-            size: 20,
+          child: GestureDetector(
+            onTap: () {
+              Get.back();
+            },
+            child: const Icon(
+              Icons.arrow_back_ios,
+              size: 20,
+            ),
           ),
         ),
       ),

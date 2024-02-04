@@ -72,7 +72,9 @@ class GetAllRidesContainer extends StatelessWidget {
                                 "${startTime.hour.toString()}:${startTime.minute.toString()}",
                             style: roundFont(17, darkHeading, FontWeight.bold)),
                         ReuseableText(
-                            text: "${travelingHrs}h$travelingMin",
+                            text: travelingHrs == 0
+                                ? "${travelingMin}min"
+                                : "${travelingHrs}h$travelingMin",
                             style:
                                 roundFont(17, darkHeading, FontWeight.normal)),
                       ],

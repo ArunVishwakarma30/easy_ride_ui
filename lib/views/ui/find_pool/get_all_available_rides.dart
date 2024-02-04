@@ -9,13 +9,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-
+import 'package:shimmer/shimmer.dart';
 import '../../../constants/app_constants.dart';
 import '../../../controllers/add_vehicle_provider.dart';
 import '../../../controllers/find_pool_provider.dart';
+import '../../../models/map/DirectionDetailsInfo.dart';
 import '../../../models/map/direction_model.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tzdata;
+
+import '../../../models/response/search_ride_res_model.dart';
 
 class GetAllAvailableRides extends StatefulWidget {
   const GetAllAvailableRides({Key? key}) : super(key: key);
@@ -41,11 +44,57 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
     tzdata.initializeTimeZones();
   }
 
-  Future<void> getRouteDetails(List<LatLng> locations) async {
-    var mapProvider = Provider.of<MapProvider>(context);
-    var directionDetailInfo =
-        await mapProvider.getOriginToDestinationDirectionDetails(locations);
+  Future<List<dynamic>> getRouteDetails(
+      SearchRidesResModel searchResult) async {
+    // at index [0] it will contain the List<LatLng> coordinates
+    // at index [1] there is a String which is for polyLine
+    // at index [2] there is a List<int> hrs
+    // at index [3] there is a List<int> mins
+    List<dynamic> routeRes = [];
+    var mapProvider = Provider.of<MapProvider>(context, listen: false);
+    List<LatLng> coordinates = [];
 
+    for (StopBy stop in searchResult.stopBy) {
+      String? placeId = stop.gMapAddressId;
+
+      Directions? coordinatesDetails =
+          await MapProvider().getPlaceDirectionDetails(placeId);
+
+      if (coordinatesDetails != null &&
+          coordinatesDetails.locationLatitude != null &&
+          coordinatesDetails.locationLongitude != null) {
+        coordinates.add(
+          LatLng(
+            coordinatesDetails.locationLatitude!,
+            coordinatesDetails.locationLongitude!,
+          ),
+        );
+      }
+    }
+    routeRes.add(coordinates);
+    var directionDetailInfo =
+        await mapProvider.getOriginToDestinationDirectionDetails(coordinates);
+    routeRes.add(directionDetailInfo![0]!.ePoints!);
+
+    // Extracting hours and minutes from each DirectionDetailsInfo
+    List<int> hrs = [];
+    List<int> mins = [];
+
+    for (int i = 0; i < directionDetailInfo.length; i++) {
+      int durationInSeconds = directionDetailInfo[i]!.durationValue!;
+      int hour = durationInSeconds ~/ 3600; // 1 hour = 3600 seconds
+      int minute = (durationInSeconds % 3600) ~/ 60;
+
+      // Adding hours and minutes to the respective lists
+      hrs.add(hour);
+      mins.add(minute);
+    }
+
+    // Adding hours and minutes lists to the result
+    routeRes.add(hrs);
+    routeRes.add(mins);
+
+    return routeRes;
   }
 
   @override
@@ -189,34 +238,81 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
                   itemCount: availableRide!.length,
                   itemBuilder: (context, index) {
                     var rideAtCurrentIndex = availableRide[index];
-                    String? departVal = findPoolProvider.extractAddressPart(
-                        rideAtCurrentIndex.stopBy[0].address);
-                    String? destVal = findPoolProvider.extractAddressPart(
-                        rideAtCurrentIndex
-                            .stopBy[rideAtCurrentIndex.stopBy.length - 1]
-                            .address);
-                    return GetAllRidesContainer(
-                      onCardTap: () {
-                        Get.to(
-                            () => RideDetailsPage(
-                                searchResult: rideAtCurrentIndex),
-                            transition: Transition.rightToLeft,
-                            arguments: 'SearchRide');
+                    return FutureBuilder(
+                      // Execute getRouteDetails for each item in the list
+                      future: getRouteDetails(rideAtCurrentIndex),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          // Display CircularProgressIndicator while waiting
+                          return Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: SizedBox(
+                              width: 200.0,
+                              height: 200.0,
+                              child: Shimmer.fromColors(
+                                baseColor: Colors.grey.withOpacity(0.25),
+                                highlightColor: Colors.white.withOpacity(0.6),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width - 40,
+                                  height: 400,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    color: Colors.grey.withOpacity(0.9),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          // Handle error
+                          return Text(snapshot.error.toString());
+                        } else {
+                          var routeInfo = snapshot.data;
+                          // NOTE : route info contain this elements
+                          // index[0] ==> list of Lat Long
+                          // index[1] ==> PolyLineDetails to show the route inside map
+                          // index[2] ==> List of int which is for hrs
+                          // index[3] ==> List of int which is for min
+                          List<LatLng> directions = routeInfo![0];
+                          String polyLineString = routeInfo[1];
+                          List<int> hrs = routeInfo[2];
+                          print(hrs);
+                          List<int> mins = routeInfo[3];
+                          print(mins);
+
+                           String? departVal =
+                              findPoolProvider.extractAddressPart(
+                                  rideAtCurrentIndex.stopBy[0].address);
+                          String? destVal = findPoolProvider.extractAddressPart(
+                              rideAtCurrentIndex
+                                  .stopBy[rideAtCurrentIndex.stopBy.length - 1]
+                                  .address);
+                          return GetAllRidesContainer(
+                            onCardTap: () {
+                              Get.to(
+                                  () => RideDetailsPage(
+                                      searchResult: rideAtCurrentIndex, routeInfo: routeInfo),
+                                  transition: Transition.rightToLeft,
+                                  arguments: 'SearchRide');
+                            },
+                            startTime: rideAtCurrentIndex.schedule,
+                            travelingHrs: hrs[hrs.length-1],
+                            // todo : calculate traveling hrs and minutes
+                            travelingMin: mins[mins.length-1],
+                            departureName: departVal,
+                            departDisFromPassLoc: 0,
+                            // todo : set this value dynamically after calculating km dis between user entered and available rides
+                            destDisFromPassLoc: 2,
+                            destinationName: destVal,
+                            driverName: rideAtCurrentIndex.driverId.firstName,
+                            pricePerSeat: rideAtCurrentIndex.pricePerPass,
+                            driverRating: null,
+                            urgentBooking: rideAtCurrentIndex.directBooking,
+                            profileImage: rideAtCurrentIndex.driverId.profile,
+                          );
+                        }
                       },
-                      startTime: rideAtCurrentIndex.schedule,
-                      travelingHrs: 2,
-                      // todo : calculate traveling hrs and minutes
-                      travelingMin: 40,
-                      departureName: departVal,
-                      departDisFromPassLoc: 0,
-                      // todo : set this value dynamically after calculating km dis between user entered and available rides
-                      destDisFromPassLoc: 2,
-                      destinationName: destVal,
-                      driverName: rideAtCurrentIndex.driverId.firstName,
-                      pricePerSeat: rideAtCurrentIndex.pricePerPass,
-                      driverRating: null,
-                      urgentBooking: rideAtCurrentIndex.directBooking,
-                      profileImage: rideAtCurrentIndex.driverId.profile,
                     );
                   },
                 );
