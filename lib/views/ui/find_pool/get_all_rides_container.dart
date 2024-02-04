@@ -1,7 +1,6 @@
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
-import 'package:easy_ride/views/common/walk_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -102,28 +101,6 @@ class GetAllRidesContainer extends StatelessWidget {
                                       19, darkHeading, FontWeight.bold)),
                             ],
                           ),
-                          Row(
-                            children: [
-                              WalkIcon(
-                                radius: departDisFromPassLoc == 0 ? 11 : 10,
-                                col: departDisFromPassLoc == 0
-                                    ? Colors.greenAccent
-                                    : const Color(0xffefeeee),
-                              ),
-                              WalkIcon(
-                                radius: departDisFromPassLoc == 1 ? 11 : 10,
-                                col: departDisFromPassLoc == 1
-                                    ? Colors.yellow
-                                    : const Color(0xffD7D4D4),
-                              ),
-                              WalkIcon(
-                                radius: departDisFromPassLoc == 2 ? 11 : 10,
-                                col: departDisFromPassLoc == 2
-                                    ? Colors.red
-                                    : const Color(0xffD7D4D4),
-                              ),
-                            ],
-                          )
                         ],
                       ),
                     ),
@@ -164,28 +141,7 @@ class GetAllRidesContainer extends StatelessWidget {
                                   maxLines: 2,
                                   style: roundFont(
                                       18, darkHeading, FontWeight.bold))),
-                          Row(
-                            children: [
-                              WalkIcon(
-                                radius: destDisFromPassLoc == 0 ? 11 : 10,
-                                col: destDisFromPassLoc == 0
-                                    ? Colors.green
-                                    : const Color(0xffD7D4D4),
-                              ),
-                              WalkIcon(
-                                radius: destDisFromPassLoc == 1 ? 11 : 10,
-                                col: destDisFromPassLoc == 1
-                                    ? Colors.yellow.shade200
-                                    : const Color(0xffD7D4D4),
-                              ),
-                              WalkIcon(
-                                radius: destDisFromPassLoc == 2 ? 11 : 10,
-                                col: destDisFromPassLoc == 2
-                                    ? Colors.yellow.shade900
-                                    : const Color(0xffD7D4D4),
-                              ),
-                            ],
-                          )
+
                         ],
                       ),
                     ),

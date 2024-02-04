@@ -10,11 +10,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../../../controllers/add_vehicle_provider.dart';
-import '../../../controllers/map_provider.dart';
-import '../../../models/map/direction_model.dart';
-import '../../common/walk_icon.dart';
 import '../profile/my_vehicles_list_tile.dart';
 import 'map_locaiton_page.dart';
 
@@ -42,10 +38,6 @@ class RideDetailsPage extends StatelessWidget {
     String polyLines = routeInfo[1];
     List<int> hrs = routeInfo[2];
     List<int> mins = routeInfo[3];
-    print(directions);
-    print(hrs);
-    print(mins);
-    print(polyLines);
 
     argument = args ?? "";
     String? schedule = formatDateTimeString(searchResult.schedule);
@@ -107,28 +99,18 @@ class RideDetailsPage extends StatelessWidget {
                     }
                     if (index < searchResult.stopBy.length - 1) {
                       travelDurationString = hrs[index] == 0
-                          ? "${mins[index].toString()}min"
+                          ? "${mins[index].toString()}m"
                           : "${hrs[index].toString()}h${mins[index].toString()}";
                     } else {
                       travelDurationString = "";
                     }
-                    // Calculating next location duration
-                    //  if(index > 0 && index < searchResult.stopBy.length){
-                    //   DateTime newTravelTime = travelTime.add(
-                    //       Duration(hours: hrs[index], minutes: mins[index]));
-                    //   travelTimeString = newTravelTime.hour == 0
-                    //       ? "${newTravelTime.minute.toString()}min"
-                    //       : "${newTravelTime.hour}h${newTravelTime.minute.toString()}";
-                    // } else {
-                    //   travelTimeString = travelTime.hour == 0
-                    //       ? "${travelTime.minute.toString()}min"
-                    //       : "${travelTime.hour}h${travelTime.minute.toString()}";
-                    // }
 
                     return GestureDetector(
                       onTap: () async {
-
-                        Get.to(() => RouteScreen(places: directions, polyLinePoints: polyLines,));
+                        Get.to(() => RouteScreen(
+                              places: directions,
+                              polyLinePoints: polyLines,
+                            ));
 
                         // Navigate to RouteScreen with coordinates
                         // Navigator.push(
@@ -183,24 +165,6 @@ class RideDetailsPage extends StatelessWidget {
                                                       FontWeight.bold))),
                                         ],
                                       ),
-                                      (argument!.isNotEmpty &&
-                                              ((index == 0) ||
-                                                  (index == stopBy.length - 1)))
-                                          ? Row(
-                                              children: [
-                                                const WalkIcon(
-                                                    radius: 10,
-                                                    col: Colors.greenAccent),
-                                                Text(
-                                                  "3 km from your departure/arrival",
-                                                  style: roundFont(
-                                                      14,
-                                                      Colors.green,
-                                                      FontWeight.normal),
-                                                )
-                                              ],
-                                            )
-                                          : const SizedBox.shrink(),
                                     ],
                                   ),
                                 ),
