@@ -7,5 +7,6 @@ class Config {
   static const String vehicleUrl = '/vehicle';
   static const String getVehicleUrl = '/vehicle/user';
   static const String createRideUrl = '/createRide';
+  static const String getAllCreatedRides = '/createRide/allRides';
   static const String searchRideUrl = '/createRide/search';
 }

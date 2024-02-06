@@ -45,7 +45,6 @@ class _Step3State extends State<Step3> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
     return SizedBox(
       // Tofix : fix this height relate problem, (Automatically get the height of the rendered widgets)
       height: 650,

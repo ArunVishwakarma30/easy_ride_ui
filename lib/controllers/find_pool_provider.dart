@@ -4,6 +4,11 @@ import 'package:easy_ride/services/helper/create_ride_helper.dart';
 import 'package:easy_ride/views/common/service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+
+import '../models/map/direction_model.dart';
+import 'map_provider.dart';
 
 class FindPoolProvider extends ChangeNotifier {
   DateTime? _travelDateTime = DateTime.now();
@@ -57,7 +62,7 @@ class FindPoolProvider extends ChangeNotifier {
 
     // Extract the values from 4th last comma to 2nd last comma
     List<String> desiredValues =
-    addressParts.sublist(fourthLastCommaIndex, secondLastCommaIndex);
+        addressParts.sublist(fourthLastCommaIndex, secondLastCommaIndex);
 
     // Join the extracted values into a single string
     String result = desiredValues.join(',');
@@ -65,4 +70,56 @@ class FindPoolProvider extends ChangeNotifier {
     return result.trim(); // Trim to remove leading and trailing whitespaces
   }
 
+  Future<List<dynamic>> getRouteDetails(
+      SearchRidesResModel searchResult, BuildContext context) async {
+    // at index [0] it will contain the List<LatLng> coordinates
+    // at index [1] there is a String which is for polyLine
+    // at index [2] there is a List<int> hrs
+    // at index [3] there is a List<int> mins
+    List<dynamic> routeRes = [];
+    var mapProvider = Provider.of<MapProvider>(context, listen: false);
+    List<LatLng> coordinates = [];
+
+    for (StopBy stop in searchResult.stopBy) {
+      String? placeId = stop.gMapAddressId;
+
+      Directions? coordinatesDetails =
+          await MapProvider().getPlaceDirectionDetails(placeId);
+
+      if (coordinatesDetails != null &&
+          coordinatesDetails.locationLatitude != null &&
+          coordinatesDetails.locationLongitude != null) {
+        coordinates.add(
+          LatLng(
+            coordinatesDetails.locationLatitude!,
+            coordinatesDetails.locationLongitude!,
+          ),
+        );
+      }
+    }
+    routeRes.add(coordinates);
+    var directionDetailInfo =
+        await mapProvider.getOriginToDestinationDirectionDetails(coordinates);
+    routeRes.add(directionDetailInfo![0]!.ePoints!);
+
+    // Extracting hours and minutes from each DirectionDetailsInfo
+    List<int> hrs = [];
+    List<int> mins = [];
+
+    for (int i = 0; i < directionDetailInfo.length; i++) {
+      int durationInSeconds = directionDetailInfo[i]!.durationValue!;
+      int hour = durationInSeconds ~/ 3600; // 1 hour = 3600 seconds
+      int minute = (durationInSeconds % 3600) ~/ 60;
+
+      // Adding hours and minutes to the respective lists
+      hrs.add(hour);
+      mins.add(minute);
+    }
+
+    // Adding hours and minutes lists to the result
+    routeRes.add(hrs);
+    routeRes.add(mins);
+
+    return routeRes;
+  }
 }

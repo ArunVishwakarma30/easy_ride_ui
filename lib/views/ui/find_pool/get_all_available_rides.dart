@@ -44,58 +44,7 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
     tzdata.initializeTimeZones();
   }
 
-  Future<List<dynamic>> getRouteDetails(
-      SearchRidesResModel searchResult) async {
-    // at index [0] it will contain the List<LatLng> coordinates
-    // at index [1] there is a String which is for polyLine
-    // at index [2] there is a List<int> hrs
-    // at index [3] there is a List<int> mins
-    List<dynamic> routeRes = [];
-    var mapProvider = Provider.of<MapProvider>(context, listen: false);
-    List<LatLng> coordinates = [];
 
-    for (StopBy stop in searchResult.stopBy) {
-      String? placeId = stop.gMapAddressId;
-
-      Directions? coordinatesDetails =
-          await MapProvider().getPlaceDirectionDetails(placeId);
-
-      if (coordinatesDetails != null &&
-          coordinatesDetails.locationLatitude != null &&
-          coordinatesDetails.locationLongitude != null) {
-        coordinates.add(
-          LatLng(
-            coordinatesDetails.locationLatitude!,
-            coordinatesDetails.locationLongitude!,
-          ),
-        );
-      }
-    }
-    routeRes.add(coordinates);
-    var directionDetailInfo =
-        await mapProvider.getOriginToDestinationDirectionDetails(coordinates);
-    routeRes.add(directionDetailInfo![0]!.ePoints!);
-
-    // Extracting hours and minutes from each DirectionDetailsInfo
-    List<int> hrs = [];
-    List<int> mins = [];
-
-    for (int i = 0; i < directionDetailInfo.length; i++) {
-      int durationInSeconds = directionDetailInfo[i]!.durationValue!;
-      int hour = durationInSeconds ~/ 3600; // 1 hour = 3600 seconds
-      int minute = (durationInSeconds % 3600) ~/ 60;
-
-      // Adding hours and minutes to the respective lists
-      hrs.add(hour);
-      mins.add(minute);
-    }
-
-    // Adding hours and minutes lists to the result
-    routeRes.add(hrs);
-    routeRes.add(mins);
-
-    return routeRes;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +189,7 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
                     var rideAtCurrentIndex = availableRide[index];
                     return FutureBuilder(
                       // Execute getRouteDetails for each item in the list
-                      future: getRouteDetails(rideAtCurrentIndex),
+                      future: findPoolProvider.getRouteDetails(rideAtCurrentIndex, context),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -274,14 +223,14 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
                           // index[1] ==> PolyLineDetails to show the route inside map
                           // index[2] ==> List of int which is for hrs
                           // index[3] ==> List of int which is for min
-                          List<LatLng> directions = routeInfo![0];
-                          String polyLineString = routeInfo[1];
-                          List<int> hrs = routeInfo[2];
+                          // List<LatLng> directions = routeInfo![0];
+                          // String polyLineString = routeInfo[1];
+                          List<int> hrs = routeInfo![2];
                           print(hrs);
                           List<int> mins = routeInfo[3];
                           print(mins);
 
-                           String? departVal =
+                          String? departVal =
                               findPoolProvider.extractAddressPart(
                                   rideAtCurrentIndex.stopBy[0].address);
                           String? destVal = findPoolProvider.extractAddressPart(
@@ -292,14 +241,15 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
                             onCardTap: () {
                               Get.to(
                                   () => RideDetailsPage(
-                                      searchResult: rideAtCurrentIndex, routeInfo: routeInfo),
+                                      rideDetail: rideAtCurrentIndex,
+                                      routeInfo: routeInfo),
                                   transition: Transition.rightToLeft,
                                   arguments: 'SearchRide');
                             },
                             startTime: rideAtCurrentIndex.schedule,
-                            travelingHrs: hrs[hrs.length-1],
+                            travelingHrs: hrs[hrs.length - 1],
                             // todo : calculate traveling hrs and minutes
-                            travelingMin: mins[mins.length-1],
+                            travelingMin: mins[mins.length - 1],
                             departureName: departVal,
                             departDisFromPassLoc: 0,
                             // todo : set this value dynamically after calculating km dis between user entered and available rides

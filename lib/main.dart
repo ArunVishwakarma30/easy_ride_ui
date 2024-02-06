@@ -20,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'constants/app_constants.dart';
 import 'controllers/bottom_navigation_provider.dart';
 import 'controllers/find_pool_provider.dart';
+import 'controllers/your_rides_provider.dart';
 
 Widget defaultHome = const OnBoardingScreen();
 
@@ -48,6 +49,7 @@ void main() async {
       ChangeNotifierProvider(create: (create) => ImageUploader()),
       ChangeNotifierProvider(create: (create) => ProfileProvider()),
       ChangeNotifierProvider(create: (create) => MapProvider()),
+      ChangeNotifierProvider(create: (create) => YourRidesProvider()),
     ],
     child: const MyApp(),
   ));

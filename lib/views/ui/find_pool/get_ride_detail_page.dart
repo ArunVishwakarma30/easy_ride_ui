@@ -16,9 +16,9 @@ import 'map_locaiton_page.dart';
 
 class RideDetailsPage extends StatelessWidget {
   RideDetailsPage(
-      {Key? key, required this.searchResult, required this.routeInfo})
+      {Key? key, required this.rideDetail, required this.routeInfo})
       : super(key: key);
-  final SearchRidesResModel searchResult;
+  var rideDetail;   
   final List<dynamic> routeInfo;
   String? argument = "";
   var args = Get.arguments;
@@ -33,6 +33,8 @@ class RideDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("objectkjnbkjnkheheeeeeeeeeee");
+
     var vehicleProvider = Provider.of<AddVehicle>(context);
     List<LatLng> directions = routeInfo[0];
     String polyLines = routeInfo[1];
@@ -40,22 +42,22 @@ class RideDetailsPage extends StatelessWidget {
     List<int> mins = routeInfo[3];
 
     argument = args ?? "";
-    String? schedule = formatDateTimeString(searchResult.schedule);
-    var stopBy = searchResult.stopBy;
+    String? schedule = formatDateTimeString(rideDetail.schedule);
+    var stopBy = rideDetail.stopBy;
 
     String? vehicleImage = "";
     bool isImageEmpty = false;
-    if (searchResult.vehicleId.image.isEmpty) {
+    if (rideDetail.vehicleId.image.isEmpty) {
       isImageEmpty = true;
-      if (searchResult.vehicleId.type == 'Auto Rickshaw' ||
-          searchResult.vehicleId.type == 'Car') {
+      if (rideDetail.vehicleId.type == 'Auto Rickshaw' ||
+          rideDetail.vehicleId.type == 'Car') {
         Map<String, String>? selectedCarImg = carTypeAndImg
-            .firstWhere((car) => car['Name'] == searchResult.vehicleId.model);
+            .firstWhere((car) => car['Name'] == rideDetail.vehicleId.model);
 
         vehicleImage = selectedCarImg['Img'].toString();
       } else {
         Map<String, String>? selectedBikeImg = bikeTypeAndImg
-            .firstWhere((car) => car['Name'] == searchResult.vehicleId.model);
+            .firstWhere((car) => car['Name'] == rideDetail.vehicleId.model);
 
         vehicleImage = selectedBikeImg['Img'].toString();
       }
@@ -88,16 +90,16 @@ class RideDetailsPage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     late String travelDurationString;
                     // Calculating next location time
-                    DateTime travelTime = searchResult.schedule;
+                    DateTime travelTime = rideDetail.schedule;
                     String travelTimeString =
                         "${travelTime.hour.toString()}:${travelTime.minute.toString()}";
-                    if (index > 0 && index < searchResult.stopBy.length) {
+                    if (index > 0 && index < rideDetail.stopBy.length) {
                       DateTime newTravelTime = travelTime.add(Duration(
                           hours: hrs[index - 1], minutes: mins[index - 1]));
                       travelTimeString =
                           "${newTravelTime.hour.toString()}:${newTravelTime.minute.toString()}";
                     }
-                    if (index < searchResult.stopBy.length - 1) {
+                    if (index < rideDetail.stopBy.length - 1) {
                       travelDurationString = hrs[index] == 0
                           ? "${mins[index].toString()}m"
                           : "${hrs[index].toString()}h${mins[index].toString()}";
@@ -207,7 +209,7 @@ class RideDetailsPage extends StatelessWidget {
                           text: "Total price for 1 passenger",
                           style: roundFont(17, lightHeading, FontWeight.bold)),
                       ReuseableText(
-                          text: "\u20B9${searchResult.pricePerPass}.00",
+                          text: "\u20B9${rideDetail.pricePerPass}.00",
                           style: roundFont(22, darkHeading, FontWeight.bold))
                     ],
                   ),
@@ -234,7 +236,7 @@ class RideDetailsPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             ReuseableText(
-                                text: searchResult.driverId.firstName,
+                                text: rideDetail.driverId.firstName,
                                 style: roundFont(
                                     17, darkHeading, FontWeight.bold)),
                             const Expanded(
@@ -244,9 +246,9 @@ class RideDetailsPage extends StatelessWidget {
                             CircleAvatar(
                               radius: 25,
                               backgroundColor: Colors.white,
-                              backgroundImage: searchResult
+                              backgroundImage: rideDetail
                                       .driverId.profile.isNotEmpty
-                                  ? NetworkImage(searchResult.driverId.profile)
+                                  ? NetworkImage(rideDetail.driverId.profile)
                                   : const AssetImage('assets/icons/person.png')
                                       as ImageProvider,
                             ),
@@ -265,7 +267,7 @@ class RideDetailsPage extends StatelessWidget {
                       const Divider(),
                       const HeightSpacer(size: 10),
                       Text(
-                        searchResult.aboutRide,
+                        rideDetail.aboutRide,
                         style: roundFont(18, darkHeading, FontWeight.normal),
                       ),
                       const HeightSpacer(size: 20),
@@ -276,21 +278,21 @@ class RideDetailsPage extends StatelessWidget {
                           },
                           child: ReuseableText(
                               text:
-                                  "Contact ${searchResult.driverId.firstName}",
+                                  "Contact ${rideDetail.driverId.firstName}",
                               style: roundFont(
                                   18, loginPageColor, FontWeight.bold))),
                       const HeightSpacer(size: 10),
                       const Divider(),
                       const HeightSpacer(size: 20),
                       TextWithIcons(
-                        text: searchResult.directBooking
+                        text: rideDetail.directBooking
                             ? "Your booking will be confirmed instantly."
                             : "Your booking won't be confirmed until the driver approves your request",
                         maxLines: 3,
                         textStyle:
                             roundFont(18, darkHeading, FontWeight.normal),
                         containerWidth: MediaQuery.of(context).size.width - 100,
-                        preFixIcon: searchResult.directBooking
+                        preFixIcon: rideDetail.directBooking
                             ? Icons.electric_bolt_outlined
                             : Icons.time_to_leave_outlined,
                         iconColor: Colors.black45,
@@ -299,27 +301,27 @@ class RideDetailsPage extends StatelessWidget {
                       const Divider(),
                       const HeightSpacer(size: 10),
                       MyVehiclesListTile(
-                        modelName: searchResult.vehicleId.model,
+                        modelName: rideDetail.vehicleId.model,
                         registrationNumber:
-                            searchResult.vehicleId.registrationNumber,
+                            rideDetail.vehicleId.registrationNumber,
                         isDefault: false,
                         viewVehicleDetails: true,
                         vehicleImage: isImageEmpty
                             ? vehicleImage
-                            : searchResult.vehicleId.image,
-                        exception: searchResult.vehicleId.exception,
-                        makeAndCategory: searchResult.vehicleId.makeAndCategory,
+                            : rideDetail.vehicleId.image,
+                        exception: rideDetail.vehicleId.exception,
+                        makeAndCategory: rideDetail.vehicleId.makeAndCategory,
                         numberOfSeats: vehicleProvider.numOfSeatSelected,
                         onTap: () {},
-                        isImageEmpty: searchResult.vehicleId.image.isEmpty,
+                        isImageEmpty: rideDetail.vehicleId.image.isEmpty,
                         selectingVehicle: true,
-                        vehicleId: searchResult.vehicleId.id,
+                        vehicleId: rideDetail.vehicleId.id,
                       ),
                       const Divider(),
                       const HeightSpacer(size: 10),
-                      searchResult.vehicleId.features.isNotEmpty
+                      rideDetail.vehicleId.features.isNotEmpty
                           ? TextWithIcons(
-                              text: searchResult.vehicleId.features,
+                              text: rideDetail.vehicleId.features,
                               maxLines: 3,
                               textStyle:
                                   roundFont(18, darkHeading, FontWeight.normal),
@@ -329,12 +331,12 @@ class RideDetailsPage extends StatelessWidget {
                               preFixIcon: Icons.star_border_purple500,
                             )
                           : const SizedBox.shrink(),
-                      searchResult.vehicleId.features.isNotEmpty
+                      rideDetail.vehicleId.features.isNotEmpty
                           ? const HeightSpacer(size: 15)
                           : const SizedBox.shrink(),
-                      searchResult.vehicleId.exception.isNotEmpty
+                      rideDetail.vehicleId.exception.isNotEmpty
                           ? TextWithIcons(
-                              text: searchResult.vehicleId.exception,
+                              text: rideDetail.vehicleId.exception,
                               maxLines: 3,
                               textStyle:
                                   roundFont(18, darkHeading, FontWeight.normal),
@@ -344,14 +346,14 @@ class RideDetailsPage extends StatelessWidget {
                               preFixIcon: Icons.not_interested,
                             )
                           : const SizedBox.shrink(),
-                      (searchResult.vehicleId.type == 'Bike' ||
-                              searchResult.vehicleId.type == 'Scooter')
+                      (rideDetail.vehicleId.type == 'Bike' ||
+                              rideDetail.vehicleId.type == 'Scooter')
                           ? const HeightSpacer(size: 15)
                           : const SizedBox.shrink(),
-                      (searchResult.vehicleId.type == 'Bike' ||
-                              searchResult.vehicleId.type == 'Scooter')
+                      (rideDetail.vehicleId.type == 'Bike' ||
+                              rideDetail.vehicleId.type == 'Scooter')
                           ? TextWithIcons(
-                              text: searchResult.vehicleId.requiredHelmet
+                              text: rideDetail.vehicleId.requiredHelmet
                                   ? "You have to carry helmet"
                                   : "You don't have to carry helmet",
                               maxLines: 3,
@@ -366,7 +368,7 @@ class RideDetailsPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                searchResult.passangersId.isNotEmpty
+                rideDetail.passangersId.isNotEmpty
                     ? const Divider(
                         thickness: 10,
                         color: Colors.black12,
@@ -379,7 +381,7 @@ class RideDetailsPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const HeightSpacer(size: 10),
-                      searchResult.passangersId.isNotEmpty
+                      rideDetail.passangersId.isNotEmpty
                           ? ReuseableText(
                               text: "Passengers",
                               style:
@@ -389,7 +391,7 @@ class RideDetailsPage extends StatelessWidget {
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: searchResult.passangersId.length,
+                        itemCount: rideDetail.passangersId.length,
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
@@ -403,7 +405,7 @@ class RideDetailsPage extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     ReuseableText(
-                                        text: searchResult
+                                        text: rideDetail
                                             .passangersId[index].firstName,
                                         style: roundFont(
                                             17, darkHeading, FontWeight.bold)),
@@ -414,11 +416,11 @@ class RideDetailsPage extends StatelessWidget {
                                     CircleAvatar(
                                       radius: 25,
                                       backgroundColor: Colors.white,
-                                      backgroundImage: searchResult
+                                      backgroundImage: rideDetail
                                               .passangersId[index]
                                               .profile
                                               .isNotEmpty
-                                          ? NetworkImage(searchResult
+                                          ? NetworkImage(rideDetail
                                               .passangersId[index].profile)
                                           : const AssetImage(
                                                   'assets/icons/person.png')
@@ -436,7 +438,7 @@ class RideDetailsPage extends StatelessWidget {
                                 ),
                               ),
                               const HeightSpacer(size: 5),
-                              index < searchResult.passangersId.length - 1
+                              index < rideDetail.passangersId.length - 1
                                   ? const Divider()
                                   : const SizedBox.shrink(),
                             ],
@@ -464,7 +466,7 @@ class RideDetailsPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    searchResult.directBooking
+                    rideDetail.directBooking
                         ? const Icon(
                             Icons.electric_bolt_outlined,
                             color: Colors.white,
@@ -478,7 +480,7 @@ class RideDetailsPage extends StatelessWidget {
                       width: 10,
                     ),
                     ReuseableText(
-                        text: searchResult.directBooking
+                        text: rideDetail.directBooking
                             ? "Book"
                             : "Request to book",
                         style: roundFont(19, Colors.white, FontWeight.normal))
