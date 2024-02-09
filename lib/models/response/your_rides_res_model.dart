@@ -148,24 +148,20 @@ class IdentityDocument {
 class StopBy {
   final String gMapAddressId;
   final String address;
-  final String id;
 
   StopBy({
     required this.gMapAddressId,
     required this.address,
-    required this.id,
   });
 
   factory StopBy.fromJson(Map<String, dynamic> json) => StopBy(
     gMapAddressId: json["gMapAddressId"],
     address: json["address"],
-    id: json["_id"],
   );
 
   Map<String, dynamic> toJson() => {
     "gMapAddressId": gMapAddressId,
     "address": address,
-    "_id": id,
   };
 }
 

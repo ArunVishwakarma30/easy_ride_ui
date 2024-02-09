@@ -58,6 +58,7 @@ class MapProvider extends ChangeNotifier {
   }
 
   removeStopOver(int index) {
+
     stopOver.removeAt(index);
     notifyListeners();
   }

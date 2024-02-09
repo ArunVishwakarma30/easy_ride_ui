@@ -1,8 +1,11 @@
 import 'package:easy_ride/controllers/find_pool_provider.dart';
 import 'package:easy_ride/controllers/your_rides_provider.dart';
+import 'package:easy_ride/models/response/your_rides_res_model.dart';
+import 'package:easy_ride/views/ui/your_rides/ride_plan.dart';
 import 'package:easy_ride/views/ui/your_rides/your_rides_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +19,8 @@ class YourRidesListView extends StatefulWidget {
 }
 
 class _YourRidesListViewState extends State<YourRidesListView> {
+  late ScrollController _scrollController;
+
   String formatDateString(DateTime dateTime) {
     // Parse the input string to a DateTime object
     // DateTime dateTime = DateTime.parse(dateTimeString);
@@ -44,6 +49,13 @@ class _YourRidesListViewState extends State<YourRidesListView> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final findPoolProvider = Provider.of<FindPoolProvider>(context);
 
@@ -66,11 +78,19 @@ class _YourRidesListViewState extends State<YourRidesListView> {
                 child: Text("No Rides Created yet"),
               );
             } else {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _scrollController.animateTo(
+                  _scrollController.position.maxScrollExtent,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              });
               var allCreatedRides = snapshot.data;
               return Container(
                 margin: const EdgeInsets.only(bottom: 20),
                 child: ListView.builder(
                   reverse: true,
+                  controller: _scrollController,
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     var createdRideAtCurrentIndex = allCreatedRides![index];
@@ -92,7 +112,13 @@ class _YourRidesListViewState extends State<YourRidesListView> {
                             createdRideAtCurrentIndex.destination);
 
                     return YourRidesContainer(
-                      onTap: () {},
+                      onTap: () {
+                        yourRidesProvider.createdRide =
+                            createdRideAtCurrentIndex;
+                        Get.to(() => RidePlan(
+                              rideDetail: createdRideAtCurrentIndex,
+                            ));
+                      },
                       dateString:
                           widget.rideCreatedListView ? date : "fasfadsf",
                       timeString: time,

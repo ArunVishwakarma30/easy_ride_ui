@@ -1,4 +1,5 @@
 import 'package:easy_ride/controllers/map_provider.dart';
+import 'package:easy_ride/models/response/your_rides_res_model.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/common/toast_msg.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants/app_constants.dart';
+import '../../../controllers/your_rides_provider.dart';
 import '../../../models/map/direction_model.dart';
 import '../../common/app_style.dart';
 
@@ -56,6 +58,7 @@ class _FindLocationPageState extends State<FindLocationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final yourRidesProvider = Provider.of<YourRidesProvider>(context);
     double width = MediaQuery.of(context).size.width;
     return Consumer<MapProvider>(
       builder: (context, mapProvider, child) {
@@ -235,6 +238,23 @@ class _FindLocationPageState extends State<FindLocationPage> {
                                         .getPlaceDirectionDetails(
                                             locationAtCurrentIndex.place_id);
                                     mapProvider.stopOver.add(stopOver!);
+                                    Get.back();
+                                  } else if (Get.arguments == "stopOverEdit") {
+                                    Directions? stopOver = await mapProvider
+                                        .getPlaceDirectionDetails(
+                                            locationAtCurrentIndex.place_id);
+                                    print("Edtiasf");
+                                    yourRidesProvider.createdRide.stopBy[yourRidesProvider.createdRide.stopBy.length-1].address;
+                                    yourRidesProvider.createdRide.stopBy
+                                        .indexOf(
+                                            StopBy(
+                                                gMapAddressId:
+                                                    stopOver!.locationId!,
+                                                address: stopOver
+                                                    .locationDescription!),
+                                            yourRidesProvider
+                                                    .createdRide.stopBy.length -
+                                                2);
                                     Get.back();
                                   }
                                   mapProvider.setPredictListToEmpty();

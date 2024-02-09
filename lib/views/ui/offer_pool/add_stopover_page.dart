@@ -68,11 +68,11 @@ class AddStopOverPage extends StatelessWidget {
                               },
                             ),
                           )
-                        : SizedBox.shrink(),
+                        : const SizedBox.shrink(),
                     const HeightSpacer(size: 10),
                     GestureDetector(
                       onTap: () {
-                        print("Send to add city page");
+
                         Get.to(() => const FindLocationPage(),
                             arguments: "stopOver");
                       },

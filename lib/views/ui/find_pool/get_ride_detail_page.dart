@@ -15,10 +15,9 @@ import '../profile/my_vehicles_list_tile.dart';
 import 'map_locaiton_page.dart';
 
 class RideDetailsPage extends StatelessWidget {
-  RideDetailsPage(
-      {Key? key, required this.rideDetail, required this.routeInfo})
+  RideDetailsPage({Key? key, required this.rideDetail, required this.routeInfo})
       : super(key: key);
-  var rideDetail;   
+  var rideDetail;
   final List<dynamic> routeInfo;
   String? argument = "";
   var args = Get.arguments;
@@ -33,8 +32,6 @@ class RideDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("objectkjnbkjnkheheeeeeeeeeee");
-
     var vehicleProvider = Provider.of<AddVehicle>(context);
     List<LatLng> directions = routeInfo[0];
     String polyLines = routeInfo[1];
@@ -92,17 +89,17 @@ class RideDetailsPage extends StatelessWidget {
                     // Calculating next location time
                     DateTime travelTime = rideDetail.schedule;
                     String travelTimeString =
-                        "${travelTime.hour.toString()}:${travelTime.minute.toString()}";
+                        "${travelTime.hour.toString()}:${travelTime.minute.toString()}${travelTime.minute.toString().length == 1 ? '0' : ""}";
                     if (index > 0 && index < rideDetail.stopBy.length) {
                       DateTime newTravelTime = travelTime.add(Duration(
                           hours: hrs[index - 1], minutes: mins[index - 1]));
                       travelTimeString =
-                          "${newTravelTime.hour.toString()}:${newTravelTime.minute.toString()}";
+                          "${newTravelTime.hour.toString()}:${newTravelTime.minute.toString()}${newTravelTime.minute.toString().length == 1 ? "0" : ""}";
                     }
                     if (index < rideDetail.stopBy.length - 1) {
                       travelDurationString = hrs[index] == 0
-                          ? "${mins[index].toString()}m"
-                          : "${hrs[index].toString()}h${mins[index].toString()}";
+                          ? "${mins[index].toString()}${mins[index].toString().length == 1 ? "0" : ""}min"
+                          : "${hrs[index].toString()}h${mins[index].toString()}${mins[index].toString().length == 1 ? "0" : ""}";
                     } else {
                       travelDurationString = "";
                     }
@@ -113,12 +110,6 @@ class RideDetailsPage extends StatelessWidget {
                               places: directions,
                               polyLinePoints: polyLines,
                             ));
-
-                        // Navigate to RouteScreen with coordinates
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => RouteScreen(coordinates: coordinates)),
-                        // );
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -277,8 +268,7 @@ class RideDetailsPage extends StatelessWidget {
                                 "Send to the chat page and initiate the chat between users");
                           },
                           child: ReuseableText(
-                              text:
-                                  "Contact ${rideDetail.driverId.firstName}",
+                              text: "Contact ${rideDetail.driverId.firstName}",
                               style: roundFont(
                                   18, loginPageColor, FontWeight.bold))),
                       const HeightSpacer(size: 10),
@@ -377,7 +367,8 @@ class RideDetailsPage extends StatelessWidget {
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Column(
+                  child:
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const HeightSpacer(size: 10),

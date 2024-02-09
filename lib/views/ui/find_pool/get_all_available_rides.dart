@@ -13,7 +13,6 @@ import 'package:shimmer/shimmer.dart';
 import '../../../constants/app_constants.dart';
 import '../../../controllers/add_vehicle_provider.dart';
 import '../../../controllers/find_pool_provider.dart';
-import '../../../models/map/DirectionDetailsInfo.dart';
 import '../../../models/map/direction_model.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tzdata;
@@ -44,7 +43,58 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
     tzdata.initializeTimeZones();
   }
 
+  Future<List<dynamic>> getRouteDetails(
+      SearchRidesResModel searchResult) async {
+    // at index [0] it will contain the List<LatLng> coordinates
+    // at index [1] there is a String which is for polyLine
+    // at index [2] there is a List<int> hrs
+    // at index [3] there is a List<int> mins
+    List<dynamic> routeRes = [];
+    var mapProvider = Provider.of<MapProvider>(context, listen: false);
+    List<LatLng> coordinates = [];
 
+    for (StopBy stop in searchResult.stopBy) {
+      String? placeId = stop.gMapAddressId;
+
+      Directions? coordinatesDetails =
+      await MapProvider().getPlaceDirectionDetails(placeId);
+
+      if (coordinatesDetails != null &&
+          coordinatesDetails.locationLatitude != null &&
+          coordinatesDetails.locationLongitude != null) {
+        coordinates.add(
+          LatLng(
+            coordinatesDetails.locationLatitude!,
+            coordinatesDetails.locationLongitude!,
+          ),
+        );
+      }
+    }
+    routeRes.add(coordinates);
+    var directionDetailInfo =
+    await mapProvider.getOriginToDestinationDirectionDetails(coordinates);
+    routeRes.add(directionDetailInfo![0]!.ePoints!);
+
+    // Extracting hours and minutes from each DirectionDetailsInfo
+    List<int> hrs = [];
+    List<int> mins = [];
+
+    for (int i = 0; i < directionDetailInfo.length; i++) {
+      int durationInSeconds = directionDetailInfo[i]!.durationValue!;
+      int hour = durationInSeconds ~/ 3600; // 1 hour = 3600 seconds
+      int minute = (durationInSeconds % 3600) ~/ 60;
+
+      // Adding hours and minutes to the respective lists
+      hrs.add(hour);
+      mins.add(minute);
+    }
+
+    // Adding hours and minutes lists to the result
+    routeRes.add(hrs);
+    routeRes.add(mins);
+
+    return routeRes;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +239,8 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
                     var rideAtCurrentIndex = availableRide[index];
                     return FutureBuilder(
                       // Execute getRouteDetails for each item in the list
-                      future: findPoolProvider.getRouteDetails(rideAtCurrentIndex, context),
+                      future: getRouteDetails(
+                          rideAtCurrentIndex),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -216,7 +267,8 @@ class _GetAllAvailableRidesState extends State<GetAllAvailableRides> {
                         } else if (snapshot.hasError) {
                           // Handle error
                           return Text(snapshot.error.toString());
-                        } else {
+                        }
+                        else {
                           var routeInfo = snapshot.data;
                           // NOTE : route info contain this elements
                           // index[0] ==> list of Lat Long

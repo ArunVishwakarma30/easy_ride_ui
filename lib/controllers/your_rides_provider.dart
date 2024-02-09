@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 class YourRidesProvider extends ChangeNotifier {
   late Future<List<YourCreatedRidesResModel>>? allCreatedRides;
+  late YourCreatedRidesResModel createdRide;
 
   bool _waiting = false;
 

@@ -155,6 +155,7 @@ class _AddAboutYourRideState extends State<AddAboutYourRide> {
                         pricePerPass: mapProvider.pricePerSeat);
 
                     mapProvider.publishRide(model);
+                    mapProvider.stopOver.clear();
                   },
                   style:
                       ElevatedButton.styleFrom(backgroundColor: loginPageColor),
