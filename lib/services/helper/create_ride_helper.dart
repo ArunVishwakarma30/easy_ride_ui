@@ -58,4 +58,5 @@ class CreateRideHelper {
       throw Exception("Failed to get the rides data");
     }
   }
+
 }

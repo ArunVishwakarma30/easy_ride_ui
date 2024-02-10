@@ -1,3 +1,4 @@
+import 'package:easy_ride/models/request/cancel_ride_req_model.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/ui/your_rides/edit_ride/edit_ride_tile.dart';
@@ -11,12 +12,12 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../constants/app_constants.dart';
 import '../../../controllers/map_provider.dart';
+import '../../../controllers/your_rides_provider.dart';
 import '../../../models/map/direction_model.dart';
 import '../../../models/response/your_rides_res_model.dart';
 import '../../common/height_spacer.dart';
 import '../find_pool/get_ride_detail_page.dart';
 import '../find_pool/map_locaiton_page.dart';
-import 'edit_ride/edit_publication.dart';
 
 class RidePlan extends StatefulWidget {
   const RidePlan({Key? key, required this.rideDetail}) : super(key: key);
@@ -101,6 +102,7 @@ class _RidePlanState extends State<RidePlan> {
 
   @override
   Widget build(BuildContext context) {
+    final yourRidesProvider = Provider.of<YourRidesProvider>(context);
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -384,17 +386,62 @@ class _RidePlanState extends State<RidePlan> {
                 const Divider(thickness: 1, color: Colors.black38),
                 const HeightSpacer(size: 30),
 
-                EditRideTile(title: "See your publication online", onTap: () {
-                Get.to(
-                () => RideDetailsPage(
-                rideDetail: widget.rideDetail,
-                routeInfo: routeInfo),
-                transition: Transition.rightToLeft,
-                arguments: 'CreateRide');
-                }),
-                EditRideTile(title: "Edit your publication", onTap: (){
-                  Get.to(()=>const EditPublication(), transition: Transition.rightToLeft);
-                })
+                EditRideTile(
+                    title: "See your publication online",
+                    onTap: () {
+                      Get.to(
+                          () => RideDetailsPage(
+                              rideDetail: widget.rideDetail,
+                              routeInfo: routeInfo),
+                          transition: Transition.rightToLeft,
+                          arguments: 'CreateRide');
+                    }),
+                widget.rideDetail.isCanceled ? Row(
+                  children: [
+                    const  Icon(Icons.not_interested, color: Colors.red,),
+                    const SizedBox(width: 15,),
+                    ReuseableText(text: "Cancelled", style: roundFont(20, Colors.red, FontWeight.bold))
+                  ],
+                ) : EditRideTile(
+                    title: "Cancel Your Ride",
+                    onTap: () {
+                      // Get.to(()=>const EditPublication(), transition: Transition.rightToLeft);
+                      showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          actionsPadding: EdgeInsets.zero,
+                          title: ReuseableText(
+                            text: "Cancel Ride?",
+                            style: roundFont(22, darkHeading, FontWeight.bold),
+                          ),
+                          content: Text(
+                            "Are you sure you want to cancel this Ride? You can't undo this action.",
+                            style: roundFont(16, lightHeading, FontWeight.bold),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text("Dismiss",
+                                  style: roundFont(
+                                      16, darkHeading, FontWeight.normal)),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                CancelRideReqModel model = CancelRideReqModel(isCanceled: true);
+                                String rideId = widget.rideDetail.id;
+                                yourRidesProvider.cancelRide(model, rideId);
+                              },
+                              child: Text("Yes",
+                                  style: roundFont(
+                                      16, darkHeading, FontWeight.normal)),
+                            ),
+                          ],
+                        ),
+                      );
+                    })
               ],
             );
           }

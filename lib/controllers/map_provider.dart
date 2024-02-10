@@ -49,7 +49,6 @@ class MapProvider extends ChangeNotifier {
   getPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     driverId = prefs.getString("userId");
-    print("fjisfa : $driverId");
   }
 
   insertLocationAndDestinationToStopOver() {
