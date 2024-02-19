@@ -1,3 +1,4 @@
+import 'package:easy_ride/models/request/update_one_signal_req_model.dart';
 import 'package:easy_ride/models/request/update_profule_req.dart';
 import 'package:easy_ride/services/helper/auth_helper.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,7 +34,6 @@ class ProfileProvider extends ChangeNotifier {
             bgColor: Colors.green,
             textColor: Colors.white);
         Get.offAll(() => const MainPage(),
-
             duration: const Duration(seconds: 2));
       } else {
         ShowSnackbar(
@@ -42,6 +42,16 @@ class ProfileProvider extends ChangeNotifier {
             icon: Icons.add_alert);
       }
       setWaiting(false);
+    });
+  }
+
+  updateOneSignalId(UpdateOneSignalIdReq model) {
+    AuthHelper.updateOneSignalId(model).then((isUpdated) {
+      if (isUpdated) {
+        print("One Signal Updated");
+      } else {
+        print("One signal update error");
+      }
     });
   }
 }

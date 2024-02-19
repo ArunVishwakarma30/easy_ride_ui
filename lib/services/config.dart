@@ -9,4 +9,6 @@ class Config {
   static const String createRideUrl = '/createRide';
   static const String getAllCreatedRides = '/createRide/allRides';
   static const String searchRideUrl = '/createRide/search';
+  static const String oneSignalAppId = '2834421f-d872-47bc-a6bf-2a2eacf04413';
+
 }

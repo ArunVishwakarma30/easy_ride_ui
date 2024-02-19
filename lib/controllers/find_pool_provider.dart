@@ -16,7 +16,7 @@ class FindPoolProvider extends ChangeNotifier {
     if (tempDate == null) {
       return;
     } else {
-      TimeOfDay? tempTime = await pickTime(context);
+      TimeOfDay? tempTime = await pickTime(context, tempDate);
       if (tempTime == null) {
         return;
       } else {

@@ -87,6 +87,7 @@ class RideDetailsPage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     late String travelDurationString;
                     // Calculating next location time
+                    // TODO(FIX logic) : something wrong in duration calculation.
                     DateTime travelTime = rideDetail.schedule;
                     String travelTimeString =
                         "${travelTime.hour.toString()}:${travelTime.minute.toString()}${travelTime.minute.toString().length == 1 ? '0' : ""}";

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_ride/views/common/toast_msg.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +9,8 @@ import 'package:image_picker/image_picker.dart';
 Future<File?> captureImage({required bool isImageSourceGallery}) async {
   try {
     final image = await ImagePicker().pickImage(
-        source: isImageSourceGallery ? ImageSource.gallery : ImageSource.camera, imageQuality: 50);
+        source: isImageSourceGallery ? ImageSource.gallery : ImageSource.camera,
+        imageQuality: 50);
     if (image == null) {
       return null;
     }
@@ -41,7 +43,6 @@ Future<File> compressImage(File file) async {
     // Handle the case where compression failed
     throw Exception('Image compression failed');
   }
-
 }
 
 Future<DateTime?> pickDate(BuildContext context) {
@@ -56,11 +57,27 @@ Future<DateTime?> pickDate(BuildContext context) {
       lastDate: DateTime(2100));
 }
 
-Future<TimeOfDay?> pickTime(BuildContext context) {
-  return showTimePicker(
+Future<TimeOfDay?> pickTime(BuildContext context, DateTime date) async {
+  TimeOfDay? selectedTime = await showTimePicker(
       context: context,
       initialTime:
           TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute));
+
+  if(selectedTime != null){
+    if (date.year == DateTime.now().year &&
+        date.day == DateTime.now().day &&
+        date.month == DateTime.now().month &&
+        (selectedTime.hour < DateTime.now().hour ||
+            (DateTime.now().hour == selectedTime.hour &&
+                DateTime.now().minute > selectedTime.minute))) {
+      ShowSnackbar(
+          title: "Failed",
+          message: "Please select a time after the current time.",
+          icon: Icons.more_time);
+      selectedTime = await pickTime(context, date);
+    }
+  }
+  return selectedTime;
 }
 
 Future<TimeOfDay?> pickTime12HrsFormat(BuildContext context) {
