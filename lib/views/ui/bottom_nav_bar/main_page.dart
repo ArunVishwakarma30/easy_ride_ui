@@ -60,8 +60,7 @@ class _MainPageState extends State<MainPage> {
     await OneSignal.shared.getDeviceState().then((value) {
       if (value != null) {
         oneSignalUserId =
-            value.userId ?? ''; // Store OneSignal user ID in the variable
-        print("One signal value: ###### $oneSignalUserId");
+            value.userId ?? '';
       }
     });
 

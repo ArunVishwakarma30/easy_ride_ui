@@ -18,11 +18,12 @@ class GetUser {
   final String email;
   final String profile;
   final String miniBio;
-  final List<dynamic> vehicles;
+  final List<Vehicle> vehicles;
   final List<dynamic> createdRide;
   final List<dynamic> requestedRide;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String oneSignalId;
 
   GetUser({
     required this.identityDocument,
@@ -38,6 +39,7 @@ class GetUser {
     required this.requestedRide,
     required this.createdAt,
     required this.updatedAt,
+    required this.oneSignalId,
   });
 
   factory GetUser.fromJson(Map<String, dynamic> json) => GetUser(
@@ -49,11 +51,12 @@ class GetUser {
     email: json["email"],
     profile: json["profile"],
     miniBio: json["miniBio"],
-    vehicles: List<dynamic>.from(json["vehicles"].map((x) => x)),
+    vehicles: List<Vehicle>.from(json["vehicles"].map((x) => Vehicle.fromJson(x))),
     createdRide: List<dynamic>.from(json["createdRide"].map((x) => x)),
     requestedRide: List<dynamic>.from(json["requestedRide"].map((x) => x)),
     createdAt: DateTime.parse(json["createdAt"]),
     updatedAt: DateTime.parse(json["updatedAt"]),
+    oneSignalId: json["oneSignalId"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -65,11 +68,12 @@ class GetUser {
     "email": email,
     "profile": profile,
     "miniBio": miniBio,
-    "vehicles": List<dynamic>.from(vehicles.map((x) => x)),
+    "vehicles": List<dynamic>.from(vehicles.map((x) => x.toJson())),
     "createdRide": List<dynamic>.from(createdRide.map((x) => x)),
     "requestedRide": List<dynamic>.from(requestedRide.map((x) => x)),
     "createdAt": createdAt.toIso8601String(),
     "updatedAt": updatedAt.toIso8601String(),
+    "oneSignalId": oneSignalId,
   };
 }
 
@@ -90,5 +94,73 @@ class IdentityDocument {
   Map<String, dynamic> toJson() => {
     "documentType": documentType,
     "documentImg": documentImg,
+  };
+}
+
+class Vehicle {
+  final String id;
+  final String userId;
+  final String type;
+  final String image;
+  final String model;
+  final String registrationNumber;
+  final int offeringSeat;
+  final String makeAndCategory;
+  final String features;
+  final String exception;
+  final bool isDefault;
+  final bool requiredHelmet;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  Vehicle({
+    required this.id,
+    required this.userId,
+    required this.type,
+    required this.image,
+    required this.model,
+    required this.registrationNumber,
+    required this.offeringSeat,
+    required this.makeAndCategory,
+    required this.features,
+    required this.exception,
+    required this.isDefault,
+    required this.requiredHelmet,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
+    id: json["_id"],
+    userId: json["userId"],
+    type: json["type"],
+    image: json["image"],
+    model: json["model"],
+    registrationNumber: json["registrationNumber"],
+    offeringSeat: json["offeringSeat"],
+    makeAndCategory: json["makeAndCategory"],
+    features: json["features"],
+    exception: json["exception"],
+    isDefault: json["isDefault"],
+    requiredHelmet: json["requiredHelmet"],
+    createdAt: DateTime.parse(json["createdAt"]),
+    updatedAt: DateTime.parse(json["updatedAt"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "_id": id,
+    "userId": userId,
+    "type": type,
+    "image": image,
+    "model": model,
+    "registrationNumber": registrationNumber,
+    "offeringSeat": offeringSeat,
+    "makeAndCategory": makeAndCategory,
+    "features": features,
+    "exception": exception,
+    "isDefault": isDefault,
+    "requiredHelmet": requiredHelmet,
+    "createdAt": createdAt.toIso8601String(),
+    "updatedAt": updatedAt.toIso8601String(),
   };
 }

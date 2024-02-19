@@ -89,7 +89,6 @@ class _YourRidesListViewState extends State<YourRidesListView> {
               return Container(
                 margin: const EdgeInsets.only(bottom: 20),
                 child: ListView.builder(
-                  reverse: true,
                   controller: _scrollController,
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {

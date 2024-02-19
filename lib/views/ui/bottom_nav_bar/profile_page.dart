@@ -70,6 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       var userData = snapshot.data;
                       vehicleCount = userData!.vehicles.length;
                       miniBio = userData.miniBio;
+                      print(userData.oneSignalId);
                       return SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
