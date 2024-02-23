@@ -12,7 +12,7 @@ class TextWithIcons extends StatelessWidget {
       this.onTextTap,
       this.onPostFixTap,
       this.iconColor = Colors.black,
-      required this.containerWidth, this.onWidgetTap, this.maxLines = 1})
+      required this.containerWidth, this.onWidgetTap, this.maxLines = 1, this.postFixIconSize = 30, this.postFixIconColor = loginPageColor})
       : super(key: key);
 
   final IconData? preFixIcon;
@@ -25,6 +25,8 @@ class TextWithIcons extends StatelessWidget {
   final Color? iconColor;
   final VoidCallback? onWidgetTap;
   final int? maxLines;
+  final double? postFixIconSize;
+  final Color? postFixIconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +66,8 @@ class TextWithIcons extends StatelessWidget {
                 onTap: onPostFixTap,
                 child: Icon(
                   postFixIcon,
-                  size: 30,
-                  color: Color(loginPageColor.value),
+                  size: postFixIconSize,
+                  color: postFixIconColor,
                 ),
               ),
             ),

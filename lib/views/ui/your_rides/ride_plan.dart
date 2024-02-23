@@ -1,6 +1,7 @@
 import 'package:easy_ride/models/request/cancel_ride_req_model.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
+import 'package:easy_ride/views/ui/profile/user_profile_page.dart';
 import 'package:easy_ride/views/ui/your_rides/edit_ride/edit_ride_tile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -193,16 +194,99 @@ class _RidePlanState extends State<RidePlan> {
             // String polyLineString = routeInfo[1];
             List<int> hrs = routeInfo![2];
             List<int> mins = routeInfo[3];
-
             return ListView(
               padding: const EdgeInsets.all(15),
               children: [
-                // TODO : Create a ListView.builder for all the ride request getting from other users
-                // TODO : also create divider
-                ReuseableText(
-                    text: date,
-                    style: roundFont(22, darkHeading, FontWeight.bold)),
-                const HeightSpacer(size: 20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ReuseableText(
+                        text: date,
+                        style: roundFont(22, darkHeading, FontWeight.bold)),
+                    const HeightSpacer(size: 20),
+                    widget.rideDetail.requests.isNotEmpty
+                        ? const HeightSpacer(size: 10)
+                        : const SizedBox.shrink(),
+                    widget.rideDetail.requests.isNotEmpty
+                        ? ReuseableText(
+                            text: "Ride requests",
+                            style: roundFont(22, Colors.red, FontWeight.bold))
+                        : const SizedBox.shrink(),
+                    widget.rideDetail.requests.isNotEmpty
+                        ? const HeightSpacer(size: 10)
+                        : const SizedBox.shrink(),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: widget.rideDetail.requests.length,
+                      itemBuilder: (context, index) {
+                        var userDetailAtCurrentIndex =
+                            widget.rideDetail.requests[index];
+                        return Column(
+                          children: [
+                            InkWell(
+                              radius: 0,
+                              onTap: () {
+                                Get.to(
+                                    () => UserProfile(
+                                        userDetail: userDetailAtCurrentIndex),
+                                    transition: Transition.rightToLeft,
+                                    arguments: "passengerRequest");
+                              },
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  ReuseableText(
+                                    text: widget
+                                        .rideDetail.requests[index].firstName,
+                                    style: roundFont(
+                                        17, darkHeading, FontWeight.normal),
+                                  ),
+                                  const Expanded(
+                                      child: SizedBox(
+                                    width: 1,
+                                  )),
+                                  CircleAvatar(
+                                    radius: 25,
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: widget.rideDetail
+                                            .requests[index].profile.isNotEmpty
+                                        ? NetworkImage(widget
+                                            .rideDetail.requests[index].profile)
+                                        : const AssetImage(
+                                                'assets/icons/person.png')
+                                            as ImageProvider,
+                                  ),
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 18,
+                                    color: darkHeading,
+                                  )
+                                ],
+                              ),
+                            ),
+                            const HeightSpacer(size: 5),
+                            index < widget.rideDetail.requests.length - 1
+                                ? const Divider()
+                                : const SizedBox.shrink(),
+                          ],
+                        );
+                      },
+                    )
+                  ],
+                ),
+                widget.rideDetail.requests.isNotEmpty
+                    ? const HeightSpacer(size: 10)
+                    : const SizedBox.shrink(),
+                widget.rideDetail.requests.isNotEmpty
+                    ? const Divider(thickness: 1, color: Colors.black38)
+                    : const SizedBox.shrink(),
+                widget.rideDetail.requests.isNotEmpty
+                    ? const HeightSpacer(size: 20)
+                    : const SizedBox.shrink(),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -304,9 +388,7 @@ class _RidePlanState extends State<RidePlan> {
                 ),
                 const HeightSpacer(size: 10),
                 const Divider(thickness: 1, color: Colors.black38),
-
                 const HeightSpacer(size: 10),
-
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -331,8 +413,12 @@ class _RidePlanState extends State<RidePlan> {
                             InkWell(
                               radius: 0,
                               onTap: () {
-                                print(
-                                    "Go to the passengers page and show required personal details to the passenger");
+                                Get.to(
+                                    () => UserProfile(
+                                        userDetail: widget
+                                            .rideDetail.passangersId[index]),
+                                    transition: Transition.rightToLeft,
+                                    arguments: "passengerProfile");
                               },
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -385,7 +471,6 @@ class _RidePlanState extends State<RidePlan> {
                 const HeightSpacer(size: 10),
                 const Divider(thickness: 1, color: Colors.black38),
                 const HeightSpacer(size: 30),
-
                 EditRideTile(
                     title: "See your publication online",
                     onTap: () {
@@ -396,52 +481,64 @@ class _RidePlanState extends State<RidePlan> {
                           transition: Transition.rightToLeft,
                           arguments: 'CreateRide');
                     }),
-                widget.rideDetail.isCanceled ? Row(
-                  children: [
-                    const  Icon(Icons.not_interested, color: Colors.red,),
-                    const SizedBox(width: 15,),
-                    ReuseableText(text: "Cancelled", style: roundFont(20, Colors.red, FontWeight.bold))
-                  ],
-                ) : EditRideTile(
-                    title: "Cancel Your Ride",
-                    onTap: () {
-                      // Get.to(()=>const EditPublication(), transition: Transition.rightToLeft);
-                      showDialog(
-                        barrierDismissible: false,
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          actionsPadding: EdgeInsets.zero,
-                          title: ReuseableText(
-                            text: "Cancel Ride?",
-                            style: roundFont(22, darkHeading, FontWeight.bold),
+                widget.rideDetail.isCanceled
+                    ? Row(
+                        children: [
+                          const Icon(
+                            Icons.not_interested,
+                            color: Colors.red,
                           ),
-                          content: Text(
-                            "Are you sure you want to cancel this Ride? You can't undo this action.",
-                            style: roundFont(16, lightHeading, FontWeight.bold),
+                          const SizedBox(
+                            width: 15,
                           ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text("Dismiss",
-                                  style: roundFont(
-                                      16, darkHeading, FontWeight.normal)),
+                          ReuseableText(
+                              text: "Cancelled",
+                              style: roundFont(20, Colors.red, FontWeight.bold))
+                        ],
+                      )
+                    : EditRideTile(
+                        title: "Cancel Your Ride",
+                        onTap: () {
+                          // Get.to(()=>const EditPublication(), transition: Transition.rightToLeft);
+                          showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              actionsPadding: EdgeInsets.zero,
+                              title: ReuseableText(
+                                text: "Cancel Ride?",
+                                style:
+                                    roundFont(22, darkHeading, FontWeight.bold),
+                              ),
+                              content: Text(
+                                "Are you sure you want to cancel this Ride? You can't undo this action.",
+                                style: roundFont(
+                                    16, lightHeading, FontWeight.bold),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("Dismiss",
+                                      style: roundFont(
+                                          16, darkHeading, FontWeight.normal)),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    CancelRideReqModel model =
+                                        CancelRideReqModel(isCanceled: true);
+                                    String rideId = widget.rideDetail.id;
+                                    yourRidesProvider.cancelRide(model, rideId);
+                                  },
+                                  child: Text("Yes",
+                                      style: roundFont(
+                                          16, darkHeading, FontWeight.normal)),
+                                ),
+                              ],
                             ),
-                            TextButton(
-                              onPressed: () {
-                                CancelRideReqModel model = CancelRideReqModel(isCanceled: true);
-                                String rideId = widget.rideDetail.id;
-                                yourRidesProvider.cancelRide(model, rideId);
-                              },
-                              child: Text("Yes",
-                                  style: roundFont(
-                                      16, darkHeading, FontWeight.normal)),
-                            ),
-                          ],
-                        ),
-                      );
-                    })
+                          );
+                        })
               ],
             );
           }

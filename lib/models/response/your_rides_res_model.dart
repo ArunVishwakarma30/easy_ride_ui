@@ -5,9 +5,12 @@
 import 'package:meta/meta.dart';
 import 'dart:convert';
 
-List<YourCreatedRidesResModel> yourCreatedRidesResModelFromJson(String str) => List<YourCreatedRidesResModel>.from(json.decode(str).map((x) => YourCreatedRidesResModel.fromJson(x)));
+List<YourCreatedRidesResModel> yourCreatedRidesResModelFromJson(String str) =>
+    List<YourCreatedRidesResModel>.from(
+        json.decode(str).map((x) => YourCreatedRidesResModel.fromJson(x)));
 
-String yourCreatedRidesResModelToJson(List<YourCreatedRidesResModel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String yourCreatedRidesResModelToJson(List<YourCreatedRidesResModel> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class YourCreatedRidesResModel {
   final String id;
@@ -23,8 +26,10 @@ class YourCreatedRidesResModel {
   final Id driverId;
   final VehicleId vehicleId;
   final List<Id> passangersId;
+  final List<Id> requests;
   final bool isCanceled;
   final bool isFinished;
+  final DateTime createdAt;
 
   YourCreatedRidesResModel({
     required this.id,
@@ -42,43 +47,52 @@ class YourCreatedRidesResModel {
     required this.passangersId,
     required this.isCanceled,
     required this.isFinished,
+    required this.requests,
+    required this.createdAt,
   });
 
-  factory YourCreatedRidesResModel.fromJson(Map<String, dynamic> json) => YourCreatedRidesResModel(
-    id: json["_id"],
-    departure: json["departure"],
-    stopBy: List<StopBy>.from(json["stopBy"].map((x) => StopBy.fromJson(x))),
-    destination: json["destination"],
-    schedule: DateTime.parse(json["schedule"]),
-    aboutRide: json["aboutRide"],
-    directBooking: json["directBooking"],
-    seatsOffering: json["seatsOffering"],
-    seatsAvailable: json["seatsAvailable"],
-    pricePerPass: json["pricePerPass"],
-    driverId: Id.fromJson(json["driverId"]),
-    vehicleId: VehicleId.fromJson(json["vehicleId"]),
-    passangersId: List<Id>.from(json["passangersId"].map((x) => Id.fromJson(x))),
-    isCanceled: json["isCanceled"],
-    isFinished: json["isFinished"],
-  );
+  factory YourCreatedRidesResModel.fromJson(Map<String, dynamic> json) =>
+      YourCreatedRidesResModel(
+        id: json["_id"],
+        departure: json["departure"],
+        stopBy:
+            List<StopBy>.from(json["stopBy"].map((x) => StopBy.fromJson(x))),
+        destination: json["destination"],
+        schedule: DateTime.parse(json["schedule"]),
+        aboutRide: json["aboutRide"],
+        directBooking: json["directBooking"],
+        seatsOffering: json["seatsOffering"],
+        seatsAvailable: json["seatsAvailable"],
+        pricePerPass: json["pricePerPass"],
+        driverId: Id.fromJson(json["driverId"]),
+        vehicleId: VehicleId.fromJson(json["vehicleId"]),
+        passangersId:
+            List<Id>.from(json["passangersId"].map((x) => Id.fromJson(x))),
+        requests: List<Id>.from(json["requests"].map((x) => Id.fromJson(x))),
+        createdAt: DateTime.parse(json["createdAt"]),
+        isCanceled: json["isCanceled"],
+        isFinished: json["isFinished"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "_id": id,
-    "departure": departure,
-    "stopBy": List<dynamic>.from(stopBy.map((x) => x.toJson())),
-    "destination": destination,
-    "schedule": schedule.toIso8601String(),
-    "aboutRide": aboutRide,
-    "directBooking": directBooking,
-    "seatsOffering": seatsOffering,
-    "seatsAvailable": seatsAvailable,
-    "pricePerPass": pricePerPass,
-    "driverId": driverId.toJson(),
-    "vehicleId": vehicleId.toJson(),
-    "passangersId": List<dynamic>.from(passangersId.map((x) => x.toJson())),
-    "isCanceled": isCanceled,
-    "isFinished": isFinished,
-  };
+        "_id": id,
+        "departure": departure,
+        "stopBy": List<dynamic>.from(stopBy.map((x) => x.toJson())),
+        "destination": destination,
+        "schedule": schedule.toIso8601String(),
+        "aboutRide": aboutRide,
+        "directBooking": directBooking,
+        "seatsOffering": seatsOffering,
+        "seatsAvailable": seatsAvailable,
+        "pricePerPass": pricePerPass,
+        "driverId": driverId.toJson(),
+        "vehicleId": vehicleId.toJson(),
+        "passangersId": List<dynamic>.from(passangersId.map((x) => x.toJson())),
+        "requests": List<dynamic>.from(requests.map((x) => x.toJson())),
+        "createdAt": createdAt.toIso8601String(),
+        "isCanceled": isCanceled,
+        "isFinished": isFinished,
+      };
 }
 
 class Id {
@@ -90,6 +104,8 @@ class Id {
   final String profile;
   final String id;
   final String miniBio;
+  final String oneSignalId;
+  final DateTime createdAt;
 
   Id({
     required this.identityDocument,
@@ -100,29 +116,35 @@ class Id {
     required this.profile,
     required this.id,
     required this.miniBio,
+    required this.oneSignalId,
+    required this.createdAt,
   });
 
   factory Id.fromJson(Map<String, dynamic> json) => Id(
-    identityDocument: IdentityDocument.fromJson(json["identityDocument"]),
-    firstName: json["firstName"],
-    lastName: json["lastName"],
-    phoneNumber: json["phoneNumber"],
-    email: json["email"],
-    profile: json["profile"],
-    id: json["_id"],
-    miniBio: json["miniBio"],
-  );
+        identityDocument: IdentityDocument.fromJson(json["identityDocument"]),
+        firstName: json["firstName"],
+        lastName: json["lastName"],
+        phoneNumber: json["phoneNumber"],
+        email: json["email"],
+        profile: json["profile"],
+        id: json["_id"],
+        miniBio: json["miniBio"],
+        oneSignalId: json["oneSignalId"],
+        createdAt: DateTime.parse(json["createdAt"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "identityDocument": identityDocument.toJson(),
-    "firstName": firstName,
-    "lastName": lastName,
-    "phoneNumber": phoneNumber,
-    "email": email,
-    "profile": profile,
-    "_id": id,
-    "miniBio": miniBio,
-  };
+        "identityDocument": identityDocument.toJson(),
+        "firstName": firstName,
+        "lastName": lastName,
+        "phoneNumber": phoneNumber,
+        "email": email,
+        "profile": profile,
+        "_id": id,
+        "miniBio": miniBio,
+        "oneSignalId": oneSignalId,
+        "createdAt": createdAt.toIso8601String(),
+      };
 }
 
 class IdentityDocument {
@@ -134,15 +156,16 @@ class IdentityDocument {
     required this.documentImg,
   });
 
-  factory IdentityDocument.fromJson(Map<String, dynamic> json) => IdentityDocument(
-    documentType: json["documentType"],
-    documentImg: json["documentImg"],
-  );
+  factory IdentityDocument.fromJson(Map<String, dynamic> json) =>
+      IdentityDocument(
+        documentType: json["documentType"],
+        documentImg: json["documentImg"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "documentType": documentType,
-    "documentImg": documentImg,
-  };
+        "documentType": documentType,
+        "documentImg": documentImg,
+      };
 }
 
 class StopBy {
@@ -155,14 +178,14 @@ class StopBy {
   });
 
   factory StopBy.fromJson(Map<String, dynamic> json) => StopBy(
-    gMapAddressId: json["gMapAddressId"],
-    address: json["address"],
-  );
+        gMapAddressId: json["gMapAddressId"],
+        address: json["address"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "gMapAddressId": gMapAddressId,
-    "address": address,
-  };
+        "gMapAddressId": gMapAddressId,
+        "address": address,
+      };
 }
 
 class VehicleId {
@@ -195,32 +218,32 @@ class VehicleId {
   });
 
   factory VehicleId.fromJson(Map<String, dynamic> json) => VehicleId(
-    id: json["_id"],
-    userId: json["userId"],
-    type: json["type"],
-    image: json["image"],
-    model: json["model"],
-    registrationNumber: json["registrationNumber"],
-    offeringSeat: json["offeringSeat"],
-    makeAndCategory: json["makeAndCategory"],
-    features: json["features"],
-    exception: json["exception"],
-    isDefault: json["isDefault"],
-    requiredHelmet: json["requiredHelmet"],
-  );
+        id: json["_id"],
+        userId: json["userId"],
+        type: json["type"],
+        image: json["image"],
+        model: json["model"],
+        registrationNumber: json["registrationNumber"],
+        offeringSeat: json["offeringSeat"],
+        makeAndCategory: json["makeAndCategory"],
+        features: json["features"],
+        exception: json["exception"],
+        isDefault: json["isDefault"],
+        requiredHelmet: json["requiredHelmet"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "_id": id,
-    "userId": userId,
-    "type": type,
-    "image": image,
-    "model": model,
-    "registrationNumber": registrationNumber,
-    "offeringSeat": offeringSeat,
-    "makeAndCategory": makeAndCategory,
-    "features": features,
-    "exception": exception,
-    "isDefault": isDefault,
-    "requiredHelmet": requiredHelmet,
-  };
+        "_id": id,
+        "userId": userId,
+        "type": type,
+        "image": image,
+        "model": model,
+        "registrationNumber": registrationNumber,
+        "offeringSeat": offeringSeat,
+        "makeAndCategory": makeAndCategory,
+        "features": features,
+        "exception": exception,
+        "isDefault": isDefault,
+        "requiredHelmet": requiredHelmet,
+      };
 }

@@ -1,11 +1,28 @@
+import 'package:easy_ride/models/request/req_ride_model.dart';
 import 'package:easy_ride/models/request/search_rides_req_model.dart';
+import 'package:easy_ride/models/request/send_notification_req_model.dart';
 import 'package:easy_ride/models/response/search_ride_res_model.dart';
 import 'package:easy_ride/services/helper/create_ride_helper.dart';
+import 'package:easy_ride/services/helper/notification_helper.dart';
+import 'package:easy_ride/services/helper/request_ride_helper.dart';
 import 'package:easy_ride/views/common/service.dart';
+import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../views/common/toast_msg.dart';
 
 class FindPoolProvider extends ChangeNotifier {
+  bool _waiting = false;
+
+  get waiting => _waiting;
+
+  void setWaiting(bool value) {
+    _waiting = value;
+    notifyListeners();
+  }
+
   DateTime? _travelDateTime = DateTime.now();
   late Future<List<SearchRidesResModel>> searchResult;
 
@@ -57,7 +74,7 @@ class FindPoolProvider extends ChangeNotifier {
 
     // Extract the values from 4th last comma to 2nd last comma
     List<String> desiredValues =
-    addressParts.sublist(fourthLastCommaIndex, secondLastCommaIndex);
+        addressParts.sublist(fourthLastCommaIndex, secondLastCommaIndex);
 
     // Join the extracted values into a single string
     String result = desiredValues.join(',');
@@ -65,5 +82,29 @@ class FindPoolProvider extends ChangeNotifier {
     return result.trim(); // Trim to remove leading and trailing whitespaces
   }
 
-
+  // request ride
+  requestRide(
+      RequestRideReqModel model, SendNotificationReqModel notificationModel) {
+    RequestRideHelper.requestRide(model).then((value) {
+      if (value) {
+        ShowSnackbar(
+            title: "Success",
+            message: "Ride Successfully Booked!",
+            icon: Icons.done_outline,
+            bgColor: Colors.green,
+            textColor: Colors.white);
+        Get.offAll(() => const MainPage(),
+            transition: Transition.fadeIn,
+            duration: const Duration(seconds: 2));
+        // write a code to send notification to driver
+        NotificationHelper.sendNotification(notificationModel);
+      } else {
+        ShowSnackbar(
+            title: "Something went wrong",
+            message: "Please try again later!",
+            icon: Icons.add_alert);
+      }
+      setWaiting(false);
+    });
+  }
 }

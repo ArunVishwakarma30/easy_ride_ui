@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../profile/edit_mini_bio.dart';
+import '../profile/user_profile_page.dart';
 import '../profile/verify_user_id.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -78,14 +79,17 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Get.to(() => const ProfilePicture(),
-                                      transition: Transition.rightToLeft);
-                                },
-                                child: Row(
-                                  children: [
-                                    Column(
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.to(
+                                          () =>
+                                              UserProfile(userDetail: userData),
+                                          transition: Transition.rightToLeft,
+                                          arguments: "myProfile");
+                                    },
+                                    child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
@@ -104,8 +108,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 FontWeight.w100))
                                       ],
                                     ),
-                                    const Expanded(child: SizedBox(width: 5)),
-                                    CircleAvatar(
+                                  ),
+                                  const Expanded(child: SizedBox(width: 5)),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.to(() => const ProfilePicture(),
+                                          transition: Transition.rightToLeft);
+                                    },
+                                    child: CircleAvatar(
                                       radius: 40,
                                       backgroundColor: Colors.white,
                                       backgroundImage: userData.profile.isEmpty
@@ -114,15 +124,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                               as ImageProvider
                                           : NetworkImage(userData.profile),
                                     ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Icon(
-                                      Icons.arrow_forward_ios,
-                                      color: Color(darkHeading.value),
-                                    )
-                                  ],
-                                ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Color(darkHeading.value),
+                                  )
+                                ],
                               ),
                               const HeightSpacer(size: 14),
 

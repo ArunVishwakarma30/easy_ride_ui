@@ -1,5 +1,7 @@
 import 'package:easy_ride/constants/app_constants.dart';
-import 'package:easy_ride/models/response/search_ride_res_model.dart';
+import 'package:easy_ride/controllers/find_pool_provider.dart';
+import 'package:easy_ride/models/request/req_ride_model.dart';
+import 'package:easy_ride/models/request/send_notification_req_model.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
@@ -10,17 +12,38 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controllers/add_vehicle_provider.dart';
 import '../profile/my_vehicles_list_tile.dart';
 import 'map_locaiton_page.dart';
 
-class RideDetailsPage extends StatelessWidget {
+class RideDetailsPage extends StatefulWidget {
   RideDetailsPage({Key? key, required this.rideDetail, required this.routeInfo})
       : super(key: key);
   var rideDetail;
   final List<dynamic> routeInfo;
+
+  @override
+  State<RideDetailsPage> createState() => _RideDetailsPageState();
+}
+
+class _RideDetailsPageState extends State<RideDetailsPage> {
+  String? userId;
   String? argument = "";
   var args = Get.arguments;
+
+  getPrefs() async {
+    var prefs = await SharedPreferences.getInstance();
+    userId = prefs.getString('userId');
+    print(userId);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPrefs();
+  }
 
   String formatDateTimeString(DateTime dateTime) {
     // Parse the input string to a DateTime object
@@ -33,28 +56,29 @@ class RideDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var vehicleProvider = Provider.of<AddVehicle>(context);
-    List<LatLng> directions = routeInfo[0];
-    String polyLines = routeInfo[1];
-    List<int> hrs = routeInfo[2];
-    List<int> mins = routeInfo[3];
+    var findPoolProvider = Provider.of<FindPoolProvider>(context);
+    List<LatLng> directions = widget.routeInfo[0];
+    String polyLines = widget.routeInfo[1];
+    List<int> hrs = widget.routeInfo[2];
+    List<int> mins = widget.routeInfo[3];
 
     argument = args ?? "";
-    String? schedule = formatDateTimeString(rideDetail.schedule);
-    var stopBy = rideDetail.stopBy;
+    String? schedule = formatDateTimeString(widget.rideDetail.schedule);
+    var stopBy = widget.rideDetail.stopBy;
 
     String? vehicleImage = "";
     bool isImageEmpty = false;
-    if (rideDetail.vehicleId.image.isEmpty) {
+    if (widget.rideDetail.vehicleId.image.isEmpty) {
       isImageEmpty = true;
-      if (rideDetail.vehicleId.type == 'Auto Rickshaw' ||
-          rideDetail.vehicleId.type == 'Car') {
-        Map<String, String>? selectedCarImg = carTypeAndImg
-            .firstWhere((car) => car['Name'] == rideDetail.vehicleId.model);
+      if (widget.rideDetail.vehicleId.type == 'Auto Rickshaw' ||
+          widget.rideDetail.vehicleId.type == 'Car') {
+        Map<String, String>? selectedCarImg = carTypeAndImg.firstWhere(
+            (car) => car['Name'] == widget.rideDetail.vehicleId.model);
 
         vehicleImage = selectedCarImg['Img'].toString();
       } else {
-        Map<String, String>? selectedBikeImg = bikeTypeAndImg
-            .firstWhere((car) => car['Name'] == rideDetail.vehicleId.model);
+        Map<String, String>? selectedBikeImg = bikeTypeAndImg.firstWhere(
+            (car) => car['Name'] == widget.rideDetail.vehicleId.model);
 
         vehicleImage = selectedBikeImg['Img'].toString();
       }
@@ -88,16 +112,16 @@ class RideDetailsPage extends StatelessWidget {
                     late String travelDurationString;
                     // Calculating next location time
                     // TODO(FIX logic) : something wrong in duration calculation.
-                    DateTime travelTime = rideDetail.schedule;
+                    DateTime travelTime = widget.rideDetail.schedule;
                     String travelTimeString =
                         "${travelTime.hour.toString()}:${travelTime.minute.toString()}${travelTime.minute.toString().length == 1 ? '0' : ""}";
-                    if (index > 0 && index < rideDetail.stopBy.length) {
+                    if (index > 0 && index < widget.rideDetail.stopBy.length) {
                       DateTime newTravelTime = travelTime.add(Duration(
                           hours: hrs[index - 1], minutes: mins[index - 1]));
                       travelTimeString =
                           "${newTravelTime.hour.toString()}:${newTravelTime.minute.toString()}${newTravelTime.minute.toString().length == 1 ? "0" : ""}";
                     }
-                    if (index < rideDetail.stopBy.length - 1) {
+                    if (index < widget.rideDetail.stopBy.length - 1) {
                       travelDurationString = hrs[index] == 0
                           ? "${mins[index].toString()}${mins[index].toString().length == 1 ? "0" : ""}min"
                           : "${hrs[index].toString()}h${mins[index].toString()}${mins[index].toString().length == 1 ? "0" : ""}";
@@ -201,7 +225,7 @@ class RideDetailsPage extends StatelessWidget {
                           text: "Total price for 1 passenger",
                           style: roundFont(17, lightHeading, FontWeight.bold)),
                       ReuseableText(
-                          text: "\u20B9${rideDetail.pricePerPass}.00",
+                          text: "\u20B9${widget.rideDetail.pricePerPass}.00",
                           style: roundFont(22, darkHeading, FontWeight.bold))
                     ],
                   ),
@@ -228,7 +252,7 @@ class RideDetailsPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             ReuseableText(
-                                text: rideDetail.driverId.firstName,
+                                text: widget.rideDetail.driverId.firstName,
                                 style: roundFont(
                                     17, darkHeading, FontWeight.bold)),
                             const Expanded(
@@ -238,9 +262,10 @@ class RideDetailsPage extends StatelessWidget {
                             CircleAvatar(
                               radius: 25,
                               backgroundColor: Colors.white,
-                              backgroundImage: rideDetail
-                                      .driverId.profile.isNotEmpty
-                                  ? NetworkImage(rideDetail.driverId.profile)
+                              backgroundImage: widget
+                                      .rideDetail.driverId.profile.isNotEmpty
+                                  ? NetworkImage(
+                                      widget.rideDetail.driverId.profile)
                                   : const AssetImage('assets/icons/person.png')
                                       as ImageProvider,
                             ),
@@ -259,7 +284,7 @@ class RideDetailsPage extends StatelessWidget {
                       const Divider(),
                       const HeightSpacer(size: 10),
                       Text(
-                        rideDetail.aboutRide,
+                        widget.rideDetail.aboutRide,
                         style: roundFont(18, darkHeading, FontWeight.normal),
                       ),
                       const HeightSpacer(size: 20),
@@ -269,21 +294,22 @@ class RideDetailsPage extends StatelessWidget {
                                 "Send to the chat page and initiate the chat between users");
                           },
                           child: ReuseableText(
-                              text: "Contact ${rideDetail.driverId.firstName}",
+                              text:
+                                  "Contact ${widget.rideDetail.driverId.firstName}",
                               style: roundFont(
                                   18, loginPageColor, FontWeight.bold))),
                       const HeightSpacer(size: 10),
                       const Divider(),
                       const HeightSpacer(size: 20),
                       TextWithIcons(
-                        text: rideDetail.directBooking
+                        text: widget.rideDetail.directBooking
                             ? "Your booking will be confirmed instantly."
                             : "Your booking won't be confirmed until the driver approves your request",
                         maxLines: 3,
                         textStyle:
                             roundFont(18, darkHeading, FontWeight.normal),
                         containerWidth: MediaQuery.of(context).size.width - 100,
-                        preFixIcon: rideDetail.directBooking
+                        preFixIcon: widget.rideDetail.directBooking
                             ? Icons.electric_bolt_outlined
                             : Icons.time_to_leave_outlined,
                         iconColor: Colors.black45,
@@ -292,27 +318,28 @@ class RideDetailsPage extends StatelessWidget {
                       const Divider(),
                       const HeightSpacer(size: 10),
                       MyVehiclesListTile(
-                        modelName: rideDetail.vehicleId.model,
+                        modelName: widget.rideDetail.vehicleId.model,
                         registrationNumber:
-                            rideDetail.vehicleId.registrationNumber,
+                            widget.rideDetail.vehicleId.registrationNumber,
                         isDefault: false,
                         viewVehicleDetails: true,
                         vehicleImage: isImageEmpty
                             ? vehicleImage
-                            : rideDetail.vehicleId.image,
-                        exception: rideDetail.vehicleId.exception,
-                        makeAndCategory: rideDetail.vehicleId.makeAndCategory,
+                            : widget.rideDetail.vehicleId.image,
+                        exception: widget.rideDetail.vehicleId.exception,
+                        makeAndCategory:
+                            widget.rideDetail.vehicleId.makeAndCategory,
                         numberOfSeats: vehicleProvider.numOfSeatSelected,
                         onTap: () {},
-                        isImageEmpty: rideDetail.vehicleId.image.isEmpty,
+                        isImageEmpty: widget.rideDetail.vehicleId.image.isEmpty,
                         selectingVehicle: true,
-                        vehicleId: rideDetail.vehicleId.id,
+                        vehicleId: widget.rideDetail.vehicleId.id,
                       ),
                       const Divider(),
                       const HeightSpacer(size: 10),
-                      rideDetail.vehicleId.features.isNotEmpty
+                      widget.rideDetail.vehicleId.features.isNotEmpty
                           ? TextWithIcons(
-                              text: rideDetail.vehicleId.features,
+                              text: widget.rideDetail.vehicleId.features,
                               maxLines: 3,
                               textStyle:
                                   roundFont(18, darkHeading, FontWeight.normal),
@@ -322,12 +349,12 @@ class RideDetailsPage extends StatelessWidget {
                               preFixIcon: Icons.star_border_purple500,
                             )
                           : const SizedBox.shrink(),
-                      rideDetail.vehicleId.features.isNotEmpty
+                      widget.rideDetail.vehicleId.features.isNotEmpty
                           ? const HeightSpacer(size: 15)
                           : const SizedBox.shrink(),
-                      rideDetail.vehicleId.exception.isNotEmpty
+                      widget.rideDetail.vehicleId.exception.isNotEmpty
                           ? TextWithIcons(
-                              text: rideDetail.vehicleId.exception,
+                              text: widget.rideDetail.vehicleId.exception,
                               maxLines: 3,
                               textStyle:
                                   roundFont(18, darkHeading, FontWeight.normal),
@@ -337,14 +364,14 @@ class RideDetailsPage extends StatelessWidget {
                               preFixIcon: Icons.not_interested,
                             )
                           : const SizedBox.shrink(),
-                      (rideDetail.vehicleId.type == 'Bike' ||
-                              rideDetail.vehicleId.type == 'Scooter')
+                      (widget.rideDetail.vehicleId.type == 'Bike' ||
+                              widget.rideDetail.vehicleId.type == 'Scooter')
                           ? const HeightSpacer(size: 15)
                           : const SizedBox.shrink(),
-                      (rideDetail.vehicleId.type == 'Bike' ||
-                              rideDetail.vehicleId.type == 'Scooter')
+                      (widget.rideDetail.vehicleId.type == 'Bike' ||
+                              widget.rideDetail.vehicleId.type == 'Scooter')
                           ? TextWithIcons(
-                              text: rideDetail.vehicleId.requiredHelmet
+                              text: widget.rideDetail.vehicleId.requiredHelmet
                                   ? "You have to carry helmet"
                                   : "You don't have to carry helmet",
                               maxLines: 3,
@@ -359,7 +386,7 @@ class RideDetailsPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                rideDetail.passangersId.isNotEmpty
+                widget.rideDetail.passangersId.isNotEmpty
                     ? const Divider(
                         thickness: 10,
                         color: Colors.black12,
@@ -368,12 +395,11 @@ class RideDetailsPage extends StatelessWidget {
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child:
-                  Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const HeightSpacer(size: 10),
-                      rideDetail.passangersId.isNotEmpty
+                      widget.rideDetail.passangersId.isNotEmpty
                           ? ReuseableText(
                               text: "Passengers",
                               style:
@@ -383,7 +409,7 @@ class RideDetailsPage extends StatelessWidget {
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: rideDetail.passangersId.length,
+                        itemCount: widget.rideDetail.passangersId.length,
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
@@ -397,7 +423,7 @@ class RideDetailsPage extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     ReuseableText(
-                                        text: rideDetail
+                                        text: widget.rideDetail
                                             .passangersId[index].firstName,
                                         style: roundFont(
                                             17, darkHeading, FontWeight.bold)),
@@ -408,11 +434,12 @@ class RideDetailsPage extends StatelessWidget {
                                     CircleAvatar(
                                       radius: 25,
                                       backgroundColor: Colors.white,
-                                      backgroundImage: rideDetail
+                                      backgroundImage: widget
+                                              .rideDetail
                                               .passangersId[index]
                                               .profile
                                               .isNotEmpty
-                                          ? NetworkImage(rideDetail
+                                          ? NetworkImage(widget.rideDetail
                                               .passangersId[index].profile)
                                           : const AssetImage(
                                                   'assets/icons/person.png')
@@ -430,7 +457,7 @@ class RideDetailsPage extends StatelessWidget {
                                 ),
                               ),
                               const HeightSpacer(size: 5),
-                              index < rideDetail.passangersId.length - 1
+                              index < widget.rideDetail.passangersId.length - 1
                                   ? const Divider()
                                   : const SizedBox.shrink(),
                             ],
@@ -449,7 +476,29 @@ class RideDetailsPage extends StatelessWidget {
               left: 20,
               child: ElevatedButton(
                 onPressed: () {
-                  print("Send a request to the driver for booking this ride ");
+                  findPoolProvider.setWaiting(true);
+                  print(widget.rideDetail.id);
+                  print(widget.rideDetail.driverId.id);
+                  print(vehicleProvider.numOfSeatSelected);
+                  print(widget.rideDetail.directBooking);
+                  SendNotificationReqModel notificationModel = SendNotificationReqModel(devices: [widget.rideDetail.driverId.oneSignalId], content: "New passenger booked your ride of date : $schedule");
+                  RequestRideReqModel model;
+                  print("Driver onesignal id : ${widget.rideDetail.driverId.oneSignalId}");
+                  if (widget.rideDetail.directBooking) {
+                    model = RequestRideReqModel(
+                        rideId: widget.rideDetail.id,
+                        userId: userId!,
+                        seatsRequired: vehicleProvider.numOfSeatSelected,
+                        isAccepted: true);
+                  } else {
+                    model = RequestRideReqModel(
+                        rideId: widget.rideDetail.id,
+                        userId: userId!,
+                        seatsRequired: vehicleProvider.numOfSeatSelected);
+                    print("Else part running : ${model.isAccepted}");
+                  }
+                  findPoolProvider.requestRide(model, notificationModel);
+
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: loginPageColor,
@@ -458,7 +507,7 @@ class RideDetailsPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    rideDetail.directBooking
+                    widget.rideDetail.directBooking
                         ? const Icon(
                             Icons.electric_bolt_outlined,
                             color: Colors.white,
@@ -472,7 +521,7 @@ class RideDetailsPage extends StatelessWidget {
                       width: 10,
                     ),
                     ReuseableText(
-                        text: rideDetail.directBooking
+                        text: widget.rideDetail.directBooking
                             ? "Book"
                             : "Request to book",
                         style: roundFont(19, Colors.white, FontWeight.normal))

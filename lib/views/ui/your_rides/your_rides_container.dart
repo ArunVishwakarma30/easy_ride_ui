@@ -2,6 +2,7 @@ import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
+import 'package:easy_ride/views/common/text_with_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +15,8 @@ class YourRidesContainer extends StatelessWidget {
       required this.destinationAddress,
       required this.status,
       required this.statusColor,
-      required this.onTap})
+      required this.onTap,
+      required this.requests})
       : super(key: key);
   final String dateString;
   final String timeString;
@@ -23,6 +25,7 @@ class YourRidesContainer extends StatelessWidget {
   final String status;
   final Color statusColor;
   final VoidCallback onTap;
+  final List<dynamic> requests;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +43,18 @@ class YourRidesContainer extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
+              requests.isNotEmpty
+                  ? TextWithIcons(
+                      preFixIcon: Icons.notification_add_outlined,
+                      iconColor: Colors.redAccent,
+                      text: "${requests.length} new request",
+                      textStyle:
+                          roundFont(18, Colors.redAccent, FontWeight.bold),
+                      containerWidth: 100)
+                  : const SizedBox.shrink(),
+              requests.isNotEmpty
+                  ? const HeightSpacer(size: 10)
+                  : const SizedBox.shrink(),
               ReuseableText(
                   text: dateString,
                   style: roundFont(18, Colors.black45, FontWeight.bold)),

@@ -123,6 +123,7 @@ class _YourRidesListViewState extends State<YourRidesListView> {
                       timeString: time,
                       departureAddress: departAddress,
                       destinationAddress: destinationAddress,
+                      requests: createdRideAtCurrentIndex.requests,
                       status: status![0],
                       statusColor: status[1],
                     );

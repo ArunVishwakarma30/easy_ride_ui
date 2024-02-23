@@ -71,8 +71,6 @@ class _MyAppState extends State<MyApp> {
               Color(loginPageColor.value)), // Change color as needed
     );
 
-    // Set the status bar color globally
-
     return GetMaterialApp(
         builder: FToastBuilder(),
         title: 'Flutter Demo',

@@ -18,8 +18,12 @@ class SearchRidesResModel {
   final DriverId driverId;
   final VehicleId vehicleId;
   final List<dynamic> passangersId;
+  final List<String> requests;
   final bool isCanceled;
   final bool isFinished;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int v;
 
   SearchRidesResModel({
     required this.id,
@@ -35,8 +39,12 @@ class SearchRidesResModel {
     required this.driverId,
     required this.vehicleId,
     required this.passangersId,
+    required this.requests,
     required this.isCanceled,
     required this.isFinished,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.v,
   });
 
   factory SearchRidesResModel.fromJson(Map<String, dynamic> json) => SearchRidesResModel(
@@ -53,8 +61,12 @@ class SearchRidesResModel {
     driverId: DriverId.fromJson(json["driverId"]),
     vehicleId: VehicleId.fromJson(json["vehicleId"]),
     passangersId: List<PassangersId>.from(json["passangersId"].map((x) => PassangersId.fromJson(x))),
+    requests: List<String>.from(json["requests"].map((x) => x)),
     isCanceled: json["isCanceled"],
     isFinished: json["isFinished"],
+    createdAt: DateTime.parse(json["createdAt"]),
+    updatedAt: DateTime.parse(json["updatedAt"]),
+    v: json["__v"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -71,12 +83,17 @@ class SearchRidesResModel {
     "driverId": driverId.toJson(),
     "vehicleId": vehicleId.toJson(),
     "passangersId": List<dynamic>.from(passangersId.map((x) => x.toJson())),
+    "requests": List<dynamic>.from(requests.map((x) => x)),
     "isCanceled": isCanceled,
     "isFinished": isFinished,
+    "createdAt": createdAt.toIso8601String(),
+    "updatedAt": updatedAt.toIso8601String(),
+    "__v": v,
   };
 }
 
 class DriverId {
+  final IdentityDocument identityDocument;
   final String id;
   final String firstName;
   final String lastName;
@@ -85,10 +102,10 @@ class DriverId {
   final String profile;
   final String miniBio;
   final List<String> vehicles;
-  // final List<dynamic> rides;
-  final List<String> createdRide;
+  final String oneSignalId;
 
   DriverId({
+    required this.identityDocument,
     required this.id,
     required this.firstName,
     required this.lastName,
@@ -97,110 +114,33 @@ class DriverId {
     required this.profile,
     required this.miniBio,
     required this.vehicles,
-    // required this.rides,
-    required this.createdRide,
+    required this.oneSignalId,
   });
 
   factory DriverId.fromJson(Map<String, dynamic> json) => DriverId(
-    id: json["_id"],
-    firstName: json["firstName"],
-    lastName: json["lastName"],
-    phoneNumber: json["phoneNumber"],
-    email: json["email"],
-    profile: json["profile"],
-    miniBio: json["miniBio"],
-    vehicles: List<String>.from(json["vehicles"].map((x) => x)),
-    // rides: List<dynamic>.from(json["rides"].map((x) => x)),
-    createdRide: List<String>.from(json["createdRide"].map((x) => x)),
-  );
-
-  Map<String, dynamic> toJson() => {
-    "_id": id,
-    "firstName": firstName,
-    "lastName": lastName,
-    "phoneNumber": phoneNumber,
-    "email": email,
-    "profile": profile,
-    "miniBio": miniBio,
-    "vehicles": List<dynamic>.from(vehicles.map((x) => x)),
-    // "rides": List<dynamic>.from(rides.map((x) => x)),
-    "createdRide": List<dynamic>.from(createdRide.map((x) => x)),
-  };
-}
-
-class PassangersId {
-  final IdentityDocument identityDocument;
-  final String miniBio;
-  final List<dynamic> createdRide;
-  final String id;
-  final String firstName;
-  final String lastName;
-  final String phoneNumber;
-  final String email;
-  final String password;
-  final String profile;
-  final List<String> vehicles;
-  // final List<dynamic> rides;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final int v;
-  final List<dynamic> requestedRide;
-
-  PassangersId({
-    required this.identityDocument,
-    required this.miniBio,
-    required this.createdRide,
-    required this.id,
-    required this.firstName,
-    required this.lastName,
-    required this.phoneNumber,
-    required this.email,
-    required this.password,
-    required this.profile,
-    required this.vehicles,
-    // required this.rides,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.v,
-    required this.requestedRide,
-  });
-
-  factory PassangersId.fromJson(Map<String, dynamic> json) => PassangersId(
     identityDocument: IdentityDocument.fromJson(json["identityDocument"]),
-    miniBio: json["miniBio"],
-    createdRide: List<dynamic>.from(json["createdRide"].map((x) => x)),
     id: json["_id"],
     firstName: json["firstName"],
     lastName: json["lastName"],
     phoneNumber: json["phoneNumber"],
     email: json["email"],
-    password: json["password"],
     profile: json["profile"],
+    miniBio: json["miniBio"],
     vehicles: List<String>.from(json["vehicles"].map((x) => x)),
-    // rides: List<dynamic>.from(json["rides"].map((x) => x)),
-    createdAt: DateTime.parse(json["createdAt"]),
-    updatedAt: DateTime.parse(json["updatedAt"]),
-    v: json["__v"],
-    requestedRide: List<dynamic>.from(json["requestedRide"].map((x) => x)),
+    oneSignalId: json["oneSignalId"],
   );
 
   Map<String, dynamic> toJson() => {
     "identityDocument": identityDocument.toJson(),
-    "miniBio": miniBio,
-    "createdRide": List<dynamic>.from(createdRide.map((x) => x)),
     "_id": id,
     "firstName": firstName,
     "lastName": lastName,
     "phoneNumber": phoneNumber,
     "email": email,
-    "password": password,
     "profile": profile,
+    "miniBio": miniBio,
     "vehicles": List<dynamic>.from(vehicles.map((x) => x)),
-    // "rides": List<dynamic>.from(rides.map((x) => x)),
-    "createdAt": createdAt.toIso8601String(),
-    "updatedAt": updatedAt.toIso8601String(),
-    "__v": v,
-    "requestedRide": List<dynamic>.from(requestedRide.map((x) => x)),
+    "oneSignalId": oneSignalId,
   };
 }
 
@@ -224,23 +164,99 @@ class IdentityDocument {
   };
 }
 
+class PassangersId {
+  final IdentityDocument identityDocument;
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String phoneNumber;
+  final String email;
+  final String profile;
+  final String miniBio;
+  final String oneSignalId;
+  final String password;
+  final List<String> vehicles;
+  final List<String> createdRide;
+  final List<String> requestedRide;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  PassangersId({
+    required this.identityDocument,
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.phoneNumber,
+    required this.email,
+    required this.profile,
+    required this.miniBio,
+    required this.oneSignalId,
+    required this.password,
+    required this.vehicles,
+    required this.createdRide,
+    required this.requestedRide,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory PassangersId.fromJson(Map<String, dynamic> json) => PassangersId(
+    identityDocument: IdentityDocument.fromJson(json["identityDocument"]),
+    id: json["_id"],
+    firstName: json["firstName"],
+    lastName: json["lastName"],
+    phoneNumber: json["phoneNumber"],
+    email: json["email"],
+    profile: json["profile"],
+    miniBio: json["miniBio"],
+    oneSignalId: json["oneSignalId"],
+    password: json["password"],
+    vehicles: List<String>.from(json["vehicles"].map((x) => x)),
+    createdRide: List<String>.from(json["createdRide"].map((x) => x)),
+    requestedRide: List<String>.from(json["requestedRide"].map((x) => x)),
+    createdAt: DateTime.parse(json["createdAt"]),
+    updatedAt: DateTime.parse(json["updatedAt"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "identityDocument": identityDocument.toJson(),
+    "_id": id,
+    "firstName": firstName,
+    "lastName": lastName,
+    "phoneNumber": phoneNumber,
+    "email": email,
+    "profile": profile,
+    "miniBio": miniBio,
+    "oneSignalId": oneSignalId,
+    "password": password,
+    "vehicles": List<dynamic>.from(vehicles.map((x) => x)),
+    "createdRide": List<dynamic>.from(createdRide.map((x) => x)),
+    "requestedRide": List<dynamic>.from(requestedRide.map((x) => x)),
+    "createdAt": createdAt.toIso8601String(),
+    "updatedAt": updatedAt.toIso8601String(),
+  };
+}
+
 class StopBy {
   final String gMapAddressId;
   final String address;
+  final String id;
 
   StopBy({
     required this.gMapAddressId,
     required this.address,
+    required this.id,
   });
 
   factory StopBy.fromJson(Map<String, dynamic> json) => StopBy(
     gMapAddressId: json["gMapAddressId"],
     address: json["address"],
+    id: json["_id"],
   );
 
   Map<String, dynamic> toJson() => {
     "gMapAddressId": gMapAddressId,
     "address": address,
+    "_id": id,
   };
 }
 
@@ -255,6 +271,7 @@ class VehicleId {
   final String makeAndCategory;
   final String features;
   final String exception;
+  final bool isDefault;
   final bool requiredHelmet;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -270,6 +287,7 @@ class VehicleId {
     required this.makeAndCategory,
     required this.features,
     required this.exception,
+    required this.isDefault,
     required this.requiredHelmet,
     required this.createdAt,
     required this.updatedAt,
@@ -286,6 +304,7 @@ class VehicleId {
     makeAndCategory: json["makeAndCategory"],
     features: json["features"],
     exception: json["exception"],
+    isDefault: json["isDefault"],
     requiredHelmet: json["requiredHelmet"],
     createdAt: DateTime.parse(json["createdAt"]),
     updatedAt: DateTime.parse(json["updatedAt"]),
@@ -302,6 +321,7 @@ class VehicleId {
     "makeAndCategory": makeAndCategory,
     "features": features,
     "exception": exception,
+    "isDefault": isDefault,
     "requiredHelmet": requiredHelmet,
     "createdAt": createdAt.toIso8601String(),
     "updatedAt": updatedAt.toIso8601String(),
