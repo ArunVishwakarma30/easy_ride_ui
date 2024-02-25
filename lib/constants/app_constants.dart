@@ -27,6 +27,7 @@ const lightBorder = Color(0xFFDCDCDC);
 
 const transparent = Color(0x00ffb60f);
 const seatColor = Color(0xffffb60f);
+const yellowDark = Color(0xffffcc56);
 
 String regEx = r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$';
 

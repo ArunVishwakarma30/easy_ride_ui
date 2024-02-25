@@ -16,7 +16,7 @@ class YourRidesContainer extends StatelessWidget {
       required this.status,
       required this.statusColor,
       required this.onTap,
-      required this.requests})
+      required this.requests, required this.isRequestRide, this.isRequestAccepted})
       : super(key: key);
   final String dateString;
   final String timeString;
@@ -26,9 +26,19 @@ class YourRidesContainer extends StatelessWidget {
   final Color statusColor;
   final VoidCallback onTap;
   final List<dynamic> requests;
+  final bool isRequestRide;
+  final dynamic isRequestAccepted;
 
   @override
   Widget build(BuildContext context) {
+    String notificationText= "";
+    if(!isRequestRide){
+      notificationText = "${requests.length} new request" ;
+    }else if(isRequestRide && isRequestAccepted == false){
+      notificationText = "Request Denied" ;
+    }else if(isRequestRide && isRequestAccepted == null){
+      notificationText = "Waiting for approval";
+    }
     return Card(
       margin: const EdgeInsets.only(left: 13, right: 13, top: 15),
       color: Colors.white,
@@ -43,11 +53,11 @@ class YourRidesContainer extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              requests.isNotEmpty
+              (requests.isNotEmpty)
                   ? TextWithIcons(
                       preFixIcon: Icons.notification_add_outlined,
                       iconColor: Colors.redAccent,
-                      text: "${requests.length} new request",
+                      text: notificationText,
                       textStyle:
                           roundFont(18, Colors.redAccent, FontWeight.bold),
                       containerWidth: 100)

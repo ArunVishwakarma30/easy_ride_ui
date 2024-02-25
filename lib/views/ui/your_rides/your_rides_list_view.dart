@@ -1,6 +1,6 @@
 import 'package:easy_ride/controllers/find_pool_provider.dart';
 import 'package:easy_ride/controllers/your_rides_provider.dart';
-import 'package:easy_ride/models/response/your_rides_res_model.dart';
+import 'package:easy_ride/views/ui/your_rides/requested_ride_page.dart';
 import 'package:easy_ride/views/ui/your_rides/ride_plan.dart';
 import 'package:easy_ride/views/ui/your_rides/your_rides_container.dart';
 import 'package:flutter/cupertino.dart';
@@ -35,8 +35,8 @@ class _YourRidesListViewState extends State<YourRidesListView> {
     return formattedTime;
   }
 
-  List<dynamic>? checkStatus(
-      bool isCanceled, bool isFinished, DateTime dateTime) {
+  List<dynamic>? checkStatus(bool isCanceled, bool isFinished,
+      DateTime dateTime) {
     if (isFinished) {
       return ["Completed", Colors.green];
     } else if (isCanceled) {
@@ -61,9 +61,16 @@ class _YourRidesListViewState extends State<YourRidesListView> {
 
     return Consumer<YourRidesProvider>(
       builder: (context, yourRidesProvider, child) {
-        yourRidesProvider.getAllCreatedRides();
-        return FutureBuilder(
-          future: yourRidesProvider.allCreatedRides,
+        if (widget.rideCreatedListView) {
+          yourRidesProvider.getAllCreatedRides();
+        } else {
+          yourRidesProvider.getAllRequestedRides();
+        }
+        return FutureBuilder<List<dynamic>>(
+          future: widget.rideCreatedListView
+              ? yourRidesProvider.allCreatedRides
+              : yourRidesProvider.allRequestedRides,
+          // TODO : check rideCreatedListView, and pass future as per requirement
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -92,11 +99,17 @@ class _YourRidesListViewState extends State<YourRidesListView> {
                   controller: _scrollController,
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
-                    var createdRideAtCurrentIndex = allCreatedRides![index];
+                    var createdRideAtCurrentIndex;
+                    if (widget.rideCreatedListView) {
+                      createdRideAtCurrentIndex = allCreatedRides![index];
+                    } else {
+                      createdRideAtCurrentIndex =
+                          allCreatedRides![index].rideId;
+                    }
                     String? date =
-                        formatDateString(createdRideAtCurrentIndex.schedule);
+                    formatDateString(createdRideAtCurrentIndex.schedule);
                     String? time =
-                        formatTime(createdRideAtCurrentIndex.schedule);
+                    formatTime(createdRideAtCurrentIndex.schedule);
 
                     // in status list , first index will be the string status, and 2nd will be the color
                     List<dynamic>? status = checkStatus(
@@ -107,23 +120,35 @@ class _YourRidesListViewState extends State<YourRidesListView> {
                     String departAddress = findPoolProvider.extractAddressPart(
                         createdRideAtCurrentIndex.departure);
                     String destinationAddress =
-                        findPoolProvider.extractAddressPart(
-                            createdRideAtCurrentIndex.destination);
+                    findPoolProvider.extractAddressPart(
+                        createdRideAtCurrentIndex.destination);
+                    dynamic requestAccepted = null;
+                    if (!widget.rideCreatedListView) {
+                      requestAccepted = allCreatedRides[index].isAccepted;
+                    }
 
                     return YourRidesContainer(
                       onTap: () {
-                        yourRidesProvider.createdRide =
-                            createdRideAtCurrentIndex;
-                        Get.to(() => RidePlan(
-                              rideDetail: createdRideAtCurrentIndex,
-                            ));
+                        if (widget.rideCreatedListView) {
+                          yourRidesProvider.createdRide =
+                              createdRideAtCurrentIndex;
+                          Get.to(() =>
+                              RidePlan(
+                                rideDetail: createdRideAtCurrentIndex,
+                              ));
+                        } else {
+                          Get.to(()=>RequestedRidePage(rideDetail: allCreatedRides[index],));
+                        }
                       },
-                      dateString:
-                          widget.rideCreatedListView ? date : "fasfadsf",
+                      isRequestRide: !widget.rideCreatedListView,
+                      dateString: date,
                       timeString: time,
                       departureAddress: departAddress,
                       destinationAddress: destinationAddress,
-                      requests: createdRideAtCurrentIndex.requests,
+                      isRequestAccepted:requestAccepted,
+                      requests: widget.rideCreatedListView
+                          ? createdRideAtCurrentIndex.requests
+                          : [],
                       status: status![0],
                       statusColor: status[1],
                     );

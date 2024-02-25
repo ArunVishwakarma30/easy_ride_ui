@@ -2,7 +2,6 @@
 //
 //     final yourCreatedRidesResModel = yourCreatedRidesResModelFromJson(jsonString);
 
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 List<YourCreatedRidesResModel> yourCreatedRidesResModelFromJson(String str) =>

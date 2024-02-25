@@ -21,8 +21,8 @@ import '../find_pool/get_ride_detail_page.dart';
 import '../find_pool/map_locaiton_page.dart';
 
 class RidePlan extends StatefulWidget {
-  const RidePlan({Key? key, required this.rideDetail}) : super(key: key);
-  final YourCreatedRidesResModel rideDetail;
+   RidePlan({Key? key, required this.rideDetail}) : super(key: key);
+  var rideDetail;
 
   @override
   State<RidePlan> createState() => _RidePlanState();

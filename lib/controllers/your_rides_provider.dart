@@ -1,4 +1,5 @@
 import 'package:easy_ride/models/request/cancel_ride_req_model.dart';
+import 'package:easy_ride/models/response/requested_ride_res_model.dart';
 import 'package:easy_ride/models/response/your_rides_res_model.dart';
 import 'package:easy_ride/services/helper/your_rides_helper.dart';
 import 'package:easy_ride/views/common/toast_msg.dart';
@@ -9,6 +10,7 @@ import 'package:get/get.dart';
 
 class YourRidesProvider extends ChangeNotifier {
   late Future<List<YourCreatedRidesResModel>>? allCreatedRides;
+  late Future<List<RequestedRidesResModel>>? allRequestedRides;
   late YourCreatedRidesResModel createdRide;
 
   bool _waiting = false;
@@ -22,6 +24,10 @@ class YourRidesProvider extends ChangeNotifier {
 
   getAllCreatedRides() {
     allCreatedRides = YourRidesHelper.getAllCreatedRides();
+  }
+
+  getAllRequestedRides() {
+    allRequestedRides = YourRidesHelper.getAllRequestedRides();
   }
 
   cancelRide(CancelRideReqModel model, String rideId) {
