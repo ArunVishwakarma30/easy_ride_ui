@@ -1,5 +1,6 @@
 import 'package:easy_ride/controllers/add_vehicle_provider.dart';
 import 'package:easy_ride/controllers/auth_provider.dart';
+import 'package:easy_ride/controllers/chat_provider.dart';
 import 'package:easy_ride/controllers/driver_verification_provider.dart';
 import 'package:easy_ride/controllers/image_uploader.dart';
 import 'package:easy_ride/controllers/map_provider.dart';
@@ -50,6 +51,7 @@ void main() async {
       ChangeNotifierProvider(create: (create) => ProfileProvider()),
       ChangeNotifierProvider(create: (create) => MapProvider()),
       ChangeNotifierProvider(create: (create) => YourRidesProvider()),
+      ChangeNotifierProvider(create: (create) => ChatNotifier()),
     ],
     child: const MyApp(),
   ));

@@ -481,9 +481,13 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                   print(widget.rideDetail.driverId.id);
                   print(vehicleProvider.numOfSeatSelected);
                   print(widget.rideDetail.directBooking);
-                  SendNotificationReqModel notificationModel = SendNotificationReqModel(devices: [widget.rideDetail.driverId.oneSignalId], content: "New passenger booked your ride of date : $schedule");
+                  SendNotificationReqModel notificationModel =
+                      SendNotificationReqModel(devices: [
+                    widget.rideDetail.driverId.oneSignalId
+                  ], content: "New passenger booked your ride of date : $schedule");
                   RequestRideReqModel model;
-                  print("Driver onesignal id : ${widget.rideDetail.driverId.oneSignalId}");
+                  print(
+                      "Driver onesignal id : ${widget.rideDetail.driverId.oneSignalId}");
                   if (widget.rideDetail.directBooking) {
                     model = RequestRideReqModel(
                         rideId: widget.rideDetail.id,
@@ -498,7 +502,6 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                     print("Else part running : ${model.isAccepted}");
                   }
                   findPoolProvider.requestRide(model, notificationModel);
-
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: loginPageColor,

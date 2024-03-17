@@ -1,4 +1,6 @@
+import 'package:easy_ride/models/request/accept_or_deny_req.dart';
 import 'package:easy_ride/models/request/cancel_ride_req_model.dart';
+import 'package:easy_ride/models/request/req_ride_model.dart';
 import 'package:easy_ride/models/response/requested_ride_res_model.dart';
 import 'package:easy_ride/models/response/your_rides_res_model.dart';
 import 'package:easy_ride/services/helper/your_rides_helper.dart';
@@ -47,6 +49,28 @@ class YourRidesProvider extends ChangeNotifier {
             icon: Icons.error,
             bgColor: Colors.red,
             textColor: Colors.white);
+      }
+    });
+  }
+
+  acceptOrDeclineUserRideReq(AcceptOrDenyReq model, String rideId) {
+    YourRidesHelper.acceptOrDeclineUserRideRequest(model, rideId).then((value) {
+      if (value) {
+        ShowSnackbar(
+            title: "Success",
+            message:
+                model.isAccepted ? "Request Accepted!" : "Request Declined!",
+            icon: Icons.done_outline,
+            bgColor: Colors.green,
+            textColor: Colors.white);
+        Get.offAll(()=>const MainPage());
+      } else {
+        ShowSnackbar(
+            title: "Failed",
+            message: "Something went wrong!",
+            icon: Icons.add_alert);
+        Get.offAll(()=>const MainPage());
+
       }
     });
   }

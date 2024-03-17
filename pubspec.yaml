@@ -66,6 +66,8 @@ dependencies:
   shimmer: ^3.0.0
   onesignal_flutter: ^3.2.7
   firebase_messaging:
+  socket_io_client: ^2.0.3+1
+  flutter_chat_bubble: ^2.0.2
 
 
 

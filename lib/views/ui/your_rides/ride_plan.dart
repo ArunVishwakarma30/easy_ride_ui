@@ -21,8 +21,8 @@ import '../find_pool/get_ride_detail_page.dart';
 import '../find_pool/map_locaiton_page.dart';
 
 class RidePlan extends StatefulWidget {
-   RidePlan({Key? key, required this.rideDetail}) : super(key: key);
-  var rideDetail;
+  const RidePlan({Key? key, required this.rideDetail}) : super(key: key);
+  final YourCreatedRidesResModel rideDetail;
 
   @override
   State<RidePlan> createState() => _RidePlanState();
@@ -115,7 +115,8 @@ class _RidePlanState extends State<RidePlan> {
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: loginPageColor),
       ),
-      body: FutureBuilder(
+      body:
+      FutureBuilder(
         future: getRouteDetails(widget.rideDetail),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -229,7 +230,9 @@ class _RidePlanState extends State<RidePlan> {
                               onTap: () {
                                 Get.to(
                                     () => UserProfile(
-                                        userDetail: userDetailAtCurrentIndex),
+                                        userDetail: userDetailAtCurrentIndex,
+                                    rideId: widget.rideDetail.id,
+                                    ),
                                     transition: Transition.rightToLeft,
                                     arguments: "passengerRequest");
                               },

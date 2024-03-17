@@ -19,7 +19,6 @@ class YourRidesListView extends StatefulWidget {
 }
 
 class _YourRidesListViewState extends State<YourRidesListView> {
-  late ScrollController _scrollController;
 
   String formatDateString(DateTime dateTime) {
     // Parse the input string to a DateTime object
@@ -48,12 +47,7 @@ class _YourRidesListViewState extends State<YourRidesListView> {
     }
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _scrollController = ScrollController();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -85,18 +79,11 @@ class _YourRidesListViewState extends State<YourRidesListView> {
                 child: Text("No Rides Created yet"),
               );
             } else {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _scrollController.animateTo(
-                  _scrollController.position.maxScrollExtent,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              });
+
               var allCreatedRides = snapshot.data;
               return Container(
                 margin: const EdgeInsets.only(bottom: 20),
                 child: ListView.builder(
-                  controller: _scrollController,
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     var createdRideAtCurrentIndex;

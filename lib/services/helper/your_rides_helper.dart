@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:easy_ride/models/request/accept_or_deny_req.dart';
 import 'package:easy_ride/models/request/cancel_ride_req_model.dart';
 import 'package:easy_ride/models/request/req_ride_model.dart';
 import 'package:easy_ride/models/response/requested_ride_res_model.dart';
@@ -78,4 +79,31 @@ class YourRidesHelper {
       throw Exception("Failed to get the rides data");
     }
   }
+
+  // update or decline user ride request
+  // update user profile
+  static Future<bool> acceptOrDeclineUserRideRequest(AcceptOrDenyReq model, String rideId) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+      'token': 'Bearer $token'
+    };
+
+    var url = Uri.parse("${Config.apiUrl}${Config.requestRide}/$rideId");
+    var response = await client.put(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode(model),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
 }
