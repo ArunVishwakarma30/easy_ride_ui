@@ -16,7 +16,7 @@ class Config {
   static const String oneSignalAppId = '2834421f-d872-47bc-a6bf-2a2eacf04413';
   static const String chatUrl = '/chats';
   static const String messagingUrl = "/messages";
-
-
+  static const String sendOTPUrl = "/otp/createOtp";
+  static const String verifyOTPURL = "/otp/verifyOtp";
 
 }

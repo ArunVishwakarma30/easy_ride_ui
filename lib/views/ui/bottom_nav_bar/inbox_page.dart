@@ -52,10 +52,7 @@ appBar: AppBar(
 
                     return GestureDetector(
                       onTap: () {
-                        // Get.to(()=>IndividualChatPage(id: chat.id, title: user.first.userName,
-                        // users: [chat.users[0].id, chat.users[1].id],));
-
-                        Get.to(()=>ChatScreen(id: chat.chatName, title: user.first.firstName, users: [chat.users[0].id, chat.users[1].id], ));
+                Get.to(()=>ChatScreen(id: chat.chatName, title: user.first.firstName, users: [chat.users[0].id, chat.users[1].id], ));
                       },
                       child: Container(
                         decoration: BoxDecoration(

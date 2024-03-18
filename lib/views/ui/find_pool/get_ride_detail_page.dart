@@ -1,5 +1,6 @@
 import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/controllers/find_pool_provider.dart';
+import 'package:easy_ride/models/request/chat/create_chat_req.dart';
 import 'package:easy_ride/models/request/req_ride_model.dart';
 import 'package:easy_ride/models/request/send_notification_req_model.dart';
 import 'package:easy_ride/views/common/app_style.dart';
@@ -14,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controllers/add_vehicle_provider.dart';
+import '../../../controllers/chat_provider.dart';
 import '../profile/my_vehicles_list_tile.dart';
 import 'map_locaiton_page.dart';
 
@@ -290,8 +292,9 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                       const HeightSpacer(size: 20),
                       GestureDetector(
                           onTap: () {
-                            print(
-                                "Send to the chat page and initiate the chat between users");
+                            var notifier = Provider.of<ChatNotifier>(context, listen: false);
+                            CreateChat model = CreateChat(senderId: userId!, receiverId: widget.rideDetail.driverId.id);
+                            notifier.createChat(model);
                           },
                           child: ReuseableText(
                               text:

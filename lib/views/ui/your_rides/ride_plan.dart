@@ -1,8 +1,10 @@
 import 'package:easy_ride/models/request/cancel_ride_req_model.dart';
+import 'package:easy_ride/models/request/send_otp_req_model.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/ui/profile/user_profile_page.dart';
 import 'package:easy_ride/views/ui/your_rides/edit_ride/edit_ride_tile.dart';
+import 'package:easy_ride/views/ui/your_rides/verify_otp.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -31,6 +33,7 @@ class RidePlan extends StatefulWidget {
 class _RidePlanState extends State<RidePlan> {
   late List<StopBy> stopBy;
   late String date;
+  final currentDateTime = DateTime.now();
 
   @override
   void initState() {
@@ -105,6 +108,11 @@ class _RidePlanState extends State<RidePlan> {
   Widget build(BuildContext context) {
     final yourRidesProvider = Provider.of<YourRidesProvider>(context);
     double width = MediaQuery.of(context).size.width;
+    final currentDate = DateTime(
+        currentDateTime.year, currentDateTime.month, currentDateTime.day);
+    final rideDate = DateTime(widget.rideDetail.schedule.year,
+        widget.rideDetail.schedule.month, widget.rideDetail.schedule.day);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -115,8 +123,7 @@ class _RidePlanState extends State<RidePlan> {
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: loginPageColor),
       ),
-      body:
-      FutureBuilder(
+      body: FutureBuilder(
         future: getRouteDetails(widget.rideDetail),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -230,9 +237,9 @@ class _RidePlanState extends State<RidePlan> {
                               onTap: () {
                                 Get.to(
                                     () => UserProfile(
-                                        userDetail: userDetailAtCurrentIndex,
-                                    rideId: widget.rideDetail.id,
-                                    ),
+                                          userDetail: userDetailAtCurrentIndex,
+                                          rideId: widget.rideDetail.id,
+                                        ),
                                     transition: Transition.rightToLeft,
                                     arguments: "passengerRequest");
                               },
@@ -541,7 +548,199 @@ class _RidePlanState extends State<RidePlan> {
                               ],
                             ),
                           );
-                        })
+                        }),
+                // currentDate == rideDate
+                //     ? Align(
+                //         alignment: Alignment.bottomCenter,
+                //         child: ElevatedButton(
+                //             onPressed: () {},
+                //             style: ElevatedButton.styleFrom(
+                //                 backgroundColor: loginPageColor),
+                //             child: ReuseableText(
+                //               text: "Start Ride",
+                //               style:
+                //                   roundFont(22, Colors.white, FontWeight.bold),
+                //             )),
+                //       )
+                //     : SizedBox.shrink(),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                //   children: [
+                //     ElevatedButton(
+                //         onPressed: () {},
+                //         style: ElevatedButton.styleFrom(
+                //             backgroundColor: loginPageColor),
+                //         child: ReuseableText(
+                //           text: "End Ride",
+                //           style: roundFont(22, Colors.white, FontWeight.bold),
+                //         )),
+                //     ElevatedButton(
+                //         onPressed: () {
+                //           showDialog<void>(
+                //               context: context,
+                //               builder: (BuildContext context) {
+                //                 return AlertDialog(
+                //                   title: const Text('Verify User'),
+                //                   content:  Container(
+                //                     width: 300,
+                //                     height: (50 * widget.rideDetail.passangersId.length).toDouble(),
+                //                       child: ListView.builder(
+                //                       shrinkWrap: true,
+                //                       physics: const NeverScrollableScrollPhysics(),
+                //                       itemCount: widget.rideDetail.passangersId.length,
+                //                       itemBuilder: (context, index) {
+                //                         return Column(
+                //                           children: [
+                //                             InkWell(
+                //                               radius: 0,
+                //                               onTap: () {
+                //                                 SendOtpReqModel model = SendOtpReqModel(email: widget.rideDetail.passangersId[index].email);
+                //                                 yourRidesProvider.sendOTP(model);
+                //
+                //                               },
+                //                               child: Row(
+                //                                 crossAxisAlignment: CrossAxisAlignment.center,
+                //                                 children: [
+                //                                   ReuseableText(
+                //                                     text: widget.rideDetail.passangersId[index]
+                //                                         .firstName,
+                //                                     style: roundFont(
+                //                                         17, darkHeading, FontWeight.normal),
+                //                                   ),
+                //                                   const Expanded(
+                //                                       child: SizedBox(
+                //                                         width: 1,
+                //                                       )),
+                //                                   CircleAvatar(
+                //                                     radius: 25,
+                //                                     backgroundColor: Colors.white,
+                //                                     backgroundImage: widget
+                //                                         .rideDetail
+                //                                         .passangersId[index]
+                //                                         .profile
+                //                                         .isNotEmpty
+                //                                         ? NetworkImage(widget.rideDetail
+                //                                         .passangersId[index].profile)
+                //                                         : const AssetImage(
+                //                                         'assets/icons/person.png')
+                //                                     as ImageProvider,
+                //                                   ),
+                //                                   const SizedBox(
+                //                                     width: 20,
+                //                                   ),
+                //                                   const Icon(
+                //                                     Icons.arrow_forward_ios,
+                //                                     size: 18,
+                //                                     color: darkHeading,
+                //                                   )
+                //                                 ],
+                //                               ),
+                //                             ),
+                //                             const HeightSpacer(size: 5),
+                //                             index < widget.rideDetail.passangersId.length - 1
+                //                                 ? const Divider()
+                //                                 : const SizedBox.shrink(),
+                //                           ],
+                //                         );
+                //                       },
+                //                     ),
+                //                   ),
+                //                    );
+                //               },
+                //             );
+                //           }
+                //         ,
+                //         style: ElevatedButton.styleFrom(
+                //             backgroundColor: loginPageColor),
+                //         child: ReuseableText(
+                //           text: "Pick Passenger",
+                //           style: roundFont(22, Colors.white, FontWeight.bold),
+                //         )),
+                //   ],
+                // )
+
+                widget.rideDetail.passangersId.isNotEmpty ?   ElevatedButton(
+                    onPressed: () {
+                      showDialog<void>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Verify User'),
+                            content:  Container(
+                              width: 300,
+                              height: (50 * widget.rideDetail.passangersId.length).toDouble(),
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: widget.rideDetail.passangersId.length,
+                                itemBuilder: (context, index) {
+                                  return Column(
+                                    children: [
+                                      InkWell(
+                                        radius: 0,
+                                        onTap: () {
+                                          SendOtpReqModel model = SendOtpReqModel(email: widget.rideDetail.passangersId[index].email);
+                                          yourRidesProvider.sendOTP(model);
+
+                                        },
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            ReuseableText(
+                                              text: widget.rideDetail.passangersId[index]
+                                                  .firstName,
+                                              style: roundFont(
+                                                  17, darkHeading, FontWeight.normal),
+                                            ),
+                                            const Expanded(
+                                                child: SizedBox(
+                                                  width: 1,
+                                                )),
+                                            CircleAvatar(
+                                              radius: 25,
+                                              backgroundColor: Colors.white,
+                                              backgroundImage: widget
+                                                  .rideDetail
+                                                  .passangersId[index]
+                                                  .profile
+                                                  .isNotEmpty
+                                                  ? NetworkImage(widget.rideDetail
+                                                  .passangersId[index].profile)
+                                                  : const AssetImage(
+                                                  'assets/icons/person.png')
+                                              as ImageProvider,
+                                            ),
+                                            const SizedBox(
+                                              width: 20,
+                                            ),
+                                            const Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 18,
+                                              color: darkHeading,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      const HeightSpacer(size: 5),
+                                      index < widget.rideDetail.passangersId.length - 1
+                                          ? const Divider()
+                                          : const SizedBox.shrink(),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                    ,
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: loginPageColor),
+                    child: ReuseableText(
+                      text: "Pick Passenger",
+                      style: roundFont(22, Colors.white, FontWeight.bold),
+                    )) : SizedBox.shrink(),
               ],
             );
           }

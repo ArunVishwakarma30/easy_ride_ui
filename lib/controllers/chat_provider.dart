@@ -1,12 +1,18 @@
+import 'package:easy_ride/models/request/chat/create_chat_req.dart';
+import 'package:easy_ride/views/common/toast_msg.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 import '../models/response/chats/get_chat_res_model.dart';
 import '../services/helper/chat_helper.dart';
+import '../views/ui/chat_screen.dart';
 
 class ChatNotifier extends ChangeNotifier {
   late Future<List<GetChats>> chats;
+  late GetChats createdChat;
   String? userId;
   List<String> _online = [];
 
@@ -30,10 +36,19 @@ class ChatNotifier extends ChangeNotifier {
     chats = ChatHelper.getConversations();
   }
 
+  createChat(CreateChat model){
+    ChatHelper.createChat(model).then((value) {
+      if(value[0]==true){
+        createdChat = value[1];
+        Get.to(()=>ChatScreen(id: createdChat.chatName, title: createdChat.users[1].firstName, users: [createdChat.users[0].id, createdChat.users[1].id], ));
+      }else{
+        ShowSnackbar(title: "Failed", message: "Something Went Wrong", icon:Icons.error_outline_outlined);
+      }
+    });
+  }
   getPrefs() async {
     var prefs = await SharedPreferences.getInstance();
     userId = prefs.getString("userId");
-    print(userId);
   }
 
   String msgTime(String timeStamp) {

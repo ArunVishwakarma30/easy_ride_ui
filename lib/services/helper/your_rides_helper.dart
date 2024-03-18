@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'package:easy_ride/models/request/accept_or_deny_req.dart';
 import 'package:easy_ride/models/request/cancel_ride_req_model.dart';
 import 'package:easy_ride/models/request/req_ride_model.dart';
+import 'package:easy_ride/models/request/send_otp_req_model.dart';
+import 'package:easy_ride/models/request/verify_otp_req_model.dart';
 import 'package:easy_ride/models/response/requested_ride_res_model.dart';
+import 'package:easy_ride/models/response/send_otp_res_model.dart';
 import 'package:easy_ride/models/response/your_rides_res_model.dart';
 import 'package:http/http.dart' as https;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -97,6 +100,53 @@ class YourRidesHelper {
       headers: requestHeaders,
       body: jsonEncode(model),
     );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // send OPT
+  static Future<List<dynamic>> sendOTP(SendOtpReqModel model) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.parse("${Config.apiUrl}${Config.sendOTPUrl}");
+    var response = await client.post(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode(model),
+    );
+
+    if (response.statusCode == 200) {
+      var sendOtpRes = sendOtpResModelFromJson(response.body);
+      return [true, sendOtpRes];
+    } else {
+      throw Exception("Failed to Send OTP");
+    }
+  }
+
+  // verify OTP
+  static Future<bool> verifyOTP(VerifyOtpReqModel model) async {
+
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.parse("${Config.apiUrl}${Config.verifyOTPURL}");
+    var response = await client.post(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode(model),
+    );
+
+    print(response.statusCode);
+    print(response.body.toString());
 
     if (response.statusCode == 200) {
       return true;
