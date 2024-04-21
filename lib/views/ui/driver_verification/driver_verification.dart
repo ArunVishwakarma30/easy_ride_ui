@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../controllers/add_vehicle_provider.dart';
+import '../../../controllers/image_uploader.dart';
 
 class DriverVerification extends StatefulWidget {
   const DriverVerification({Key? key}) : super(key: key);
@@ -92,6 +93,8 @@ class _DriverVerificationState extends State<DriverVerification> {
 
   @override
   Widget build(BuildContext context) {
+    final addVehicleProvider = Provider.of<AddVehicle>(context);
+    final imageProvider = Provider.of<ImageUploader>(context);
     void setDriverVerification() async {
       var prefs = await SharedPreferences.getInstance();
       prefs.setBool("isDriverVerified", true);
@@ -152,7 +155,6 @@ class _DriverVerificationState extends State<DriverVerification> {
     return SafeArea(
       child: Consumer<DriverVerificationProvider>(
         builder: (context, driverVerificationNotifier, child) {
-          final addVehicleProvider = Provider.of<AddVehicle>(context);
 
           return Scaffold(
             backgroundColor: Colors.white,

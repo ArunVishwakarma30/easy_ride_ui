@@ -194,7 +194,8 @@ class _RequestedRidePageState extends State<RequestedRidePage> {
                           bottom: 20, right: 20, left: 20),
                       color: yellowDark,
                       child: Text(
-                        "Your booking is awaiting the driver's approval",
+                        // "Your booking is awaiting the driver's approval",
+                        "Your Booking",
                         style: roundFont(25, darkHeading, FontWeight.bold),
                       )),
                   Padding(

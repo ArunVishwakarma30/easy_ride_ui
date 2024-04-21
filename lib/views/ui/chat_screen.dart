@@ -58,6 +58,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
 
         socket!.on('message recieved', (newMessgeRecieved) {
+          if (!mounted) return;
           sendStopTypingEvent(widget.id!);
           ReceivedMessage receivedMessage =
               ReceivedMessage.fromJson(newMessgeRecieved);

@@ -7,6 +7,7 @@ import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/common/text_with_icons.dart';
+import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../controllers/add_vehicle_provider.dart';
+import '../../../controllers/bottom_navigation_provider.dart';
 import '../../../controllers/chat_provider.dart';
 import '../profile/my_vehicles_list_tile.dart';
 import 'map_locaiton_page.dart';
@@ -293,8 +295,12 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                       GestureDetector(
                           onTap: () {
                             var notifier = Provider.of<ChatNotifier>(context, listen: false);
+                            var navNotifier = Provider.of<BottomNavNotifier>(context, listen: false);
                             CreateChat model = CreateChat(senderId: userId!, receiverId: widget.rideDetail.driverId.id);
+                            navNotifier.setCurrentIndex(0);
                             notifier.createChat(model);
+
+                            Get.offAll(()=>MainPage());
                           },
                           child: ReuseableText(
                               text:
