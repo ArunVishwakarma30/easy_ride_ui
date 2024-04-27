@@ -8,14 +8,18 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../controllers/bottom_navigation_provider.dart';
+import '../../../controllers/chat_provider.dart';
 import '../../../controllers/map_provider.dart';
 import '../../../controllers/your_rides_provider.dart';
 import '../../../models/map/direction_model.dart';
+import '../../../models/request/chat/create_chat_req.dart';
 import '../../../models/response/requested_ride_res_model.dart';
 import '../../common/reuseable_text_widget.dart';
-import '../find_pool/get_ride_detail_page.dart';
+import '../bottom_nav_bar/main_page.dart';
 import '../find_pool/map_locaiton_page.dart';
 import 'edit_ride/edit_ride_tile.dart';
 
@@ -30,6 +34,7 @@ class RequestedRidePage extends StatefulWidget {
 class _RequestedRidePageState extends State<RequestedRidePage> {
   late List<StopBy> stopBy;
   late String date;
+  late String userId;
 
   @override
   void initState() {
@@ -37,6 +42,12 @@ class _RequestedRidePageState extends State<RequestedRidePage> {
     super.initState();
     stopBy = widget.rideDetail.rideId.stopBy;
     date = formatDateTimeString(widget.rideDetail.rideId.schedule);
+    getPrefs();
+  }
+
+  getPrefs() async {
+    var prefs = await SharedPreferences.getInstance();
+    userId = prefs.getString("userId")!;
   }
 
   String formatDateTimeString(DateTime dateTime) {
@@ -241,6 +252,7 @@ class _RequestedRidePageState extends State<RequestedRidePage> {
                           Get.to(() => RouteScreen(
                                 places: routeInfo[0],
                                 polyLinePoints: routeInfo[1],
+                                stopBy: stopBy,
                               ));
                         },
                         child: Column(
@@ -352,17 +364,22 @@ class _RequestedRidePageState extends State<RequestedRidePage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: EditRideTile(
-                        title: "See ride offer ",
-                        onTap: () {
-                          // Get.to(
-                          //     () => RideDetailsPage(
-                          //         rideDetail: widget.rideDetail,
-                          //         routeInfo: routeInfo),
-                          //     transition: Transition.rightToLeft,
-                          //     arguments: 'CreateRide');
+                      title: "Contact Driver ",
+                      onTap: () {
+                        var notifier =
+                            Provider.of<ChatNotifier>(context, listen: false);
+                        var navNotifier = Provider.of<BottomNavNotifier>(
+                            context,
+                            listen: false);
+                        CreateChat model = CreateChat(
+                            senderId: userId,
+                            receiverId:widget.rideDetail.rideId.driverId);
+                        navNotifier.setCurrentIndex(0);
+                        notifier.createChat(model);
 
-                          print("go to ride details page");
-                        }),
+                        Get.offAll(() => MainPage());
+                      },
+                    ),
                   ),
                   widget.rideDetail.rideId.isCanceled
                       ? Padding(
@@ -385,7 +402,35 @@ class _RequestedRidePageState extends State<RequestedRidePage> {
                         )
                       : Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: EditRideTile(
+                          child:
+            widget.rideDetail.rideId.isCanceled || widget.rideDetail.rideId.isFinished      ?
+            Row(
+              children: [
+                Icon(
+                  widget.rideDetail.rideId.isFinished
+                      ? Icons.done_outline
+                      : Icons.not_interested,
+                  color: widget.rideDetail.rideId.isFinished
+                      ? Colors.green
+                      : Colors.red,
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
+                ReuseableText(
+                    text: widget.rideDetail.rideId.isFinished
+                        ? "Completed"
+                        : "Cancelled",
+                    style: roundFont(
+                        20,
+                        widget.rideDetail.rideId.isFinished
+                            ? Colors.green
+                            : Colors.red,
+                        FontWeight.bold))
+              ],
+            )
+                :
+                          EditRideTile(
                               title: "Cancel Your Request",
                               onTap: () {
                                 // Get.to(()=>const EditPublication(), transition: Transition.rightToLeft);

@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:easy_ride/constants/app_constants.dart';
+import 'package:easy_ride/controllers/auth_provider.dart';
 import 'package:easy_ride/controllers/driver_verification_provider.dart';
+import 'package:easy_ride/models/request/update_identity_req_model.dart';
+import 'package:easy_ride/services/helper/auth_helper.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
@@ -17,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../controllers/add_vehicle_provider.dart';
 import '../../../controllers/image_uploader.dart';
+import '../../../models/request/add_vehicle_req_model.dart';
 
 class DriverVerification extends StatefulWidget {
   const DriverVerification({Key? key}) : super(key: key);
@@ -43,6 +47,8 @@ class _DriverVerificationState extends State<DriverVerification> {
   Map<String, String> selectedBike = {};
   File? uploadedCarImage;
   File? uploadedBikeImage;
+  String? userId;
+
 
   // Callback function to set the selected vehicle value from the drop down
   void onCarSelected(Map<String, String> car) {
@@ -92,9 +98,21 @@ class _DriverVerificationState extends State<DriverVerification> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPrefs();
+  }
+  void getPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userId = prefs.getString('userId');
+  }
+
+  @override
   Widget build(BuildContext context) {
     final addVehicleProvider = Provider.of<AddVehicle>(context);
     final imageProvider = Provider.of<ImageUploader>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
     void setDriverVerification() async {
       var prefs = await SharedPreferences.getInstance();
       prefs.setBool("isDriverVerified", true);
@@ -155,14 +173,13 @@ class _DriverVerificationState extends State<DriverVerification> {
     return SafeArea(
       child: Consumer<DriverVerificationProvider>(
         builder: (context, driverVerificationNotifier, child) {
-
           return Scaffold(
             backgroundColor: Colors.white,
             body: Stepper(
               type: StepperType.horizontal,
               steps: getSteps(),
               currentStep: driverVerificationNotifier.currentStep,
-              onStepContinue: () {
+              onStepContinue: () async {
                 String firstName = _firstNameController.text.toString();
                 String lastName = _lastNameController.text.toString();
 
@@ -202,6 +219,28 @@ class _DriverVerificationState extends State<DriverVerification> {
                         showToastMessage(context, "Please Enter all the fields",
                             Icons.error_outline_outlined);
                       } else {
+                        addVehicleProvider.setWaiting(true);
+                        String? imageUrl = "";
+                        if (uploadedCarImage != null) {
+                          // Now you can safely access properties and methods of uploadedCarImage
+                          imageUrl = await imageProvider
+                              .imageUpload(uploadedCarImage!);
+                        } // heck if it is null or not , before uploading
+                        AddVehicleReqModel model = AddVehicleReqModel(
+                            userId: userId!,
+                            type: selectedCar['Name'] == "Auto Rickshaw"
+                                ? "Auto Rickshaw"
+                                : "Car",
+                            image: imageUrl!,
+                            model: selectedCar['Name']!,
+                            registrationNumber: vehicleRegistrationNumber,
+                            offeringSeat: addVehicleProvider.numOfSeatSelected,
+                            makeAndCategory: _makeCategory.text,
+                            features: _features.text,
+                            exception: _exception.text,
+                            isDefault: addVehicleProvider.isDefaultVehicle,
+                            requiredHelmet: false);
+                        addVehicleProvider.addVehicle(model);
                         print(
                             "Vehicle Registration Number : ${vehicleRegistrationNumber}");
                         print(
@@ -219,12 +258,14 @@ class _DriverVerificationState extends State<DriverVerification> {
                             "Vehicle Image File : ${uploadedCarImage.toString()}"); // check if it is null or not , before uploading
                         print(
                             "Number of seats selected : ${addVehicleProvider.numOfSeatSelected}");
-
+                        String? documentImage =
+                        await imageProvider.imageUpload(selectedImage);
+                        UploadIdentityModel identityModel = UploadIdentityModel(firstName: _firstNameController.text.toString(), lastName: _lastNameController.text.toString(), identityDocument: IdentityDocument(documentType: selectedDocument.toString(), documentImg: documentImage!));
+                        authProvider.uploadIdentity(identityModel);
                         // here set share prefs
                         setDriverVerification();
                       }
-                    }
-                    else {
+                    } else {
                       if ((selectedBike['Name'] == null) ||
                           (selectedBike['Name'] == 'Select Type') ||
                           (vehicleRegistrationNumber.isEmpty) ||
@@ -232,6 +273,34 @@ class _DriverVerificationState extends State<DriverVerification> {
                         showToastMessage(context, "Please Enter all the fields",
                             Icons.error_outline_outlined);
                       } else {
+                        addVehicleProvider.setWaiting(true);
+                        print(
+                            "Helmet Required (1 : Required, 2:Optional ) : ${addVehicleProvider.carryHelmet}");
+                        print(
+                            "Name : ${selectedBike['Name']} /n Image Path : ${selectedBike['Img']}");
+                        String? imageUrl = "";
+                        if (uploadedBikeImage != null) {
+                          imageUrl =
+                          await imageProvider.imageUpload(uploadedBikeImage!);
+                        }
+                        AddVehicleReqModel model = AddVehicleReqModel(
+                            userId: userId!,
+                            type: selectedBike['Name'] == "Bike"
+                                ? "Bike"
+                                : "Scooter",
+                            image: imageUrl!,
+                            model: selectedBike['Name']!,
+                            registrationNumber: vehicleRegistrationNumber,
+                            offeringSeat: 0,
+                            makeAndCategory: _makeCategory.text,
+                            features: _features.text,
+                            exception: "",
+                            isDefault: addVehicleProvider.isDefaultVehicle,
+                            requiredHelmet: addVehicleProvider.carryHelmet == 1
+                                ? true
+                                : false);
+
+                        addVehicleProvider.addVehicle(model);
                         print(
                             "Vehicle Registration Number : ${vehicleRegistrationNumber}");
                         print(
@@ -250,6 +319,10 @@ class _DriverVerificationState extends State<DriverVerification> {
                         print(
                             "Helmet Required (1 : Required, 2:Optional ) : ${addVehicleProvider.carryHelmet}");
 
+                        String? documentImage =
+                        await imageProvider.imageUpload(selectedImage);
+                        UploadIdentityModel identityModel = UploadIdentityModel(firstName: _firstNameController.text.toString(), lastName: _lastNameController.text.toString(), identityDocument: IdentityDocument(documentType: selectedDocument.toString(), documentImg: documentImage!));
+                        authProvider.uploadIdentity(identityModel);
                         // here set share prefs
                         setDriverVerification();
                       }

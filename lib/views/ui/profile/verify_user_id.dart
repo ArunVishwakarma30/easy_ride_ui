@@ -3,9 +3,15 @@ import 'dart:io';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/height_spacer.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
+import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 import '../../../constants/app_constants.dart';
+import '../../../controllers/auth_provider.dart';
+import '../../../controllers/image_uploader.dart';
+import '../../../models/request/update_identity_req_model.dart';
 import '../driver_verification/step_two_widget.dart';
 
 class VerifyUserId extends StatefulWidget {
@@ -33,6 +39,13 @@ class _VerifyUserIdState extends State<VerifyUserId> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+  }
+
+  @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
@@ -42,6 +55,9 @@ class _VerifyUserIdState extends State<VerifyUserId> {
 
   @override
   Widget build(BuildContext context) {
+    final imageProvider = Provider.of<ImageUploader>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
+
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
@@ -68,9 +84,16 @@ class _VerifyUserIdState extends State<VerifyUserId> {
                       borderRadius: BorderRadius.all(Radius.circular(10.0))),
                   minimumSize: Size(width, 55),
                 ),
-                onPressed: () {},
-                child: Text(
-                  "Continue",
+                onPressed: () async {
+                  authProvider.setWaiting(true);
+                  String? documentImage =
+                      await imageProvider.imageUpload(selectedImage);
+                  UploadIdentityModel identityModel = UploadIdentityModel(firstName: _firstNameController.text.toString(), lastName: _lastNameController.text.toString(), identityDocument: IdentityDocument(documentType: selectedDocument.toString(), documentImg: documentImage!));
+                  authProvider.uploadIdentity(identityModel);
+                  Get.to(()=>const MainPage());
+                },
+                child: authProvider.waiting ? const CircularProgressIndicator() : Text(
+                   "Upload",
                   style: roundFont(width * 0.06, Colors.white, FontWeight.bold),
                 )),
           ]),

@@ -60,6 +60,7 @@ class RideId {
   final List<String> passangersId;
   final bool isCanceled;
   final bool isFinished;
+  final bool isStarted;
 
   RideId({
     required this.id,
@@ -77,6 +78,7 @@ class RideId {
     required this.passangersId,
     required this.isCanceled,
     required this.isFinished,
+    required this.isStarted,
   });
 
   factory RideId.fromJson(Map<String, dynamic> json) => RideId(
@@ -95,6 +97,7 @@ class RideId {
     passangersId: List<String>.from(json["passangersId"].map((x) => x)),
     isCanceled: json["isCanceled"],
     isFinished: json["isFinished"],
+    isStarted: json["isStarted"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -113,6 +116,7 @@ class RideId {
     "passangersId": List<dynamic>.from(passangersId.map((x) => x)),
     "isCanceled": isCanceled,
     "isFinished": isFinished,
+    "isStarted": isStarted,
   };
 }
 

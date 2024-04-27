@@ -17,11 +17,12 @@ import '../../common/app_style.dart';
 import '../../common/reuseable_text_widget.dart';
 
 class RouteScreen extends StatefulWidget {
-  const RouteScreen(
-      {Key? key, required this.places, required this.polyLinePoints})
+  RouteScreen(
+      {Key? key, required this.places, required this.polyLinePoints, this.stopBy})
       : super(key: key);
   final List<LatLng> places;
   final String polyLinePoints;
+   List<dynamic>? stopBy;
 
   @override
   State<RouteScreen> createState() => _RouteScreenState();
@@ -71,24 +72,32 @@ class _RouteScreenState extends State<RouteScreen> {
   _generateMarkers() async {
     for (int i = 0; i < widget.places.length; i++) {
       late final Uint8List markerIcon;
+      late final String markerTitle;
       if (i == 0) {
+        markerTitle = "Departure Location";
         markerIcon =
             await getBytesFromAsset('assets/icons/my_location.png', 100);
       } else if (i == widget.places.length - 1) {
+        markerTitle = "Destination Location";
         markerIcon = await getBytesFromAsset(
             'assets/icons/destination_location.png', 100);
+
       } else {
+        markerTitle = "Stop by";
+
         markerIcon =
             await getBytesFromAsset('assets/icons/pick_location.png', 200);
       }
+      print(widget.stopBy!.length);
+
       _markers.add(
         Marker(
           markerId: MarkerId(i.toString()),
           position: widget.places[i],
           consumeTapEvents: false,
           infoWindow: InfoWindow(
-            title: "fjasfa",
-            snippet: "fjiasoflasf",
+            title: markerTitle,
+            snippet: widget.stopBy![i].address ,
           ),
           icon: BitmapDescriptor.fromBytes(markerIcon),
         ),

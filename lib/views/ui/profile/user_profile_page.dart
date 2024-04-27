@@ -41,10 +41,7 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width;
+    double width = MediaQuery.of(context).size.width;
     var userData = widget.userDetail;
     return Scaffold(
         backgroundColor: CupertinoColors.white,
@@ -68,21 +65,21 @@ class _UserProfileState extends State<UserProfile> {
                           ReuseableText(
                               text: userData.firstName,
                               style:
-                              roundFont(25, darkHeading, FontWeight.bold)),
+                                  roundFont(25, darkHeading, FontWeight.bold)),
                           CircleAvatar(
                             radius: 40,
                             backgroundColor: Colors.white,
                             backgroundImage: userData.profile.isNotEmpty
                                 ? NetworkImage(userData.profile)
                                 : const AssetImage('assets/icons/person.png')
-                            as ImageProvider,
+                                    as ImageProvider,
                           ),
                         ],
                       ),
                       const HeightSpacer(size: 20),
                       TextWithIcons(
                         onWidgetTap: () {
-                          print("Redirect user to user ratings page");
+                          // print("Redirect user to user ratings page");
                         },
                         text: "4/4 - 5 ratings",
                         textStyle: roundFont(18, darkHeading, FontWeight.bold),
@@ -98,7 +95,7 @@ class _UserProfileState extends State<UserProfile> {
                         text: userData.email,
                         containerWidth: width,
                         textStyle:
-                        roundFont(17, Colors.black45, FontWeight.bold),
+                            roundFont(17, Colors.black45, FontWeight.bold),
                         preFixIcon: Icons.check_circle,
                         iconColor: Colors.green,
                       ),
@@ -107,7 +104,7 @@ class _UserProfileState extends State<UserProfile> {
                         text: userData.phoneNumber,
                         containerWidth: width,
                         textStyle:
-                        roundFont(17, Colors.black45, FontWeight.bold),
+                            roundFont(17, Colors.black45, FontWeight.bold),
                         preFixIcon: Icons.check_circle,
                         iconColor: Colors.green,
                       ),
@@ -133,10 +130,10 @@ class _UserProfileState extends State<UserProfile> {
               ),
               Padding(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: ReuseableText(
                     text:
-                    "Member since ${formatDateTimeString(userData.createdAt)}",
+                        "Member since ${formatDateTimeString(userData.createdAt)}",
                     style: roundFont(18, Colors.grey, FontWeight.bold)),
               ),
               Divider(
@@ -144,63 +141,83 @@ class _UserProfileState extends State<UserProfile> {
                 thickness: 10,
               ),
               HeightSpacer(size: 14),
+              widget.userDetail.identityDocument.documentType.isNotEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      child: ReuseableText(
+                          text:
+                              "Identity Proof : ${widget.userDetail.identityDocument.documentType}",
+                          style: roundFont(18, Colors.grey, FontWeight.bold)),
+                    )
+                  : const SizedBox.shrink(),
+              widget.userDetail.identityDocument.documentType.isNotEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 5),
+                      child: Image.network(
+                          widget.userDetail.identityDocument.documentImg),
+                    )
+                  : const SizedBox.shrink(),
             ],
           ),
           args == "passengerRequest"
               ? Positioned(
-              bottom: 20.0,
-              left: 20,
-              child: Container(
-                width: width - 40,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                          onPressed: () {
-                            AcceptOrDenyReq model = AcceptOrDenyReq(
-                                isAccepted: false);
-                            YourRidesProvider provider = Provider.of<
-                                YourRidesProvider>(context, listen: false);
-                            provider.acceptOrDeclineUserRideReq(
-                                model, widget.rideId);
-                          },
-                          style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              side: const BorderSide(
-                                  color: CupertinoColors.systemGrey2,
-                                  width: 1)),
-                          child: Text(
-                            "Decline",
-                            style: roundFont(
-                                18, loginPageColor, FontWeight.bold),
-                          )),
+                  bottom: 20.0,
+                  left: 20,
+                  child: Container(
+                    width: width - 40,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                              onPressed: () {
+                                AcceptOrDenyReq model =
+                                    AcceptOrDenyReq(isAccepted: false);
+                                YourRidesProvider provider =
+                                    Provider.of<YourRidesProvider>(context,
+                                        listen: false);
+                                provider.acceptOrDeclineUserRideReq(
+                                    model, widget.rideId);
+                              },
+                              style: OutlinedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  side: const BorderSide(
+                                      color: CupertinoColors.systemGrey2,
+                                      width: 1)),
+                              child: Text(
+                                "Decline",
+                                style: roundFont(
+                                    18, loginPageColor, FontWeight.bold),
+                              )),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Expanded(
+                          child: OutlinedButton(
+                              onPressed: () {
+                                AcceptOrDenyReq model =
+                                    AcceptOrDenyReq(isAccepted: true);
+                                YourRidesProvider provider =
+                                    Provider.of<YourRidesProvider>(context,
+                                        listen: false);
+                                provider.acceptOrDeclineUserRideReq(
+                                    model, widget.rideId);
+                              },
+                              style: OutlinedButton.styleFrom(
+                                  backgroundColor: loginPageColor,
+                                  side: const BorderSide(
+                                      color: Colors.grey, width: 0)),
+                              child: Text(
+                                "Accept",
+                                style: roundFont(
+                                    18, Colors.white, FontWeight.bold),
+                              )),
+                        )
+                      ],
                     ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    Expanded(
-                      child: OutlinedButton(
-                          onPressed: () {
-                            AcceptOrDenyReq model = AcceptOrDenyReq(
-                                isAccepted: true);
-                            YourRidesProvider provider = Provider.of<
-                                YourRidesProvider>(context, listen: false);
-                            provider.acceptOrDeclineUserRideReq(
-                                model, widget.rideId);
-                          },
-                          style: OutlinedButton.styleFrom(
-                              backgroundColor: loginPageColor,
-                              side: const BorderSide(
-                                  color: Colors.grey, width: 0)),
-                          child: Text(
-                            "Accept",
-                            style: roundFont(
-                                18, Colors.white, FontWeight.bold),
-                          )),
-                    )
-                  ],
-                ),
-              ))
+                  ))
               : const SizedBox.shrink()
         ]));
   }

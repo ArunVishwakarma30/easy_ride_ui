@@ -1,3 +1,4 @@
+import 'package:easy_ride/constants/app_constants.dart';
 import 'package:easy_ride/controllers/find_pool_provider.dart';
 import 'package:easy_ride/controllers/your_rides_provider.dart';
 import 'package:easy_ride/views/ui/your_rides/requested_ride_page.dart';
@@ -35,8 +36,11 @@ class _YourRidesListViewState extends State<YourRidesListView> {
   }
 
   List<dynamic>? checkStatus(bool isCanceled, bool isFinished,
-      DateTime dateTime) {
-    if (isFinished) {
+      DateTime dateTime, bool isStarted) {
+    if(isStarted){
+      return ["Started...", loginPageColor];
+    }
+    else if (isFinished) {
       return ["Completed", Colors.green];
     } else if (isCanceled) {
       return ["Cancelled", Colors.red];
@@ -64,7 +68,7 @@ class _YourRidesListViewState extends State<YourRidesListView> {
           future: widget.rideCreatedListView
               ? yourRidesProvider.allCreatedRides
               : yourRidesProvider.allRequestedRides,
-          // TODO : check rideCreatedListView, and pass future as per requirement
+
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -102,7 +106,9 @@ class _YourRidesListViewState extends State<YourRidesListView> {
                     List<dynamic>? status = checkStatus(
                         createdRideAtCurrentIndex.isCanceled,
                         createdRideAtCurrentIndex.isFinished,
-                        createdRideAtCurrentIndex.schedule);
+                        createdRideAtCurrentIndex.schedule,
+                      createdRideAtCurrentIndex.isStarted
+                    );
 
                     String departAddress = findPoolProvider.extractAddressPart(
                         createdRideAtCurrentIndex.departure);

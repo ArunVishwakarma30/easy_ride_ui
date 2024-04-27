@@ -37,7 +37,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    bool isIdVerified = false;
 
     late String miniBio;
     List<String> travelPreferences = [];
@@ -148,25 +147,26 @@ class _ProfilePageState extends State<ProfilePage> {
                               const HeightSpacer(size: 22),
                               GestureDetector(
                                 onTap: () {
-                                  if (!isIdVerified) {
-                                    // todo : verify user identity here
-                                  }
+                                  // if (userData.identityDocument.documentImg.isNotEmpty) {
+                                  //   // todo : verify user identity here
+                                  // }
                                 },
                                 child: TextWithIcons(
                                   onWidgetTap: () {
+                                    // send data if already verified
                                     Get.to(() => const VerifyUserId(),
                                         transition: Transition.rightToLeft);
                                   },
-                                  text: isIdVerified
+                                  text: userData.identityDocument.documentImg.isNotEmpty
                                       ? "Id Verified"
                                       : "Verify my ID",
                                   containerWidth: width,
                                   textStyle: roundFont(
-                                      17, loginPageColor, FontWeight.bold),
-                                  preFixIcon: isIdVerified
+                                      17, userData.identityDocument.documentImg.isNotEmpty?Colors.black45: loginPageColor, FontWeight.bold),
+                                  preFixIcon: userData.identityDocument.documentImg.isNotEmpty
                                       ? Icons.check_circle
                                       : Icons.add_circle_outline_outlined,
-                                  iconColor: isIdVerified
+                                  iconColor: userData.identityDocument.documentImg.isNotEmpty
                                       ? Colors.green
                                       : Color(loginPageColor.value),
                                 ),

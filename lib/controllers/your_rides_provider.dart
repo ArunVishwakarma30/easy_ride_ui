@@ -1,6 +1,8 @@
 import 'package:easy_ride/models/request/accept_or_deny_req.dart';
 import 'package:easy_ride/models/request/cancel_ride_req_model.dart';
+import 'package:easy_ride/models/request/finish_ride_req_model.dart';
 import 'package:easy_ride/models/request/send_otp_req_model.dart';
+import 'package:easy_ride/models/request/start_ride_req.dart';
 import 'package:easy_ride/models/request/verify_otp_req_model.dart';
 import 'package:easy_ride/models/response/requested_ride_res_model.dart';
 import 'package:easy_ride/models/response/send_otp_res_model.dart';
@@ -77,6 +79,39 @@ class YourRidesProvider extends ChangeNotifier {
       }
     });
   }
+
+
+  startRide(BuildContext context, StartRideReq model, String rideId) {
+    YourRidesHelper.startRide(model, rideId).then((value) {
+      if (value) {
+        scaffoldMessage(context, "Ride Started");
+        Get.offAll(() => const MainPage());
+      } else {
+        ShowSnackbar(
+            title: "Failed",
+            message: "Something went wrong!",
+            icon: Icons.add_alert);
+        Get.offAll(() => const MainPage());
+      }
+    });
+  }
+
+
+  finishRide(BuildContext context, FinishRideReq model, String rideId) {
+    YourRidesHelper.finishRide(model, rideId).then((value) {
+      if (value) {
+        scaffoldMessage(context, "Ride Completed");
+        Get.offAll(() => const MainPage());
+      } else {
+        ShowSnackbar(
+            title: "Failed",
+            message: "Something went wrong!",
+            icon: Icons.add_alert);
+        Get.offAll(() => const MainPage());
+      }
+    });
+  }
+
 
   // send OTP
   sendOTP(SendOtpReqModel model) {

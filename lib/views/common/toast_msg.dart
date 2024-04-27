@@ -53,3 +53,11 @@ ShowSnackbar( {
         color: Colors.white,
       ));
 }
+
+scaffoldMessage(BuildContext context, String msg){
+  var snackBar = SnackBar(
+    content: Text(msg),
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}

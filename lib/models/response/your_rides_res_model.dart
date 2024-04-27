@@ -28,6 +28,7 @@ class YourCreatedRidesResModel {
   final List<Id> requests;
   final bool isCanceled;
   final bool isFinished;
+  final bool isStarted;
   final DateTime createdAt;
 
   YourCreatedRidesResModel({
@@ -46,6 +47,7 @@ class YourCreatedRidesResModel {
     required this.passangersId,
     required this.isCanceled,
     required this.isFinished,
+    required this.isStarted,
     required this.requests,
     required this.createdAt,
   });
@@ -71,6 +73,7 @@ class YourCreatedRidesResModel {
         createdAt: DateTime.parse(json["createdAt"]),
         isCanceled: json["isCanceled"],
         isFinished: json["isFinished"],
+        isStarted: json["isStarted"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -91,6 +94,7 @@ class YourCreatedRidesResModel {
         "createdAt": createdAt.toIso8601String(),
         "isCanceled": isCanceled,
         "isFinished": isFinished,
+        "isStarted": isStarted,
       };
 }
 

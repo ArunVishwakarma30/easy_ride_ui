@@ -1,10 +1,11 @@
 import 'package:easy_ride/models/request/cancel_ride_req_model.dart';
+import 'package:easy_ride/models/request/finish_ride_req_model.dart';
 import 'package:easy_ride/models/request/send_otp_req_model.dart';
+import 'package:easy_ride/models/request/start_ride_req.dart';
 import 'package:easy_ride/views/common/app_style.dart';
 import 'package:easy_ride/views/common/reuseable_text_widget.dart';
 import 'package:easy_ride/views/ui/profile/user_profile_page.dart';
 import 'package:easy_ride/views/ui/your_rides/edit_ride/edit_ride_tile.dart';
-import 'package:easy_ride/views/ui/your_rides/verify_otp.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -326,6 +327,7 @@ class _RidePlanState extends State<RidePlan> {
                         Get.to(() => RouteScreen(
                               places: routeInfo[0],
                               polyLinePoints: routeInfo[1],
+                              stopBy: widget.rideDetail.stopBy,
                             ));
                       },
                       child: Column(
@@ -491,177 +493,233 @@ class _RidePlanState extends State<RidePlan> {
                           transition: Transition.rightToLeft,
                           arguments: 'CreateRide');
                     }),
-                widget.rideDetail.isCanceled
-                    ? Row(
+                widget.rideDetail.isCanceled || widget.rideDetail.isFinished
+                    ?
+                Row(
                         children: [
-                          const Icon(
-                            Icons.not_interested,
-                            color: Colors.red,
+                          Icon(
+                            widget.rideDetail.isFinished
+                                ? Icons.done_outline
+                                : Icons.not_interested,
+                            color: widget.rideDetail.isFinished
+                                ? Colors.green
+                                : Colors.red,
                           ),
                           const SizedBox(
                             width: 15,
                           ),
                           ReuseableText(
-                              text: "Cancelled",
-                              style: roundFont(20, Colors.red, FontWeight.bold))
+                              text: widget.rideDetail.isFinished
+                                  ? "Completed"
+                                  : "Canceled",
+                              style: roundFont(
+                                  20,
+                                  widget.rideDetail.isFinished
+                                      ? Colors.green
+                                      : Colors.red,
+                                  FontWeight.bold))
                         ],
                       )
-                    : EditRideTile(
-                        title: "Cancel Your Ride",
-                        onTap: () {
-                          // Get.to(()=>const EditPublication(), transition: Transition.rightToLeft);
-                          showDialog(
-                            barrierDismissible: false,
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              actionsPadding: EdgeInsets.zero,
-                              title: ReuseableText(
-                                text: "Cancel Ride?",
-                                style:
-                                    roundFont(22, darkHeading, FontWeight.bold),
-                              ),
-                              content: Text(
-                                "Are you sure you want to cancel this Ride? You can't undo this action.",
-                                style: roundFont(
-                                    16, lightHeading, FontWeight.bold),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text("Dismiss",
-                                      style: roundFont(
-                                          16, darkHeading, FontWeight.normal)),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    CancelRideReqModel model =
-                                        CancelRideReqModel(isCanceled: true);
-                                    String rideId = widget.rideDetail.id;
-                                    yourRidesProvider.cancelRide(model, rideId);
-                                  },
-                                  child: Text("Yes",
-                                      style: roundFont(
-                                          16, darkHeading, FontWeight.normal)),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                currentDate == rideDate
-                    ? Align(
-                        alignment: Alignment.bottomCenter,
-                        child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: loginPageColor),
-                            child: ReuseableText(
-                              text: "Start Ride",
-                              style:
-                                  roundFont(22, Colors.white, FontWeight.bold),
-                            )),
-                      )
-                    : SizedBox.shrink(),
-                currentDate == rideDate ?
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: loginPageColor),
-                        child: ReuseableText(
-                          text: "End Ride",
-                          style: roundFont(22, Colors.white, FontWeight.bold),
-                        )),
-                    widget.rideDetail.passangersId.isNotEmpty ?   ElevatedButton(
-                        onPressed: () {
-                          print(widget.rideDetail.schedule);
-                          showDialog<void>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Verify User'),
-                                content:  Container(
-                                  width: 300,
-                                  height: (50 * widget.rideDetail.passangersId.length).toDouble(),
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: const NeverScrollableScrollPhysics(),
-                                    itemCount: widget.rideDetail.passangersId.length,
-                                    itemBuilder: (context, index) {
-                                      return Column(
-                                        children: [
-                                          InkWell(
-                                            radius: 0,
-                                            onTap: () {
-                                              SendOtpReqModel model = SendOtpReqModel(email: widget.rideDetail.passangersId[index].email);
-                                              yourRidesProvider.sendOTP(model);
-
-                                            },
-                                            child: Row(
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                ReuseableText(
-                                                  text: widget.rideDetail.passangersId[index]
-                                                      .firstName,
-                                                  style: roundFont(
-                                                      17, darkHeading, FontWeight.normal),
-                                                ),
-                                                const Expanded(
-                                                    child: SizedBox(
-                                                      width: 1,
-                                                    )),
-                                                CircleAvatar(
-                                                  radius: 25,
-                                                  backgroundColor: Colors.white,
-                                                  backgroundImage: widget
-                                                      .rideDetail
-                                                      .passangersId[index]
-                                                      .profile
-                                                      .isNotEmpty
-                                                      ? NetworkImage(widget.rideDetail
-                                                      .passangersId[index].profile)
-                                                      : const AssetImage(
-                                                      'assets/icons/person.png')
-                                                  as ImageProvider,
-                                                ),
-                                                const SizedBox(
-                                                  width: 20,
-                                                ),
-                                                const Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  size: 18,
-                                                  color: darkHeading,
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          const HeightSpacer(size: 5),
-                                          index < widget.rideDetail.passangersId.length - 1
-                                              ? const Divider()
-                                              : const SizedBox.shrink(),
-                                        ],
-                                      );
-                                    },
+                    : widget.rideDetail.isStarted
+                        ? SizedBox.shrink()
+                        : EditRideTile(
+                            title: "Cancel Your Ride",
+                            onTap: () {
+                              // Get.to(()=>const EditPublication(), transition: Transition.rightToLeft);
+                              showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  actionsPadding: EdgeInsets.zero,
+                                  title: ReuseableText(
+                                    text: "Cancel Ride?",
+                                    style: roundFont(
+                                        22, darkHeading, FontWeight.bold),
                                   ),
+                                  content: Text(
+                                    "Are you sure you want to cancel this Ride? You can't undo this action.",
+                                    style: roundFont(
+                                        16, lightHeading, FontWeight.bold),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text("Dismiss",
+                                          style: roundFont(16, darkHeading,
+                                              FontWeight.normal)),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        CancelRideReqModel model =
+                                            CancelRideReqModel(
+                                                isCanceled: true);
+                                        String rideId = widget.rideDetail.id;
+                                        yourRidesProvider.cancelRide(
+                                            model, rideId);
+                                      },
+                                      child: Text("Yes",
+                                          style: roundFont(16, darkHeading,
+                                              FontWeight.normal)),
+                                    ),
+                                  ],
                                 ),
                               );
-                            },
-                          );
-                        }
-                        ,
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: loginPageColor),
-                        child: ReuseableText(
-                          text: "Pick Passenger",
-                          style: roundFont(22, Colors.white, FontWeight.bold),
-                        )) : SizedBox.shrink(),
-                  ],
-                )          : SizedBox.shrink(),
-
-
+                            }),
+                (currentDate == rideDate) &&
+                        (!widget.rideDetail.isFinished &&
+                            !widget.rideDetail.isCanceled)
+                    ? Row(
+                        children: [
+                          ElevatedButton(
+                              onPressed: () {
+                                if (widget.rideDetail.isStarted) {
+                                  FinishRideReq model = FinishRideReq(
+                                      endTime: DateTime.now(),
+                                      isFinished: true,
+                                      isStarted: false);
+                                  yourRidesProvider.finishRide(
+                                      context, model, widget.rideDetail.id);
+                                } else {
+                                  StartRideReq model = StartRideReq(
+                                      startTime: DateTime.now(),
+                                      isStarted: true);
+                                  yourRidesProvider.startRide(
+                                      context, model, widget.rideDetail.id);
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: loginPageColor),
+                              child: ReuseableText(
+                                text: widget.rideDetail.isStarted
+                                    ? "End Ride"
+                                    : "Start Ride",
+                                style: roundFont(
+                                    22, Colors.white, FontWeight.bold),
+                              )),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          (widget.rideDetail.passangersId.isNotEmpty &&
+                                  widget.rideDetail.isStarted)
+                              ? ElevatedButton(
+                                  onPressed: () {
+                                    showDialog<void>(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Verify User'),
+                                          content: Container(
+                                            width: 300,
+                                            height: (50 *
+                                                    widget.rideDetail
+                                                        .passangersId.length)
+                                                .toDouble(),
+                                            child: ListView.builder(
+                                              shrinkWrap: true,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              itemCount: widget.rideDetail
+                                                  .passangersId.length,
+                                              itemBuilder: (context, index) {
+                                                return Column(
+                                                  children: [
+                                                    InkWell(
+                                                      radius: 0,
+                                                      onTap: () {
+                                                        SendOtpReqModel model =
+                                                            SendOtpReqModel(
+                                                                email: widget
+                                                                    .rideDetail
+                                                                    .passangersId[
+                                                                        index]
+                                                                    .email);
+                                                        yourRidesProvider
+                                                            .sendOTP(model);
+                                                      },
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          ReuseableText(
+                                                            text: widget
+                                                                .rideDetail
+                                                                .passangersId[
+                                                                    index]
+                                                                .firstName,
+                                                            style: roundFont(
+                                                                17,
+                                                                darkHeading,
+                                                                FontWeight
+                                                                    .normal),
+                                                          ),
+                                                          const Expanded(
+                                                              child: SizedBox(
+                                                            width: 1,
+                                                          )),
+                                                          CircleAvatar(
+                                                            radius: 25,
+                                                            backgroundColor:
+                                                                Colors.white,
+                                                            backgroundImage: widget
+                                                                    .rideDetail
+                                                                    .passangersId[
+                                                                        index]
+                                                                    .profile
+                                                                    .isNotEmpty
+                                                                ? NetworkImage(widget
+                                                                    .rideDetail
+                                                                    .passangersId[
+                                                                        index]
+                                                                    .profile)
+                                                                : const AssetImage(
+                                                                        'assets/icons/person.png')
+                                                                    as ImageProvider,
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 20,
+                                                          ),
+                                                          const Icon(
+                                                            Icons
+                                                                .arrow_forward_ios,
+                                                            size: 18,
+                                                            color: darkHeading,
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const HeightSpacer(size: 5),
+                                                    index <
+                                                            widget
+                                                                    .rideDetail
+                                                                    .passangersId
+                                                                    .length -
+                                                                1
+                                                        ? const Divider()
+                                                        : const SizedBox
+                                                            .shrink(),
+                                                  ],
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                      backgroundColor: loginPageColor),
+                                  child: ReuseableText(
+                                    text: "Pick Passenger",
+                                    style: roundFont(
+                                        22, Colors.white, FontWeight.bold),
+                                  ))
+                              : const SizedBox.shrink(),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
               ],
             );
           }

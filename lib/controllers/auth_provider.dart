@@ -1,5 +1,6 @@
 import 'package:easy_ride/models/request/login_req_model.dart';
 import 'package:easy_ride/models/request/sign_up_req_model.dart';
+import 'package:easy_ride/models/request/update_identity_req_model.dart';
 import 'package:easy_ride/services/helper/auth_helper.dart';
 import 'package:easy_ride/views/common/toast_msg.dart';
 import 'package:easy_ride/views/ui/bottom_nav_bar/main_page.dart';
@@ -74,5 +75,9 @@ class AuthProvider extends ChangeNotifier {
       }
       setWaiting(false);
     });
+  }
+
+  uploadIdentity(UploadIdentityModel model){
+    AuthHelper.uploadIdentity(model).then((value) => print("identity successfully uploaded"));
   }
 }

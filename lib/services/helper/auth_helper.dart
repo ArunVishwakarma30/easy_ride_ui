@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:easy_ride/models/request/login_req_model.dart';
 import 'package:easy_ride/models/request/sign_up_req_model.dart';
+import 'package:easy_ride/models/request/update_identity_req_model.dart';
 import 'package:easy_ride/models/request/update_image_req.dart';
 import 'package:easy_ride/models/request/update_one_signal_req_model.dart';
 import 'package:easy_ride/models/request/update_profule_req.dart';
@@ -113,7 +114,31 @@ class AuthHelper {
     }
   }
 
-  // update user profile
+  //upload identity
+  static Future<bool> uploadIdentity(UploadIdentityModel model) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+      'token': 'Bearer $token'
+    };
+
+    var url = Uri.parse("${Config.apiUrl}${Config.userUrl}");
+    var response = await client.put(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode(model),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // update One signal Id
   static Future<bool> updateOneSignalId(UpdateOneSignalIdReq model) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
@@ -137,7 +162,7 @@ class AuthHelper {
     }
   }
 
-  // update user profile
+  // update user profile image
   static Future<bool> updateUserImage(UpdateProfileImageReq model) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');

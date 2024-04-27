@@ -138,6 +138,7 @@ class _RideDetailsPageState extends State<RideDetailsPage> {
                         Get.to(() => RouteScreen(
                               places: directions,
                               polyLinePoints: polyLines,
+                          stopBy: stopBy,
                             ));
                       },
                       child: Padding(
