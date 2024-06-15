@@ -41,7 +41,7 @@ dependencies:
   intl_phone_field: ^3.2.0
   curved_navigation_bar: ^1.0.3
   shared_preferences: ^2.2.0
-  get: ^4.6.5
+  get: ^4.6.6
   image_picker: ^1.0.4
   fluttertoast: ^8.2.4
   paged_vertical_calendar: ^1.1.6

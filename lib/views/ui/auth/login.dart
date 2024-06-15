@@ -160,6 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                                         if (_password.text.isEmpty) {
                                           return "Please enter password!";
                                         }
+                                        return null;
                                       },
                                       textSce:
                                           authProvider.secure ? true : false,

@@ -23,7 +23,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   List pages = const [
     InboxPage(),
